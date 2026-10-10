@@ -1,0 +1,261 @@
+# The pipeline
+
+Where every byte in `site/data/*.json` comes from, and how to rebuild all of it from an
+empty directory. If you can follow this to a working site, you can add FortiOS 8.1 the
+day it ships — that is the test this document exists to pass.
+
+- [From scratch](#from-scratch)
+- [Where the data comes from](#where-the-data-comes-from)
+- [Adding a firmware version](#adding-a-firmware-version)
+- [Adding a guide](#adding-a-guide)
+- [A device capture](#a-device-capture)
+- [What is checked, and what is not](#what-is-checked-and-what-is-not)
+- [What this pipeline cannot do](#what-this-pipeline-cannot-do)
+
+Run `make` for the same list with timings and costs. Every command below is a `make`
+target; the scripts underneath take the same arguments if you prefer them.
+
+## From scratch
+
+```bash
+git clone https://github.com/patrickdaj/forti-cli-finder && cd forti-cli-finder
+brew install poppler          # or: apt install poppler-utils
+make all                      # sources -> fetch -> build, ~12 minutes the first time
+make serve                    # http://localhost:8000
+```
+
+That is the whole thing. `python3` and `pdftotext` are the only dependencies and they
+are meant to stay the only ones: the bundles ship to a browser from a static host, so a
+dependency here is a dependency forever.
+
+What `make all` does, in order:
+
+| step | what it does | cost |
+|---|---|---|
+| `make sources` | asks docs.fortinet.com what PDF each document in `sources.json` resolves to today, writes `sources.lock.json` | ~20s |
+| `make fetch` | downloads exactly what the lock file names, into `sources/` | ~10min, ~550MB |
+| `make build` | `pdftotext` → parse → bundle → attach samples → derive get/show → stamp → check | ~60s |
+
+`sources/*.pdf` is gitignored. `site/data/*.json` is **committed**, because GitHub Pages
+serves the files as they are rather than building them — so the bundles in the repo must
+match what `make build` produces. `make build` is deterministic; confirm with
+`git diff --stat site/data` after a rebuild and expect nothing.
+
+## Where the data comes from
+
+Two files decide everything. `sources.json` is the input (which documents, and what each
+one is for); `sources.lock.json` is the record (which exact PDF each build read).
+
+```
+sources.json
+  cli[]     parsed into the command tree -- these ARE the bundles
+  output[]  mined for "# command" + output samples and for config examples
+  hand[]    course material transcribed by hand, same shape as output[]
+```
+
+A `cli` entry becomes one bundle file:
+
+```json
+{ "key": "fos-cli", "product": "fortios",   "parser": "fos",  "short": "FGT", "label": "FortiOS 7.6.7",
+  "ver": "7.6.7", "src": "CLI Reference + Administration Guide",
+  "doc": "/document/fortigate/7.6.7/cli-reference", "title": "...", "expect": "FortiOS-7.6.7-CLI_Reference" }
+```
+
+- `product` — which platform it is a build of (FortiGate, FortiSwitch…).
+- `bundle` — which **file** it is written to. Omit it and it defaults to `product`, which
+  is why the original four are still `fortios.json` and friends. These are two different
+  things, and conflating them is what stopped two firmware builds coexisting.
+- `ver`, `src` — how `/ver` labels the build on the page.
+- `doc` — the page on docs.fortinet.com. The **version is pinned into this path**. That
+  one fact drives the whole "how do we add 8.1" answer below.
+- `expect` — a substring of the PDF filename. If Fortinet serves something else, the
+  build stops rather than silently parsing the wrong document.
+
+What each tool contributes to a finished entry:
+
+| field | from | by |
+|---|---|---|
+| `k`, `p`, `d`, `pg`, `s` | the CLI Reference PDF | `parse_fos.py` (generated reference) / `parse_hand.py` (hand-written ones) |
+| `x[]` parameters, `ty`, `sz`, `df`, `o[]` | the same PDF's Variable tables | the same parsers |
+| `o[]` sample output | the guides in `output[]`/`hand[]` | `extract_outputs.py` → `attach_outputs.py` |
+| `e[]` worked examples, `fq` frequency | the same guides | `extract_config_examples.py` → `attach_config_examples.py` |
+| `show`/`get` for every config table | derived, not read | `derive_getshow.py` |
+| `mi` model lists, `BUILD` hash | the reference / the bundles | `build_bundles.py`, `stamp_build.py` |
+
+Three things are worth knowing because they are judgement calls, not mechanics:
+
+**Derived `get`/`show`.** The FortiOS CLI Reference is generated from the config tree and
+documents only `config`. But wherever `config firewall policy` exists, `show firewall
+policy` and `get firewall policy` are valid and show what it sets — that relationship is
+exact, so `derive_getshow.py` writes them and marks them `dv:1` so the page can say so.
+The *diagnostic* read tree (`get router info bgp neighbors`) is **not** derivable and is
+deliberately not invented.
+
+**Samples can appear under a build they were not written for.** A platform may ship more
+than one firmware build while the guides we mine are version-specific, so a `target` list
+may name several builds and a sample attaches to each build whose tree contains the
+command. Provenance travels with it — a capture from the 7.6 study guide shown under the
+8.0 build still prints its own source line. See `docs/sources.md`.
+
+**Worked examples are pooled per bundle and filtered by `target`.** A table name is not
+unique across platforms (`system global` exists on all four), so an example only reaches
+a bundle its guide actually targets.
+
+## Adding a firmware version
+
+This is the question the pipeline exists to answer well.
+
+**1. Find out it exists.** `make sources` will never tell you — it re-resolves the paths
+already in `sources.json`, so it catches Fortinet re-releasing 7.6.7 in place and nothing
+else. A new version is a path nobody has looked at:
+
+```bash
+make versions
+```
+
+reads one sitemap listing every product/version Fortinet publishes and prints what is
+newer than what we ship, with the PDF each candidate path actually serves.
+
+> **Read the filename.** Fortinet redirects an unpublished version to the nearest build.
+> `/document/fortiswitch/7.6.8/fortiswitchos-cli-reference` resolves — and serves
+> `FortiSwitchOS-7.6.7_CLI_Reference.pdf`. That is not a new document and adding it would
+> ship a duplicate under a wrong label.
+
+**2. Measure it before you commit to it.** More sections is not automatically better, and
+a second near-identical bundle gives the `/ver` picker nothing to distinguish while
+doubling that platform's data.
+
+```bash
+mkdir -p work/probe/81 && curl -o work/probe/81/fos81.pdf '<the URL make versions printed>'
+pdftotext -layout work/probe/81/fos81.pdf work/probe/81/fos81.txt
+python3 tools/parse_fos.py work/probe/81/fos81.txt work/probe/81/fos81.tree.json fortios
+```
+
+Then compare its section and argument counts against the bundle you already ship. The
+rule we used for 8.0: add it when it gains argument lists or adds sections without
+removing many; skip it when the parse yields *fewer* sections, which means the parser
+needs work on that document first. `work/probe/80/decision.md` is the worked example —
+FortiOS 8.0.1 was added (+540 commands, +228 argument lists), the other three platforms
+were skipped at deltas under 2%.
+
+**3. Add one entry to `sources.json`.** After its sibling, because a platform's **first**
+entry is the build you get by default:
+
+```json
+{ "key": "fos-cli-81", "product": "fortios",   "parser": "fos",  "short": "FGT", "label": "FortiOS 8.1.0",
+  "ver": "8.1.0", "src": "CLI Reference",
+  "bundle": "fortios-8.1",
+  "doc": "/document/fortigate/8.1.0/cli-reference", "title": "FortiOS 8.1.0 CLI Reference", "expect": "FortiOS-8.1.0-CLI_Reference" }
+```
+
+**4. Point the sample sources at it.** Add `"fortios-8.1"` to the `target` list of every
+`output` and `hand` entry whose samples should reach it, or the new bundle ships with no
+sample output at all.
+
+**5. Build.**
+
+```bash
+make sources && make fetch && make build
+```
+
+`stamp_build.py` regenerates the `PRODUCTS` list in `site/index.html` from `sources.json`,
+so there is nothing to edit in the page, and `check_bundles.py` fails the build if the two
+ever disagree. `/ver` lists the new build and `/fgt@8.1.0` picks it.
+
+**6. Read the diff.**
+
+```bash
+make diff
+```
+
+`git diff` on a minified bundle says "1 insertion, 1 deletion" whatever happened inside.
+`make diff` says it in commands: added, removed, arguments gained or lost, samples gained
+or lost. A data-refresh pull request is unreviewable without it.
+
+## Adding a guide
+
+A guide contributes sample output and worked config examples, not commands. Most
+contribute almost nothing — six measured candidates yielded 13 new commands between them
+— so measure first:
+
+```bash
+make probe DOC=/document/fortigate/8.0.1/administration-guide
+```
+
+If it pays, add it to `sources.json` under `output` with a `target` (which bundles its
+samples may reach) and a `rank` (lower wins when two guides show the same command), then
+`make sources && make fetch && make build`. `docs/sources.md` records which guides are in,
+which were measured and rejected, and why.
+
+## A device capture
+
+Everything above is Fortinet's documentation. A FortiGate will also describe itself, and
+it is the only source that is exact for a firmware *build*:
+
+```
+FGT-1 # tree
+```
+
+Save that output and:
+
+```bash
+make tree FILE=work/live/fgt-7.6-tree.txt BUNDLE=fortios
+```
+
+`tree` carries what the CLI Reference does not: the arguments of `diagnose` and `execute`
+commands, integer ranges and string lengths on every config field, each table's mkey, and
+the `<Enter> or` marker that means an argument is optional. It carries no descriptions, no
+defaults, no option values, no sample output — and `get router info *` is opaque to it,
+because that subtree belongs to the routing daemon. The tree is the skeleton; the PDF is
+the flesh; they join on the command path.
+
+Today `make tree` **reports**; it does not write into the bundles. Its value right now is
+as ground truth: every disagreement between a 7.6 device and our parsed 7.6.7 bundle is
+either a parser bug or a documentation error, and before this there was nothing to measure
+against. The column to read is "we ship fewer args".
+
+The parser is pinned by `python3 tools/parse_tree.py --selftest`, which runs as part of
+`make check` against `tools/testdata/tree-sample.txt` — a fixture built from real captured
+lines, including the awkward ones (a mkey declared inline, a sibling connector aligned to
+the inline `--`, parentheses inside a field name, a line the terminal wrapped).
+
+## What is checked, and what is not
+
+`make check` (also the last step of `make build`) asserts:
+
+- one bundle per `cli` entry, and bundle ids and names well formed;
+- no two entries writing to the same bundle, no two builds claiming one version;
+- every `target` naming a bundle that exists — a typo stops the build and names the source;
+- no duplicate derived `get`/`show` paths;
+- worked examples not lopsided across builds of one platform, which is how a shared
+  example pool starving the second build shows up;
+- `index.html`'s generated `PRODUCTS` list agreeing with `sources.json`, including no
+  stale entries.
+
+There is no test framework. `check_bundles.py` and `parse_tree.py --selftest` are the
+tests, and the bundles are the thing worth asserting about.
+
+Not checked, and worth your eyes: whether a parse is *correct*. The counts can be right
+while the content is wrong. `make diff` and `make tree` exist for that, and both want a
+human reading them.
+
+## What this pipeline cannot do
+
+Stated plainly so nobody rediscovers it:
+
+- **`get router info bgp neighbors` and its family.** The generated CLI Reference
+  documents no diagnostic `get` tree, and a device's `tree` does not expand it either. All
+  46 `get router info *` entries we ship have empty syntax and no arguments. Closing this
+  needs either the hand-written `get` chapter from the 5.6-era CLI Reference (it exists,
+  pp. 1071–1129, and was dropped after 6.0) or `?` against a live device.
+- **Arguments for 3113 non-config FortiOS commands** (3104 if you exclude `show`).
+  The reference prints the bare command. A tree
+  capture fixes part of this; `?` on a device fixes more.
+- **Required vs optional arguments.** Fortinet's own convention is that an argument is
+  required unless bracketed, and in 176 of 180 bracketed cases the optional ones are a
+  trailing run — but the generated FortiOS reference almost never uses the brackets. The
+  parsers keep the notation verbatim and nothing interprets it yet.
+- **Sample output coverage.** Thin, and unevenly: FortiAnalyzer ships 9 commands with
+  output, FortiManager 7.
+- **Anything about a device's actual configuration.** Nothing here reads one, and the
+  capture flow is deliberately limited to firmware metadata.

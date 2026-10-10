@@ -70,6 +70,10 @@ Sample output is mined separately from eight guides plus course material transcr
 hand. Which guides, why those and not others, and what coverage actually looks like:
 [docs/sources.md](docs/sources.md).
 
+Where every byte comes from, how to rebuild from an empty directory, and how to add a
+firmware version when Fortinet ships one: [docs/pipeline.md](docs/pipeline.md). Start
+with `make`, which lists every step with what it costs.
+
 ### Rebuild it
 
 Needs `python3` and `pdftotext` (poppler: `brew install poppler` /

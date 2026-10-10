@@ -1,0 +1,78 @@
+--  -- system               |- [datasource] --*name     (35)
+                              +- type   (0,4294967295)
+              |- [timezone] --*name     (63)
+              |- <global> -- language
+                          |- gui-ipv6
+                          |- admintimeout       (1,480)
+                          |- admin-host         (255 xss)
+                          |- hostname   (35)
+                          |- [internet-service-download-list] --*id     (0,4294967295)
+                          +- application-bandwidth-tracking
+              |- [accprofile] --*name   (35)
+                              |- scope
+                              |- cli-diagnose
+                              |- cli-get
+                              |- cli-show
+                              |- cli-exec
+                              +- cli-config
+              |- [interface] --*name    (15)
+                             |- vdom    (31)
+                             |- vrf     (0,511)
+                             +- <ipv6> -- ip6-mode
+                                       |- nd-cert       (35)
+                                       +- [ip6-prefix-list] --*prefix
+                                                            |- autonomous-flag
+                                                            +- valid-life-time  (0,4294967295)
+              |- <status>
+              |- performance -- <status>
+                             |- <top> -- <delay> -- <lines>     (-1)
+                             +- firewall -- <packet-distribution>
+                                         +- <statistics>
+              |- <session>
+              |- checksum -- <status>
+              |- session-info -- <list>
+                              |- <expectation>
+                              |- <full-stat>
+                              |- <statistics>
+                              +- <ttl>
+              +- info -- admin -- <status>
+                               +- <ssh>
+    |- diagnose__tree__ -- sniffer -- packet -- <interface> -- <filter> -- <verbose> -- <count> -- <tsformat> -- <frame size>   (-1)
+                                   +- migsock -- filter -- filter       (-1)
+                        |- sys -- ha -- checksum -- show -- <Enter> or <global/vdom-name> -- <Enter> or <object-fullpath>      (-1)
+                               +- session -- filter -- src -- <xxx.xxx.xxx.xxx> -- <xxx.xxx.xxx.xxx>    (-1)
+                                                    |- dst -- <xxx.xxx.xxx.xxx> -- <xxx.xxx.xxx.xxx>    (-1)
+                                                    |- proto -- <xx> -- <xx>    (-1)
+                                                    +- clear -- vd
+                                                             +- src
+                        +- hardware -- deviceinfo -- disk
+                                                  |- nic
+                                                  +- nic-stats
+
+    |- execute__tree__ -- ping -- <ip>  (-1)
+                       |- backup -- config -- tftp -- <string> -- <tftp server> -- <Enter>|<passwd>    (-1)
+                       +- reboot -- comment -- <string>         (-1)
+    |- hardware -- <status>
+                |- <cpu>
+                +- <nic> -- <nic>       (-1)
+    +- router -- <info>
+              +- <info6>
+    |- log -- fortianalyzer -- <setting>                                          |- status
+                                                                                  |- ips-archive
+                                                                                  +- server      (127)
+           |- [custom-field] --*id    (35)
+                             |- name   (15)
+                             +- value   (15)
+           +- <setting> -- resolve-ip
+                        +- resolve-port
+    |- quirks -- [DoS-policy] --*policyid        (0,9999)
+                              |- status
+                              +- [anomaly] --*name     (63)
+                                           |- threshold       (1,2147483647)
+                                           +- threshold(default)      (0,4294967295)
+              |- [device-upgrade] -- vdom       (31)
+                                  |- status
+                                  |-*serial     (79)
+                                  +- device-type
+              +- wrapped -- miglogd -- <Integer> -- <Integer> -- <Integer>
+        (-1)
