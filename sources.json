@@ -15,22 +15,22 @@
   ],
 
   "cli": [
-    { "key": "fos-cli", "product": "fortios",       "parser": "fos",  "short": "FGT", "label": "FortiOS 7.6.4",
-      "doc": "/document/fortigate/7.6.4/cli-reference",      "title": "FortiOS 7.6.4 CLI Reference",        "expect": "FortiOS-7.6.4-CLI_Reference" },
-    { "key": "fsw-cli", "product": "fortiswitch",   "parser": "hand", "short": "FSW", "label": "FortiSwitchOS 7.6.2",
-      "doc": "/document/fortiswitch/7.6.2/fortiswitchos-cli-reference",    "title": "FortiSwitchOS 7.6.2 CLI Reference",  "expect": "FortiSwitchOS-7.6.2_CLI_Reference" },
-    { "key": "faz-cli", "product": "fortianalyzer", "parser": "hand", "short": "FAZ", "label": "FortiAnalyzer 7.6.5",
-      "doc": "/document/fortianalyzer/7.6.5/cli-reference",  "title": "FortiAnalyzer 7.6.5 CLI Reference",  "expect": "FortiAnalyzer_7.6.5_CLI_Reference" },
-    { "key": "fmg-cli", "product": "fortimanager",  "parser": "hand", "short": "FMG", "label": "FortiManager 7.6.5",
-      "doc": "/document/fortimanager/7.6.5/cli-reference",   "title": "FortiManager 7.6.5 CLI Reference",   "expect": "FortiManager_7.6.5_CLI_Reference" }
+    { "key": "fos-cli", "product": "fortios",       "parser": "fos",  "short": "FGT", "label": "FortiOS 7.6.7",
+      "doc": "/document/fortigate/7.6.7/cli-reference",      "title": "FortiOS 7.6.7 CLI Reference", "expect": "FortiOS-7.6.7-CLI_Reference" },
+    { "key": "fsw-cli", "product": "fortiswitch",   "parser": "hand", "short": "FSW", "label": "FortiSwitchOS 7.6.7",
+      "doc": "/document/fortiswitch/7.6.7/fortiswitchos-cli-reference",    "title": "FortiSwitchOS 7.6.7 CLI Reference", "expect": "FortiSwitchOS-7.6.7_CLI_Reference" },
+    { "key": "faz-cli", "product": "fortianalyzer", "parser": "hand", "short": "FAZ", "label": "FortiAnalyzer 7.6.7",
+      "doc": "/document/fortianalyzer/7.6.7/cli-reference",  "title": "FortiAnalyzer 7.6.7 CLI Reference", "expect": "FortiAnalyzer_7.6.7_CLI_Reference" },
+    { "key": "fmg-cli", "product": "fortimanager",  "parser": "hand", "short": "FMG", "label": "FortiManager 7.6.7",
+      "doc": "/document/fortimanager/7.6.7/cli-reference",   "title": "FortiManager 7.6.7 CLI Reference", "expect": "FortiManager_7.6.7_CLI_Reference" }
   ],
 
   "output": [
     { "key": "ag",    "rank": 0, "target": ["fortios"],
-      "doc": "/document/fortigate/7.6.4/administration-guide",
-      "title": "FortiOS 7.6.4 Administration Guide", "expect": "FortiOS-7.6.4-Administration_Guide" },
+      "doc": "/document/fortigate/7.6.7/administration-guide",
+      "title": "FortiOS 7.6.7 Administration Guide", "expect": "FortiOS-7.6.7-Administration_Guide" },
     { "key": "nf76",  "rank": 1, "target": ["fortios"],
-      "doc": "/document/fortigate/7.6.4/new-features",
+      "doc": "/document/fortigate/7.6.7/new-features",
       "title": "FortiOS 7.6.0 New Features Guide", "expect": "FortiOS-7.6.0-New_Features_Guide" },
     { "key": "ag74",  "rank": 3, "target": ["fortios"],
       "doc": "/document/fortigate/7.4.12/administration-guide",
@@ -39,17 +39,17 @@
       "doc": "/document/fortigate/7.4.0/new-features",
       "title": "FortiOS 7.4.0 New Features Guide", "expect": "FortiOS-7.4.0-New_Features_Guide" },
     { "key": "flg",   "rank": 0, "target": ["fortios", "fortiswitch"],
-      "doc": "/document/fortiswitch/7.6.3/fortilink-guide",
-      "title": "FortiSwitchOS 7.6.2 FortiLink Guide (FortiOS 7.6.3)", "expect": "FortiLink_Guide" },
+      "doc": "/document/fortiswitch/7.6.7/fortilink-guide",
+      "title": "FortiSwitchOS 7.6.7 FortiLink Guide (FortiOS 7.6.7)", "expect": "FortiSwitchOS-7.6.7-FortiLink_Guide" },
     { "key": "fswag", "rank": 0, "target": ["fortiswitch"],
-      "doc": "/document/fortiswitch/7.6.2/fortiswitchos-administration-guide",
-      "title": "FortiSwitchOS 7.6.2 Administration Guide (Standalone Mode)", "expect": "FortiSwitchOS-7.6.2-Administration_Guide" },
+      "doc": "/document/fortiswitch/7.6.7/fortiswitchos-administration-guide",
+      "title": "FortiSwitchOS 7.6.7 Administration Guide (Standalone Mode)", "expect": "FortiSwitchOS-7.6.7-Administration_Guide" },
     { "key": "fazag", "rank": 0, "target": ["fortianalyzer"],
-      "doc": "/document/fortianalyzer/7.6.5/administration-guide",
-      "title": "FortiAnalyzer 7.6.5 Administration Guide", "expect": "FortiAnalyzer-7.6.5-Administration_Guide" },
+      "doc": "/document/fortianalyzer/7.6.7/administration-guide",
+      "title": "FortiAnalyzer 7.6.7 Administration Guide", "expect": "FortiAnalyzer-7.6.7-Administration_Guide" },
     { "key": "fmgag", "rank": 0, "target": ["fortimanager"],
-      "doc": "/document/fortimanager/7.6.5/administration-guide",
-      "title": "FortiManager 7.6.5 Administration Guide", "expect": "FortiManager-7.6.5-Administration_Guide" }
+      "doc": "/document/fortimanager/7.6.7/administration-guide",
+      "title": "FortiManager 7.6.7 Administration Guide", "expect": "FortiManager-7.6.7-Administration_Guide" }
   ],
 
   "hand": [

@@ -155,6 +155,17 @@ for s in sections:
         ind = min(len(x) - len(x.lstrip()) for x in e if x.strip())
         ex.append('\n'.join(x[ind:] if x.strip() else '' for x in e))
     s['examples'] = ex
+    # A "config <name>" row in the variable table opens a sub-table: it is a heading for
+    # the parameters under it, not a parameter called "config". Turn it into their table.
+    kept, table = [], ''
+    for p in s['params']:
+        m = re.match(r'^config\s+(\S.*)$', p['name'].strip())
+        if m and len(m.group(1).split()) <= 4:
+            table = m.group(1).strip().rstrip('.')
+            continue
+        p['table'] = p.get('table') or table
+        kept.append(p)
+    s['params'] = kept
     for p in s['params']:
         p.pop('_wrap', None)
         p['key'] = re.split(r'[\s(<{\[]', p['name'], maxsplit=1)[0] or p['name']

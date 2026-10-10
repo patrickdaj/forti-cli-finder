@@ -195,10 +195,10 @@ details.dsc[open] summary::before{content:"\25be"}
 <script>
 (function(){
 const PRODUCTS=[
-  {id:'fortios',short:'FGT',name:'FortiOS',vers:[{v:'7.6.4',f:'fortios',src:'CLI Reference + Administration Guide'}]},
-  {id:'fortiswitch',short:'FSW',name:'FortiSwitchOS',vers:[{v:'7.6.2',f:'fortiswitch',src:'CLI Reference + Administration and FortiLink guides'}]},
-  {id:'fortianalyzer',short:'FAZ',name:'FortiAnalyzer',vers:[{v:'7.6.5',f:'fortianalyzer',src:'CLI Reference'}]},
-  {id:'fortimanager',short:'FMG',name:'FortiManager',vers:[{v:'7.6.5',f:'fortimanager',src:'CLI Reference'}]}];
+  {id:'fortios',short:'FGT',name:'FortiOS',vers:[{v:'7.6.7',f:'fortios',src:'CLI Reference + Administration Guide'}]},
+  {id:'fortiswitch',short:'FSW',name:'FortiSwitchOS',vers:[{v:'7.6.7',f:'fortiswitch',src:'CLI Reference + Administration and FortiLink guides'}]},
+  {id:'fortianalyzer',short:'FAZ',name:'FortiAnalyzer',vers:[{v:'7.6.7',f:'fortianalyzer',src:'CLI Reference + Administration Guide'}]},
+  {id:'fortimanager',short:'FMG',name:'FortiManager',vers:[{v:'7.6.7',f:'fortimanager',src:'CLI Reference + Administration Guide'}]}];
 // To add a build: put its bundle in data/ and add {v,f,src} to that platform's vers. /ver lists and picks them.
 PRODUCTS.forEach(P=>{
   Object.defineProperty(P,'ver',{get(){const v=(S.ver||{})[P.id];return P.vers.some(x=>x.v===v)?v:P.vers[0].v}});
@@ -422,7 +422,7 @@ function liveHtml(){
 const PALIAS={fgt:'fortios',fortigate:'fortios',fortios:'fortios',fos:'fortios',fsw:'fortiswitch',fortiswitch:'fortiswitch',switch:'fortiswitch',faz:'fortianalyzer',fortianalyzer:'fortianalyzer',fmg:'fortimanager',fortimanager:'fortimanager'};
 const KALIAS={config:'config',conf:'config',diagnose:'diagnose',diag:'diagnose',execute:'execute',exec:'execute',get:'get',show:'show'};
 const SLASH=[
-  ['/fgt','FortiGate (FortiOS 7.6.4) only'],['/fsw','FortiSwitch (FortiSwitchOS 7.6.2) only'],['/faz','FortiAnalyzer 7.6.5 only'],['/fmg','FortiManager 7.6.5 only'],
+  ['/fgt','FortiGate (FortiOS 7.6.7) only'],['/fsw','FortiSwitch (FortiSwitchOS 7.6.7) only'],['/faz','FortiAnalyzer 7.6.7 only'],['/fmg','FortiManager 7.6.7 only'],
   ['/all','every platform'],
   ['/config','config commands only'],['/diag','diagnose commands only'],['/exec','execute commands only'],['/get','get commands only'],['/show','show commands only'],
   ['/any','every command type'],
@@ -451,7 +451,7 @@ function slashParse(q){ // returns {prod,kind,vers,act,err}
 function slashRun(q){
   const r=slashParse(q);const lines=[];
   if(r.act==='clear'||r.act==='cls'){S.hist=[];store.set('cf.hist',S.hist);return}
-  if(r.act==='help'||r.act==='?')SLASH.forEach(([c,d])=>lines.push(c.padEnd(9)+d)),lines.push('combine them: /fsw diag, /fgt fsw show, /fgt@7.6.4');
+  if(r.act==='help'||r.act==='?')SLASH.forEach(([c,d])=>lines.push(c.padEnd(9)+d)),lines.push('combine them: /fsw diag, /fgt fsw show, /fgt@7.6.7');
   if((r.act==='ver'||r.act==='version'||r.act==='versions')&&!Object.keys(r.vers).length)PRODUCTS.forEach(P=>P.vers.forEach(x=>lines.push((x.v===P.ver?'* ':'  ')+P.short.padEnd(5)+x.v.padEnd(8)+P.name+' \u00b7 '+x.src)));
   Object.entries(r.vers).forEach(([id,v])=>{if(S.ver[id]!==v){S.ver[id]=v;delete DATA[id]}});store.set('cf.ver',S.ver);
   if(r.act==='reset'){S.prod=['fortios'];S.kind=KINDS.slice()}
@@ -472,7 +472,7 @@ function slashMenu(){
 }
 function slashHtml(){
   const m=slashMenu();if(S.sel>=m.length)S.sel=0;
-  return `<div class="live">${m.map(([c,d],n)=>`<div class="li${n===S.sel?' sel':''}" data-slash="${esc(c)}"><span class="c" style="color:var(--t-prompt)">${esc(c)}</span><span class="h">${esc(d)}</span><span class="t"></span></div>`).join('')}<div class="more">\u2191\u2193 pick \u00b7 enter runs \u00b7 tab completes \u00b7 combine: /fsw diag, /fgt fsw show, /fgt@7.6.4</div></div>`;
+  return `<div class="live">${m.map(([c,d],n)=>`<div class="li${n===S.sel?' sel':''}" data-slash="${esc(c)}"><span class="c" style="color:var(--t-prompt)">${esc(c)}</span><span class="h">${esc(d)}</span><span class="t"></span></div>`).join('')}<div class="more">\u2191\u2193 pick \u00b7 enter runs \u00b7 tab completes \u00b7 combine: /fsw diag, /fgt fsw show, /fgt@7.6.7</div></div>`;
 }
 function slashComplete(c){ // replace the last token with c
   const parts=S.q.split(/(\s+)/);let lastIdx=parts.length-1;while(lastIdx>0&&!parts[lastIdx].trim())lastIdx--;

@@ -12,14 +12,14 @@ Re-measure any guide with:
 
 | Document | Commands | Samples | Feeds |
 |---|---:|---:|---|
-| FortiOS 7.6.4 Administration Guide | 680 | 1680 | FortiOS |
+| FortiOS 7.6.7 Administration Guide | 697 | 1734 | FortiOS |
 | FortiOS 7.4.12 Administration Guide | 578 | 1403 | FortiOS |
 | FortiOS 7.4.0 New Features Guide | 219 | 445 | FortiOS |
 | FortiOS 7.6.0 New Features Guide | 215 | 419 | FortiOS |
-| FortiSwitchOS 7.6.2 FortiLink Guide | 35 | 50 | FortiOS + FortiSwitch |
-| FortiSwitchOS 7.6.2 Administration Guide | 14 | 19 | FortiSwitch |
-| FortiAnalyzer 7.6.5 Administration Guide | 8 | 11 | FortiAnalyzer |
-| FortiManager 7.6.5 Administration Guide | 5 | 8 | FortiManager |
+| FortiSwitchOS 7.6.7 FortiLink Guide | 35 | 51 | FortiOS + FortiSwitch |
+| FortiSwitchOS 7.6.7 Administration Guide | 14 | 19 | FortiSwitch |
+| FortiAnalyzer 7.6.7 Administration Guide | 9 | 12 | FortiAnalyzer |
+| FortiManager 7.6.7 Administration Guide | 7 | 10 | FortiManager |
 | NSE 4 / FortiSwitch course material (hand-transcribed) | 47 | 47 | FortiOS + FortiSwitch |
 
 The older FortiOS guides are included because a 7.4 sample for a command the 7.6 guide
@@ -52,10 +52,10 @@ commands that can actually produce output (`config` prints nothing, so it is exc
 
 | | output-capable | own sample | + inherited | shows something |
 |---|---:|---:|---:|---:|
-| FortiOS | 5219 | 494 | 524 | 19.5% |
-| FortiSwitch | 281 | 23 | 26 | 17.4% |
-| FortiAnalyzer | 233 | 8 | 0 | 3.4% |
-| FortiManager | 274 | 5 | 0 | 1.8% |
+| FortiOS | 5217 | 500 | 523 | 19.6% |
+| FortiSwitch | 284 | 23 | 26 | 17.3% |
+| FortiAnalyzer | 239 | 9 | 0 | 3.8% |
+| FortiManager | 277 | 7 | 0 | 2.5% |
 
 "Inherited" is a command with no sample of its own shown the nearest ancestor that has one,
 labelled as such -- `diagnose debug application acd` has no sample anywhere, but

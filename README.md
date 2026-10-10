@@ -37,7 +37,7 @@ Opening `index.html` from disk will not load the data. Any static host works; se
 | inspector | tab or esc | back to the prompt |
 
 Slash commands: `/fgt /fsw /faz /fmg /all` (platform), `/config /diag /exec /get /show /any`
-(command type), `/ver` (list and pick a firmware build), `/fgt@7.6.4`, `/reset`, `/clear`,
+(command type), `/ver` (list and pick a firmware build), `/fgt@7.6.7`, `/reset`, `/clear`,
 `/help`. They combine: `/fsw diag`, `/fgt fsw show`.
 
 ## The data
@@ -47,10 +47,10 @@ and page it came from.
 
 | Bundle | Built from |
 |---|---|
-| `fortios.json` | FortiOS 7.6.4 CLI Reference |
-| `fortiswitch.json` | FortiSwitchOS 7.6.2 CLI Reference |
-| `fortianalyzer.json` | FortiAnalyzer 7.6.5 CLI Reference |
-| `fortimanager.json` | FortiManager 7.6.5 CLI Reference |
+| `fortios.json` | FortiOS 7.6.7 CLI Reference |
+| `fortiswitch.json` | FortiSwitchOS 7.6.7 CLI Reference |
+| `fortianalyzer.json` | FortiAnalyzer 7.6.7 CLI Reference |
+| `fortimanager.json` | FortiManager 7.6.7 CLI Reference |
 
 Sample output is mined separately from eight guides plus course material transcribed by
 hand. Which guides, why those and not others, and what coverage actually looks like:

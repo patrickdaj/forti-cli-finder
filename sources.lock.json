@@ -1,11 +1,11 @@
 {
  "documents": {
   "ag": {
-   "bytes": 137840945,
-   "doc": "/document/fortigate/7.6.4/administration-guide",
-   "name": "FortiOS-7.6.4-Administration_Guide.pdf",
-   "title": "FortiOS 7.6.4 Administration Guide",
-   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/2def7712-5e99-11f0-a9d0-d2b0d2e22f7d/FortiOS-7.6.4-Administration_Guide.pdf"
+   "bytes": 148490830,
+   "doc": "/document/fortigate/7.6.7/administration-guide",
+   "name": "FortiOS-7.6.7-Administration_Guide.pdf",
+   "title": "FortiOS 7.6.7 Administration Guide",
+   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/7f08ccb4-5ac6-11f1-a33a-02356ffb40d9/FortiOS-7.6.7-Administration_Guide.pdf"
   },
   "ag74": {
    "bytes": 135097347,
@@ -15,60 +15,60 @@
    "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/c673a09c-47e1-11f1-b31d-02356ffb40d9/FortiOS-7.4.12-Administration_Guide.pdf"
   },
   "faz-cli": {
-   "bytes": 2252793,
-   "doc": "/document/fortianalyzer/7.6.5/cli-reference",
-   "name": "FortiAnalyzer_7.6.5_CLI_Reference.pdf",
-   "title": "FortiAnalyzer 7.6.5 CLI Reference",
-   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/2394a403-ca47-11f0-8b43-d2943efe5b2f/FortiAnalyzer_7.6.5_CLI_Reference.pdf"
+   "bytes": 2272162,
+   "doc": "/document/fortianalyzer/7.6.7/cli-reference",
+   "name": "FortiAnalyzer_7.6.7_CLI_Reference.pdf",
+   "title": "FortiAnalyzer 7.6.7 CLI Reference",
+   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/af50a789-5dfe-11f1-a33a-02356ffb40d9/FortiAnalyzer_7.6.7_CLI_Reference.pdf"
   },
   "fazag": {
-   "bytes": 38600143,
-   "doc": "/document/fortianalyzer/7.6.5/administration-guide",
-   "name": "FortiAnalyzer-7.6.5-Administration_Guide.pdf",
-   "title": "FortiAnalyzer 7.6.5 Administration Guide",
-   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/c240da6d-d092-11f0-8b43-d2943efe5b2f/FortiAnalyzer-7.6.5-Administration_Guide.pdf"
+   "bytes": 39499138,
+   "doc": "/document/fortianalyzer/7.6.7/administration-guide",
+   "name": "FortiAnalyzer-7.6.7-Administration_Guide.pdf",
+   "title": "FortiAnalyzer 7.6.7 Administration Guide",
+   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/fd952fd3-5dfc-11f1-a33a-02356ffb40d9/FortiAnalyzer-7.6.7-Administration_Guide.pdf"
   },
   "flg": {
-   "bytes": 11319356,
-   "doc": "/document/fortiswitch/7.6.3/fortilink-guide",
-   "name": "FortiSwitchOS-7.6.2-FortiLink_Guide_(FortiOS_7.6.3).pdf",
-   "title": "FortiSwitchOS 7.6.2 FortiLink Guide (FortiOS 7.6.3)",
-   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/bc255ee7-1a52-11f0-b13a-ca4255feedd9/FortiSwitchOS-7.6.2-FortiLink_Guide_%28FortiOS_7.6.3%29.pdf"
+   "bytes": 11426772,
+   "doc": "/document/fortiswitch/7.6.7/fortilink-guide",
+   "name": "FortiSwitchOS-7.6.7-FortiLink_Guide_(FortiOS_7.6.7).pdf",
+   "title": "FortiSwitchOS 7.6.7 FortiLink Guide (FortiOS 7.6.7)",
+   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/46a99058-50a1-11f1-a33a-02356ffb40d9/FortiSwitchOS-7.6.7-FortiLink_Guide_%28FortiOS_7.6.7%29.pdf"
   },
   "fmg-cli": {
-   "bytes": 2339909,
-   "doc": "/document/fortimanager/7.6.5/cli-reference",
-   "name": "FortiManager_7.6.5_CLI_Reference.pdf",
-   "title": "FortiManager 7.6.5 CLI Reference",
-   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/8a0a273c-c98c-11f0-8b43-d2943efe5b2f/FortiManager_7.6.5_CLI_Reference.pdf"
+   "bytes": 2356411,
+   "doc": "/document/fortimanager/7.6.7/cli-reference",
+   "name": "FortiManager_7.6.7_CLI_Reference.pdf",
+   "title": "FortiManager 7.6.7 CLI Reference",
+   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/3d7939ca-5870-11f1-a33a-02356ffb40d9/FortiManager_7.6.7_CLI_Reference.pdf"
   },
   "fmgag": {
-   "bytes": 79176197,
-   "doc": "/document/fortimanager/7.6.5/administration-guide",
-   "name": "FortiManager-7.6.5-Administration_Guide.pdf",
-   "title": "FortiManager 7.6.5 Administration Guide",
-   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/7fea17d9-c98c-11f0-8b43-d2943efe5b2f/FortiManager-7.6.5-Administration_Guide.pdf"
+   "bytes": 81927096,
+   "doc": "/document/fortimanager/7.6.7/administration-guide",
+   "name": "FortiManager-7.6.7-Administration_Guide.pdf",
+   "title": "FortiManager 7.6.7 Administration Guide",
+   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/3d792528-5870-11f1-a33a-02356ffb40d9/FortiManager-7.6.7-Administration_Guide.pdf"
   },
   "fos-cli": {
-   "bytes": 18229871,
-   "doc": "/document/fortigate/7.6.4/cli-reference",
-   "name": "FortiOS-7.6.4-CLI_Reference.pdf",
-   "title": "FortiOS 7.6.4 CLI Reference",
-   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/0bec1c7c-7948-11f0-9bfd-6af4c3636dc7/FortiOS-7.6.4-CLI_Reference.pdf"
+   "bytes": 18404297,
+   "doc": "/document/fortigate/7.6.7/cli-reference",
+   "name": "FortiOS-7.6.7-CLI_Reference.pdf",
+   "title": "FortiOS 7.6.7 CLI Reference",
+   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/7f08d735-5ac6-11f1-a33a-02356ffb40d9/FortiOS-7.6.7-CLI_Reference.pdf"
   },
   "fsw-cli": {
-   "bytes": 3101379,
-   "doc": "/document/fortiswitch/7.6.2/fortiswitchos-cli-reference",
-   "name": "FortiSwitchOS-7.6.2_CLI_Reference.pdf",
-   "title": "FortiSwitchOS 7.6.2 CLI Reference",
-   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/f4f55e70-2a04-11f0-a9d0-d2b0d2e22f7d/FortiSwitchOS-7.6.2_CLI_Reference.pdf"
+   "bytes": 2533633,
+   "doc": "/document/fortiswitch/7.6.7/fortiswitchos-cli-reference",
+   "name": "FortiSwitchOS-7.6.7_CLI_Reference.pdf",
+   "title": "FortiSwitchOS 7.6.7 CLI Reference",
+   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/11803d0d-50a4-11f1-a33a-02356ffb40d9/FortiSwitchOS-7.6.7_CLI_Reference.pdf"
   },
   "fswag": {
-   "bytes": 7445300,
-   "doc": "/document/fortiswitch/7.6.2/fortiswitchos-administration-guide",
-   "name": "FortiSwitchOS-7.6.2-Administration_Guide\u2014Standalone_Mode.pdf",
-   "title": "FortiSwitchOS 7.6.2 Administration Guide (Standalone Mode)",
-   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/a07431b2-2a04-11f0-a9d0-d2b0d2e22f7d/FortiSwitchOS-7.6.2-Administration_Guide%E2%80%94Standalone_Mode.pdf"
+   "bytes": 7363315,
+   "doc": "/document/fortiswitch/7.6.7/fortiswitchos-administration-guide",
+   "name": "FortiSwitchOS-7.6.7-Administration_Guide\u2014Standalone_Mode.pdf",
+   "title": "FortiSwitchOS 7.6.7 Administration Guide (Standalone Mode)",
+   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/9c663509-50a3-11f1-a33a-02356ffb40d9/FortiSwitchOS-7.6.7-Administration_Guide%E2%80%94Standalone_Mode.pdf"
   },
   "nf74": {
    "bytes": 36086755,
@@ -79,7 +79,7 @@
   },
   "nf76": {
    "bytes": 39414752,
-   "doc": "/document/fortigate/7.6.4/new-features",
+   "doc": "/document/fortigate/7.6.7/new-features",
    "name": "FortiOS-7.6.0-New_Features_Guide.pdf",
    "title": "FortiOS 7.6.0 New Features Guide",
    "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/688ca0ef-eaf8-11ee-8c42-fa163e15d75b/FortiOS-7.6.0-New_Features_Guide.pdf"
