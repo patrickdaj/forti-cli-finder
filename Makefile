@@ -16,6 +16,7 @@ export WORK OUT
 # A doc path for `make probe`, e.g. /document/fortigate/8.0.1/administration-guide
 DOC     ?=
 DEV     ?=
+CONFIG  ?=
 BUNDLE  ?= auto        # `auto` matches the capture's own firmware to a bundle
 
 .DEFAULT_GOAL := help
@@ -120,8 +121,18 @@ all: sources fetch build
 ##                 is still captured and useful.
 ##                   make capture              # every device
 ##                   make capture DEV=fgt1     # one
+##                   make capture CONFIG=1     # also walk config tables (see below)
+##
+##                 CONFIG=1 adds field-level help, which needs config mode. It is safe
+##                 by construction rather than by promise: every table is entered,
+##                 probed with `set ?`, and left with `abort` -- never `end` -- so the
+##                 candidate config is discarded. Before the walk it takes a restorable
+##                 revision on the device (`execute backup config flash`) and records
+##                 `diagnose sys ha checksum show`; after it, the checksum again. Equal
+##                 checksums prove the walk wrote nothing. If they differ it says so
+##                 loudly and tells you how to restore.
 capture:
-	@$(PY) tools/capture_device.py $(DEV)
+	@$(PY) tools/capture_device.py $(DEV) $(if $(CONFIG),--config-walk)
 
 ## tree FILE=...   Parse a device's `tree` capture; diff it against a bundle.    instant
 ##                 `tree` on a FortiGate prints its own command tree. It is the only

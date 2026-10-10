@@ -224,10 +224,43 @@ bundle ships with no arguments — 3104 of them on FortiOS 7.6. It is all reads 
 promising to. Field-level help for config tables would need config mode, and is
 deliberately not collected.
 
+### Config-mode help, and why `abort` makes it safe
+
+`make capture CONFIG=1` also collects field-level help, which needs config mode. The
+safety is structural rather than a promise:
+
+```
+config <table>              enter
+edit zz-cli-finder-probe    a context for `set ?`, distinctive on purpose
+set ?                       the field list with help, options and ranges
+abort                       discard the block -- never `end`
+```
+
+`abort` leaves a config block discarding everything done inside it, so nothing the walk
+types is ever committed. That is what makes probing arbitrary tables reasonable: you can
+enter any context and do anything within it, provided you always leave by aborting.
+
+Around the whole walk, two device-native guards:
+
+- **`execute backup config flash "cli-finder pre-walk"`** — a restorable revision on the
+  device itself. No TFTP server, and no copy of your configuration (with its secrets) on
+  the machine running this.
+- **`diagnose sys ha checksum show`** before and after. Equal checksums prove the walk
+  wrote nothing. This is why we do not diff `show full-configuration`: that would mean
+  writing your entire config to disk in order to check it had not been touched.
+
+If the checksums differ the script says so loudly and prints
+`execute revision list config` / `execute restore config flash <revision>`.
+
+The same discipline is what would let the inspector one day *validate* a composed block
+against a real device — paste it inside a config block, read the parse errors, abort —
+but that is a separate feature and is not built.
+
 Budget, measured rather than guessed: 5,743 round trips for the tree plus the bare
 commands — 8 minutes at 80ms per round trip, 29 at 300ms. Adding per-field option and
 default help for all 13,336 config fields would be 19,079 round trips, 25 to 95 minutes,
-and would need config mode. It is an unattended coffee, not a project.
+and would need config mode. The config walk as built is 2,500 round trips for FortiOS
+— 3 minutes at 80ms, 13 at 300ms. All of it is an unattended coffee, not a project.
 
 One thing nobody can know without a device: whether FortiOS answers `?` through an ssh
 pty at all. It acts on the keystroke rather than on a newline, which is why this uses a

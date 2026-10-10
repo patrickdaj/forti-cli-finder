@@ -11,6 +11,7 @@ second half. tools/parse_tree.py reads what it writes.
     python3 tools/capture_device.py                  # every device in the file
     python3 tools/capture_device.py fgt1             # just one
     python3 tools/capture_device.py fgt1 --probe-all # ? every bare command, not a sample
+    python3 tools/capture_device.py fgt1 --config-walk  # also field help (enters config)
 
 What it runs: `get system status`, `tree`, and `<command> ?` for commands we ship with no
 arguments. All reads. It never enters `config` mode, so it works against an account with
@@ -238,9 +239,89 @@ def bare_commands(product, ver=None, limit=None):
     return sorted(out)[:limit] if limit else sorted(out)
 
 
+# ---------------------------------------------------------------- the config walk
+
+def config_targets(product, ver=None, limit=None):
+    """Top-level `config` paths, and each one's edit key if it has one.
+
+    From the bundle rather than the tree: the bundle's config sections are exactly the
+    valid top-level `config` commands, and its syntax block already says `edit <key>`
+    for the ones that are tables.
+    """
+    import json
+    cfg = json.load(open(os.path.join(ROOT, 'sources.json')))
+    cands = [e for e in cfg['cli'] if e['product'] == product]
+    if ver:
+        want = '.'.join(ver.split('.')[:2])
+        cands = [e for e in cands
+                 if '.'.join(e.get('ver', '').split('.')[:2]) == want] or cands
+    if not cands:
+        return []
+    name = cands[0].get('bundle') or cands[0]['product']
+    path = os.path.join(ROOT, os.environ.get('OUT', 'site/data'), f'{name}.json')
+    if not os.path.exists(path):
+        return []
+    edit = re.compile(r'^\s*edit\s+(<[^>]+>)', re.M)
+    out = []
+    for sec in json.load(open(path))['secs']:
+        if sec['k'] != 'config' or sec.get('dv'):
+            continue
+        if re.search(r'[<>\[\]{}|]', sec['p']):
+            continue
+        m = edit.search(sec.get('s') or '')
+        out.append((sec['p'], m.group(1) if m else None))
+    out.sort(key=lambda t: t[0])
+    return out[:limit] if limit else out
+
+
+def probe_key(mkey):
+    """A key to `edit` so `set ?` has a context. Discarded by `abort`, never committed.
+
+    Distinctive on purpose: if one ever survives a crashed session, it is obvious where
+    it came from and trivial to find.
+    """
+    return '99999999' if re.search(r'id|num|seq|policyid', mkey or '', re.I) else 'zz-cli-finder-probe'
+
+
+def checksum(s):
+    """The device's own config checksum -- how we prove the walk changed nothing.
+
+    Better than diffing `show full-configuration`, which would mean writing the whole
+    configuration, secrets included, to our disk in order to check it was not touched.
+    """
+    return s.run('diagnose sys ha checksum show', idle=1.2, timeout=60)
+
+
+def config_walk(s, targets, out):
+    """`config <path>` -> `set ?` -> abort, for each table. Never `end`.
+
+    `abort` leaves the config block discarding everything done inside it, which is why
+    editing a probe key is safe; the checksum either side is what proves it.
+    """
+    got = 0
+    with open(os.path.join(out, 'config-help.txt'), 'w') as fh:
+        for i, (path, mkey) in enumerate(targets, 1):
+            try:
+                r = s.run(f'config {path}', idle=0.5, timeout=20)
+                if BAD.search(r or ''):
+                    continue
+                if mkey:
+                    s.run(f'edit {probe_key(mkey)}', idle=0.5, timeout=20)
+                _, body = s.ask('set')
+                if body and useful(body):
+                    fh.write(f'### config {path}\n{body}\n\n')
+                    got += 1
+            finally:
+                # always, even if the above raised: never leave a config block open
+                s.run('abort', idle=0.4, timeout=20)
+            if i % 50 == 0 or i == len(targets):
+                print(f'    {i}/{len(targets)}  field help for {got}', flush=True)
+    return got
+
+
 # ---------------------------------------------------------------- one device
 
-def capture(dev, probe_limit, verbose):
+def capture(dev, probe_limit, verbose, do_config=False):
     print(f"\n=== {dev['name']}  {dev['user']}@{dev['host']}  ({dev['kind']})")
     s = Session(dev, verbose)
     s.read(idle=1.5, timeout=90, until=PROMPT)
@@ -286,6 +367,29 @@ def capture(dev, probe_limit, verbose):
                           'this ssh pty on this build. Stopping the walk; the tree is '
                           'still captured.')
                     break
+    if do_config:
+        print('  config walk: backing up to flash first')
+        bk = s.run('execute backup config flash "cli-finder pre-walk"', idle=1.5, timeout=90)
+        write(out, 'backup.txt', bk)
+        before = checksum(s)
+        write(out, 'checksum-before.txt', before)
+        targets = config_targets(product, ver, None if probe_all else 40)
+        print(f'  asking ? about {len(targets)} config tables (abort after each, never end)')
+        got = config_walk(s, targets, out)
+        after = checksum(s)
+        write(out, 'checksum-after.txt', after)
+        if before.strip() and before.strip() == after.strip():
+            print(f'  config checksum unchanged -- the walk wrote nothing. '
+                  f'({got} tables described)')
+        elif not before.strip():
+            print('  WARNING: no checksum before the walk, so nothing was verified. '
+                  'Compare a revision by hand: execute revision list config')
+        else:
+            print('  *** CONFIG CHECKSUM CHANGED -- the walk altered something. ***')
+            print('      restore:  execute revision list config')
+            print('                execute restore config flash <revision>')
+            print(f'      the two checksums are in {os.path.relpath(out, ROOT)}/')
+
     s.close()
 
     print(f'  -> {os.path.relpath(out, ROOT)}/   ({answered} help texts)')
@@ -303,6 +407,7 @@ def main():
     args = sys.argv[1:]
     verbose = '--verbose' in args
     probe_all = '--probe-all' in args
+    config_walk_on = '--config-walk' in args
     want = [a for a in args if not a.startswith('--')]
     devices = load_env()
     if want:
@@ -315,7 +420,7 @@ def main():
     done = []
     for dev in devices.values():
         try:
-            d = capture(dev, None if probe_all else 60, verbose)
+            d = capture(dev, None if probe_all else 60, verbose, config_walk_on)
             if d:
                 done.append(d)
         except SystemExit as e:
