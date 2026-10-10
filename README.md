@@ -94,7 +94,7 @@ Add it to `sources.json` under `output` with a `target` (which bundles its sampl
 attach to) and a `rank` (lower wins when two guides show the same command), then
 re-run discovery, fetch and build. Measure it first:
 
-    python3 tools/prospect.py /document/fortigate/7.6.4/new-features
+    python3 tools/prospect.py /document/fortigate/7.6.7/new-features
 
 ### Adding a firmware build
 

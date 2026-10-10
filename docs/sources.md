@@ -6,17 +6,17 @@ numbers are distinct commands / total samples found in that document.
 
 Re-measure any guide with:
 
-    python3 tools/prospect.py /document/fortigate/7.6.4/new-features
+    python3 tools/prospect.py /document/fortigate/7.6.7/new-features
 
 ## In the build
 
 | Document | Commands | Samples | Feeds |
 |---|---:|---:|---|
-| FortiOS 7.6.7 Administration Guide | 697 | 1734 | FortiOS |
+| FortiOS 7.6.7 Administration Guide | 720 | 1734 | FortiOS |
 | FortiOS 7.4.12 Administration Guide | 578 | 1403 | FortiOS |
 | FortiOS 7.4.0 New Features Guide | 219 | 445 | FortiOS |
 | FortiOS 7.6.0 New Features Guide | 215 | 419 | FortiOS |
-| FortiSwitchOS 7.6.7 FortiLink Guide | 35 | 51 | FortiOS + FortiSwitch |
+| FortiSwitchOS 7.6.7 FortiLink Guide | 36 | 51 | FortiOS + FortiSwitch |
 | FortiSwitchOS 7.6.7 Administration Guide | 14 | 19 | FortiSwitch |
 | FortiAnalyzer 7.6.7 Administration Guide | 9 | 12 | FortiAnalyzer |
 | FortiManager 7.6.7 Administration Guide | 7 | 10 | FortiManager |
@@ -26,8 +26,8 @@ The older FortiOS guides are included because a 7.4 sample for a command the 7.6
 never shows is still worth having. They rank below current-firmware guides, so where both
 cover a command the 7.6 sample wins; `sources.json` sets that with `rank`.
 
-Overlap is heavy. The four FortiOS guides contain 824 distinct commands between them, only
-144 more than the 7.6.4 Administration Guide alone.
+Overlap is heavy. The four FortiOS guides contain 831 distinct commands between them, only
+111 more than the 7.6.7 Administration Guide alone.
 
 ## Measured and rejected (0-2 commands each)
 
