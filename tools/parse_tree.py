@@ -16,7 +16,8 @@ is the skeleton and the PDF is the flesh; they join on the command path.
 
   python3 tools/parse_tree.py <capture>                 # summary
   python3 tools/parse_tree.py <capture> --json out.json # every node
-  python3 tools/parse_tree.py <capture> --diff fortios  # against a shipped bundle
+  python3 tools/parse_tree.py <capture> --diff auto    # against the matching bundle
+  python3 tools/parse_tree.py <capture> --record       # note it in captures.json
   python3 tools/parse_tree.py --selftest                # against tools/testdata
 
 Format, in case it ever changes under us. Depth is the column of the `|-` / `+-` / `--`
@@ -37,6 +38,46 @@ CONN = re.compile(r'(?:(?<=\s)|^)(\|-|\+-|--)')
 # "  (35)" / "  (1,480)" / "  (-1)" / "  (79 xss)" at the end of a segment.
 SUFFIX = re.compile(r'\s+\(([^()]*)\)\s*$')
 VERBS = {'diagnose__tree__': 'diagnose', 'execute__tree__': 'execute'}
+
+# "Version: FortiGate-VM64 v7.6.4,build2731,250410 (GA.F)" -- the first line of
+# `get system status`, and the only part of a capture we ever record.
+BANNER = re.compile(r'^Version:\s*(\S+?)\s+v(\d+\.\d+\.\d+)\s*,\s*build(\d+)', re.M)
+MODELS = {'fortigate': 'fortios', 'fortiwifi': 'fortios', 'fortios': 'fortios',
+          'fortiswitch': 'fortiswitch', 'fortianalyzer': 'fortianalyzer',
+          'fortimanager': 'fortimanager'}
+# Identifying data an operator must not hand us by accident.
+PRIVATE = re.compile(r'^(Serial-Number|Hostname)\s*:', re.M | re.I)
+
+
+def identify(text):
+    """What box and build is this capture from? None if it carries no status banner."""
+    m = BANNER.search(text)
+    if not m:
+        return None
+    model, ver, build = m.group(1), m.group(2), m.group(3)
+    fam = model.split('-')[0].lower()
+    return {'product': MODELS.get(fam), 'model': model, 'ver': ver, 'build': build}
+
+
+def pick_bundle(ident):
+    """Which bundle does a capture speak for? Same platform, same major.minor.
+
+    Never across a minor boundary: a 7.6.4 box describes the 7.6 bundle and says nothing
+    trustworthy about 8.0. If nothing matches, that is a finding -- the device runs a
+    build we ship no reference for -- not something to guess around.
+    """
+    cfg = json.load(open(os.path.join(ROOT, 'sources.json')))
+    want = '.'.join(ident['ver'].split('.')[:2])
+    hits = [e for e in cfg['cli'] if e['product'] == ident['product']
+            and '.'.join(e.get('ver', '').split('.')[:2]) == want]
+    if len(hits) == 1:
+        return hits[0].get('bundle') or hits[0]['product'], None
+    same = [e.get('bundle') or e['product'] for e in cfg['cli']
+            if e['product'] == ident['product']]
+    if not hits:
+        return None, (f"no bundle for {ident['product']} {want}.x -- we ship {same}. "
+                      f'Add that version to sources.json, or pass BUNDLE= to override.')
+    return None, f'{len(hits)} bundles claim {ident["product"]} {want}.x: {same}'
 
 
 def segments(line):
@@ -214,6 +255,33 @@ def diff(cmds, bundle):
         print(f'      - {k} {p}')
 
 
+def record(ident, path, cmds):
+    """Note what we have measured a bundle against, in captures.json.
+
+    Model, firmware and build only. The capture itself stays in work/live/, which is
+    gitignored, because its status banner carries a serial number and a hostname.
+    """
+    dest = os.path.join(ROOT, 'captures.json')
+    have = json.load(open(dest)) if os.path.exists(dest) else {'captures': []}
+    import datetime, hashlib
+    row = {'product': ident['product'], 'model': ident['model'],
+           'ver': ident['ver'], 'build': ident['build'],
+           'commands': len(cmds),
+           'sha256': hashlib.sha256(open(path, 'rb').read()).hexdigest()[:16],
+           'seen': datetime.date.today().isoformat()}
+    key = (row['product'], row['ver'], row['build'])
+    have['captures'] = [c for c in have['captures']
+                        if (c['product'], c['ver'], c['build']) != key] + [row]
+    have['captures'].sort(key=lambda c: (c['product'], c['ver'], c['build']))
+    have['_comment'] = ['What each bundle has been measured against, and when.',
+                        'Model, firmware and build only -- never a serial or a hostname.',
+                        'The captures themselves live in work/live/, which is gitignored.',
+                        'Written by tools/parse_tree.py --record.']
+    json.dump(have, open(dest, 'w'), indent=1)
+    open(dest, 'a').write('\n')
+    print(f"  recorded in captures.json: {row['model']} v{row['ver']} build{row['build']}")
+
+
 def selftest():
     nodes = parse(open(SAMPLE).read())
     cmds = commands(nodes)
@@ -285,6 +353,21 @@ def selftest():
     # a line the terminal wrapped: the stray "(-1)" must not become a node
     assert not any(n['name'].startswith('(') for n in nodes), 'wrapped suffix became a node'
 
+    # a capture identifies itself from its status banner, and never by its serial
+    i = identify('Version: FortiGate-VM64 v7.6.4,build2731,250410 (GA.F)\n'
+                 'Serial-Number: FGVM02TM24000000\n')
+    assert i == {'product': 'fortios', 'model': 'FortiGate-VM64',
+                 'ver': '7.6.4', 'build': '2731'}, i
+    assert identify('tree\nno banner here') is None
+    assert identify('Version: FortiSwitch-124F v7.6.2,build0123,240101'
+                    )['product'] == 'fortiswitch'
+    b, why = pick_bundle(i)
+    assert b == 'fortios' and why is None, (b, why)
+    b, why = pick_bundle(dict(i, ver='8.0.1'))
+    assert b == 'fortios-8.0', (b, why)
+    b, why = pick_bundle(dict(i, ver='9.9.9'))
+    assert b is None and 'no bundle for fortios 9.9.x' in why, (b, why)
+
     print(f'selftest OK  ({len(nodes)} nodes, {len(cmds)} commands from the fixture)')
     return 0
 
@@ -300,14 +383,37 @@ def main():
     nodes = parse(text)
     cmds = commands(nodes)
     print(f'{args[0]}:')
+    ident = identify(text)
+    if ident:
+        print(f"  from {ident['model']} v{ident['ver']} build{ident['build']}"
+              f"  ({ident['product']})")
+        if PRIVATE.search(text):
+            print('  note: this capture carries a serial number or hostname. It stays in'
+                  '\n        work/live/ (gitignored); only model and build are recorded.')
     summarise(nodes, cmds)
     if '--json' in args:
         dest = args[args.index('--json') + 1]
         json.dump({'nodes': nodes, 'commands': cmds}, open(dest, 'w'),
                   ensure_ascii=False, indent=1)
         print(f'  wrote {dest}')
+    if '--record' in args:
+        if not ident:
+            print('  cannot record: no "Version:" banner. Capture `get system status`'
+                  ' above the tree so the file says which build it came from.')
+            return 1
+        record(ident, args[0], cmds)
     if '--diff' in args:
-        diff(cmds, args[args.index('--diff') + 1])
+        want = args[args.index('--diff') + 1]
+        if want in ('', 'auto'):
+            if not ident:
+                print('  --diff auto needs a "Version:" banner; pass a bundle name instead.')
+                return 2
+            want, why = pick_bundle(ident)
+            if not want:
+                print(f'  {why}')
+                return 2
+            print(f'  diffing against {want} (same platform, same major.minor)')
+        diff(cmds, want)
     return 0
 
 

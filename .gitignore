@@ -11,6 +11,10 @@ work/*/config-examples.json
 work/*.list
 work/probe/
 work/baseline/
+# device captures: a `get system status` banner carries a serial number and a hostname,
+# which are the operator's data and never ours to commit. The derived facts (model,
+# firmware, build) go in captures.json instead.
+work/live/
 
 # local
 .DS_Store

@@ -15,7 +15,7 @@ export WORK OUT
 
 # A doc path for `make probe`, e.g. /document/fortigate/8.0.1/administration-guide
 DOC     ?=
-BUNDLE  ?= fortios
+BUNDLE  ?= auto        # `auto` matches the capture's own firmware to a bundle
 
 .DEFAULT_GOAL := help
 .PHONY: help all versions versions-check sources sources-check fetch build check \
@@ -117,7 +117,14 @@ all: sources fetch build
 ##                 bare that the box can describe.
 ##                 Does NOT give descriptions, defaults, option values, sample output,
 ##                 or `get router info *` -- the routing daemon's tree is opaque to it.
-##                   make tree FILE=work/live/fgt-7.6-tree.txt BUNDLE=fortios
+##                 A capture that begins with `get system status` identifies itself, so
+##                 BUNDLE defaults to `auto`: same platform, same major.minor, and it
+##                 refuses rather than guess across a minor boundary. Captures live in
+##                 work/live/, which is gitignored -- a status banner carries a serial
+##                 number and a hostname. Add --record to note the model and build in
+##                 captures.json, which is the committed answer to "what have we
+##                 measured this bundle against, and when".
+##                   make tree FILE=work/live/fgt-7.6-tree.txt
 tree:
 	@test -n "$(FILE)" || { echo "set FILE=<a tree capture>"; exit 2; }
 	@$(PY) tools/parse_tree.py "$(FILE)" --diff "$(BUNDLE)"
