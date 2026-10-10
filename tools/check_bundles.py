@@ -45,6 +45,20 @@ def main():
         if not d.get('secs'):
             fail.append(f'{b}: no sections')
 
+    page = open(os.path.join(ROOT, 'site/index.html'), encoding='utf-8').read()
+    for e in cfg['cli']:
+        b = bundle_id(e)
+        if f'f:"{b}"' not in page:
+            fail.append(f'{b}: not named in index.html PRODUCTS -- run stamp_build.py')
+        if not e.get('ver'):
+            fail.append(f'{b}: sources.json entry has no "ver", so /ver cannot label it')
+    seen = {}
+    for e in cfg['cli']:
+        seen.setdefault(e['product'], []).append(e.get('ver'))
+    for p, vs in sorted(seen.items()):
+        if len(vs) != len(set(vs)):
+            fail.append(f'{p}: two builds claim version {vs}')
+
     for f in fail:
         print(f'  FAIL {f}', file=sys.stderr)
     print(f'{len(ids)} bundles checked, {len(fail)} problems')

@@ -15,3 +15,7 @@ work/baseline/
 # local
 .DS_Store
 *.zip
+
+# python bytecode from the tools importing each other
+__pycache__/
+*.pyc

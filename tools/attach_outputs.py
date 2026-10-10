@@ -123,49 +123,61 @@ for e in CFG['output'] + CFG['hand']:
             o['g'] = smp['g']
 
         cands = list(TARGET[key])
-        hits = [(p, m) for p, m in ((p, match(p, kind, rest)) for p in cands) if m]
-        if hits:
-            # Longest path match wins first: it is stronger evidence than any caption
-            # heuristic. Only then is the platform question asked.
-            best = max(h[1][1][0] for h in hits)
-            hits = [h for h in hits if h[1][1][0] == best]
-            if len({PLATFORM[h[0]] for h in hits}) > 1:
-                # A guide that covers both ends of a FortiLink pair: decide by where the
-                # command actually runs. This picks a platform, not a build.
+        ms = {b: match(b, kind, rest) for b in cands}
+        hits = {b: m for b, m in ms.items() if m}
+
+        # Which platform is this sample about? A platform's evidence is the longest match
+        # any of its builds found -- length beats the caption heuristic, which only breaks
+        # a tie. Builds of one platform never compete with each other here: a command the
+        # 8.0 reference documents more deeply must not stop 7.6.7 taking its own match.
+        plats = {PLATFORM[b] for b in cands}
+        if len(plats) > 1:
+            bylen = {}
+            for b, m in hits.items():
+                pl = PLATFORM[b]
+                bylen[pl] = max(bylen.get(pl, 0), m[1][0])
+            if bylen:
+                top = max(bylen.values())
+                win = {pl for pl, n in bylen.items() if n == top}
+            else:
+                win = set(plats)
+            if len(win) > 1:
+                # A guide covering both ends of a FortiLink pair: decide by where the
+                # command actually runs.
                 on_fgt = 'switch-controller' in cmd or (
                     'FortiGate' in smp['cap'] and 'FortiSwitch' not in smp['cap'])
                 want = 'fortios' if on_fgt else 'fortiswitch'
-                if any(PLATFORM[h[0]] == want for h in hits):
-                    hits = [h for h in hits if PLATFORM[h[0]] == want]
-            # Every surviving build gets the sample. A 7.6.7 guide is evidence about an
-            # 8.0 command too, and each sample carries the guide it came from, so the
-            # page still says which firmware it was captured on.
-            for bundle, (i, _) in hits:
-                att[bundle][i].append(o)
-                stats[key]['attached:' + bundle] += 1
-            continue
-
-        # no match: keep it as a new entry, but only where that is safe
-        p = ' '.join(pathwords(rest))
-        if not p:
-            stats[key]['dropped'] += 1
-            continue
-        plats = {PLATFORM[b] for b in cands}
-        if len(plats) == 1:
-            want = next(iter(plats))
+                win = {want} if want in win else {
+                    PLATFORM[next(b for b in cands if PLATFORM[b] in win)]}
+            targets = [b for b in cands if PLATFORM[b] in win]
         else:
-            want = 'fortios' if ('switch-controller' in cmd or (
-                'FortiGate' in smp['cap'] and 'FortiSwitch' not in smp['cap'])) else 'fortiswitch'
-        targets = [b for b in cands if PLATFORM[b] == want] or list(cands)
-        # For a guide that spans products, an unmatched command is as likely to be a third
-        # party's ('show run' on a Cisco switch) as ours -- keep only plausible ones.
-        if len(plats) > 1 and (kind not in ('get', 'show')
-                               or p.split()[0] not in tops[targets[0]]):
+            targets = cands
+
+        # Then each build of that platform takes its own match, or -- having none -- is a
+        # candidate for a new entry. These are independent: a sample can document a
+        # command 7.6.7 has and 8.0 dropped, or the reverse.
+        took = 0
+        for b in targets:
+            if b in hits:
+                att[b][hits[b][0]].append(o)
+                stats[key]['attached:' + b] += 1
+                took += 1
+
+        miss = [b for b in targets if b not in hits]
+        if miss:
+            # no match: keep it as a new entry, but only where that is safe
+            p = ' '.join(pathwords(rest))
+            # For a guide that spans products, an unmatched command is as likely to be a
+            # third party's ('show run' on a Cisco switch) as ours -- keep only plausible
+            # ones.
+            if p and not (len(plats) > 1 and (kind not in ('get', 'show')
+                                              or p.split()[0] not in tops[targets[0]])):
+                for b in miss:
+                    new[b].setdefault((kind, p), []).append(o)
+                    stats[key]['new:' + b] += 1
+                    took += 1
+        if not took:
             stats[key]['dropped'] += 1
-            continue
-        for bundle in targets:
-            new[bundle].setdefault((kind, p), []).append(o)
-            stats[key]['new:' + bundle] += 1
 
 
 def rank(lst, base):

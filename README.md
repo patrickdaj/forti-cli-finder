@@ -50,7 +50,7 @@ full list with the cursor on your choice, esc cancels. Values are quoted the way
 prints them: string types quoted, numbers, options and addresses bare.
 
 Slash commands: `/fgt /fsw /faz /fmg /all` (platform), `/config /diag /exec /get /show /any`
-(command type), `/ver` (list and pick a firmware build), `/fgt@7.6.7`, `/reset`, `/clear`,
+(command type), `/ver` (list and pick a firmware build), `/fgt@8.0.1`, `/reset`, `/clear`,
 `/help`. They combine: `/fsw diag`, `/fgt fsw show`.
 
 ## The data
@@ -61,6 +61,7 @@ and page it came from.
 | Bundle | Built from |
 |---|---|
 | `fortios.json` | FortiOS 7.6.7 CLI Reference |
+| `fortios-8.0.json` | FortiOS 8.0.1 CLI Reference |
 | `fortiswitch.json` | FortiSwitchOS 7.6.7 CLI Reference |
 | `fortianalyzer.json` | FortiAnalyzer 7.6.7 CLI Reference |
 | `fortimanager.json` | FortiManager 7.6.7 CLI Reference |
@@ -111,10 +112,33 @@ re-run discovery, fetch and build. Measure it first:
 
 ### Adding a firmware build
 
-Build its bundle under a new name (`fortios-7.4.8.json`) and add it to that platform's
-`vers` list at the top of the script in `site/index.html`:
-`{v:'7.4.8', f:'fortios-7.4.8', src:'CLI Reference'}`. `/ver` then lists it and `/fgt@7.4.8`
-picks it.
+One entry in `sources.json` under `cli`, with a `bundle` naming its own file and a `ver`
+and `src` for the `/ver` listing:
+
+    {"key": "fos-cli-74", "product": "fortios", "bundle": "fortios-7.4",
+     "parser": "fos", "short": "FGT",
+     "label": "FortiOS 7.4.12", "ver": "7.4.12", "src": "CLI Reference",
+     "doc": "/document/fortigate/7.4.12/cli-reference",
+     "title": "FortiOS 7.4.12 CLI Reference",
+     "expect": "FortiOS-7.4.12-CLI_Reference"}
+
+`product` says which platform it is a build of; `bundle` says which file it is written to.
+Leave `bundle` out and it defaults to `product`, which is why the original four bundles
+are still `fortios.json` and friends.
+
+Put the new entry **after** its siblings: a platform's first entry is the build you get by
+default. Then add the new bundle to the `target` list of every `output` and `hand` source
+whose samples should reach it -- the guides are version-specific but a 7.6 guide is still
+evidence about an 8.0 command, and each sample names the guide it came from, so the page
+says which firmware the output was captured on.
+
+Re-run discovery, fetch and build. `tools/stamp_build.py` regenerates the `PRODUCTS` list
+in `site/index.html` from `sources.json`, so there is nothing to edit there, and
+`tools/check_bundles.py` fails the build if the two ever disagree.
+
+Measure before you add: a reference that duplicates one you already ship costs a bundle
+and gives the `/ver` picker nothing to distinguish. Parse it to a scratch tree and diff
+the section and argument counts against the bundle you have.
 
 ## Deploying
 
