@@ -18,6 +18,13 @@ SC = os.environ.get('WORK', 'work')
 D = os.environ.get('OUT', 'site/data')
 CFG = json.load(open(os.path.join(ROOT, 'sources.json')))
 
+import importlib.util
+_spec = importlib.util.spec_from_file_location(
+    'check_bundles', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'check_bundles.py'))
+_cb = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_cb)
+
+
 MIN_EX = 5          # below this, a percentage is noise
 MAX_KEEP = 3        # worked examples kept per table
 
@@ -34,7 +41,7 @@ for e in CFG['output']:
 
 seen_global = set()
 for e in CFG['cli']:
-    pid = e['product']
+    pid = _cb.bundle_id(e)
     path = f'{D}/{pid}.json'
     b = json.load(open(path))
     n_ex = n_fq = 0

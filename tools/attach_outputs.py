@@ -31,11 +31,28 @@ for e in CFG['output'] + CFG['hand']:
         SRC[e['lab_key']] = e['lab_title']
         RANK[e['lab_key']] = e.get('rank', 0)
 
-PRODUCTS = [e['product'] for e in CFG['cli']]
-B = {p: json.load(open(f'{D}/{p}.json')) for p in PRODUCTS}
+import importlib.util
+_spec = importlib.util.spec_from_file_location(
+    'check_bundles', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'check_bundles.py'))
+_cb = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_cb)
+
+BUNDLES = [_cb.bundle_id(e) for e in CFG['cli']]
+# Which platform each bundle is a build of. The routing below asks a platform question --
+# is this a switch-controller command, so FortiGate rather than FortiSwitch? -- and that
+# must not be confused with which build it lands in.
+PLATFORM = {_cb.bundle_id(e): e['product'] for e in CFG['cli']}
+B = {b: json.load(open(f'{D}/{b}.json')) for b in BUNDLES}
+_unknown = {k: [t for t in ts if t not in B] for k, ts in TARGET.items()}
+_unknown = {k: v for k, v in _unknown.items() if v}
+if _unknown:
+    raise SystemExit('sources.json: ' + '; '.join(
+        f'source {k!r} targets unknown bundle(s) {v}' for k, v in sorted(_unknown.items()))
+        + f'; known bundles are {sorted(B)}')
 for p, b in B.items():
     assert not any(s.get('ag') or s.get('o') for s in b['secs']), \
         f'{p}: bundle already has samples -- run build_bundles.py first'
+
 
 # ---- index the command paths ------------------------------------------------
 idx = {p: defaultdict(list) for p in B}
@@ -62,9 +79,9 @@ def pathwords(words):
     return out
 
 
-def match(product, kind, rest):
+def match(bundle, kind, rest):
     best = None
-    for pw, i in idx[product].get(kind, []):
+    for pw, i in idx[bundle].get(kind, []):
         if len(pw) <= len(rest) and all(
                 a == b or (len(a) >= 2 and b.startswith(a)) or (len(b) >= 3 and a.startswith(b))
                 for a, b in zip(rest, pw)):
@@ -105,18 +122,27 @@ for e in CFG['output'] + CFG['hand']:
         if smp.get('g'):
             o['g'] = smp['g']
 
-        cands = [p for p in TARGET[key] if p in B]
+        cands = list(TARGET[key])
         hits = [(p, m) for p, m in ((p, match(p, kind, rest)) for p in cands) if m]
         if hits:
-            if len(hits) > 1:
+            # Longest path match wins first: it is stronger evidence than any caption
+            # heuristic. Only then is the platform question asked.
+            best = max(h[1][1][0] for h in hits)
+            hits = [h for h in hits if h[1][1][0] == best]
+            if len({PLATFORM[h[0]] for h in hits}) > 1:
                 # A guide that covers both ends of a FortiLink pair: decide by where the
-                # command actually runs.
+                # command actually runs. This picks a platform, not a build.
                 on_fgt = 'switch-controller' in cmd or (
                     'FortiGate' in smp['cap'] and 'FortiSwitch' not in smp['cap'])
-                hits.sort(key=lambda h: (h[1][1][0], (h[0] == 'fortios') == on_fgt), reverse=True)
-            product, (i, _) = hits[0]
-            att[product][i].append(o)
-            stats[key]['attached:' + product] += 1
+                want = 'fortios' if on_fgt else 'fortiswitch'
+                if any(PLATFORM[h[0]] == want for h in hits):
+                    hits = [h for h in hits if PLATFORM[h[0]] == want]
+            # Every surviving build gets the sample. A 7.6.7 guide is evidence about an
+            # 8.0 command too, and each sample carries the guide it came from, so the
+            # page still says which firmware it was captured on.
+            for bundle, (i, _) in hits:
+                att[bundle][i].append(o)
+                stats[key]['attached:' + bundle] += 1
             continue
 
         # no match: keep it as a new entry, but only where that is safe
@@ -124,18 +150,22 @@ for e in CFG['output'] + CFG['hand']:
         if not p:
             stats[key]['dropped'] += 1
             continue
-        if len(cands) == 1:
-            product = cands[0]
+        plats = {PLATFORM[b] for b in cands}
+        if len(plats) == 1:
+            want = next(iter(plats))
         else:
-            product = 'fortios' if ('switch-controller' in cmd or (
+            want = 'fortios' if ('switch-controller' in cmd or (
                 'FortiGate' in smp['cap'] and 'FortiSwitch' not in smp['cap'])) else 'fortiswitch'
+        targets = [b for b in cands if PLATFORM[b] == want] or list(cands)
         # For a guide that spans products, an unmatched command is as likely to be a third
         # party's ('show run' on a Cisco switch) as ours -- keep only plausible ones.
-        if len(cands) > 1 and (kind not in ('get', 'show') or p.split()[0] not in tops[product]):
+        if len(plats) > 1 and (kind not in ('get', 'show')
+                               or p.split()[0] not in tops[targets[0]]):
             stats[key]['dropped'] += 1
             continue
-        new[product].setdefault((kind, p), []).append(o)
-        stats[key]['new:' + product] += 1
+        for bundle in targets:
+            new[bundle].setdefault((kind, p), []).append(o)
+            stats[key]['new:' + bundle] += 1
 
 
 def rank(lst, base):
