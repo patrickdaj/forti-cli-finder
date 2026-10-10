@@ -1,0 +1,16 @@
+# Fortinet PDFs: ~500MB, redownloadable from sources.lock.json
+sources/*.pdf
+sources/*.part
+
+# build intermediates
+work/*/text.txt
+work/*/tree.json
+work/*/tree2.json
+work/*/samples.json
+work/*.list
+work/probe/
+work/baseline/
+
+# local
+.DS_Store
+*.zip

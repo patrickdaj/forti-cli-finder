@@ -1,0 +1,89 @@
+name: Refresh data from docs.fortinet.com
+
+# Weekly: ask docs.fortinet.com what it is serving for each document in sources.json.
+# If nothing moved, stop -- no download, no commit. If something did, rebuild the
+# bundles and open a pull request so the data diff gets read before it goes live.
+# It deliberately does not push to main: a Fortinet re-release can change the parse,
+# and that is worth a human glance.
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'        # Mondays, 06:17 UTC
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Rebuild even if no document changed'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Look for new document releases
+        id: discover
+        run: |
+          set +e
+          python3 tools/discover_sources.py --check
+          code=$?
+          set -e
+          case $code in
+            0) echo "changed=false" >> "$GITHUB_OUTPUT"; echo "Everything is current." ;;
+            1) echo "changed=true"  >> "$GITHUB_OUTPUT"; echo "A document moved." ;;
+            *) echo "changed=true"  >> "$GITHUB_OUTPUT";
+               echo "::warning::Some documents could not be resolved; continuing with the rest." ;;
+          esac
+
+      - name: Stop if nothing changed
+        if: steps.discover.outputs.changed == 'false' && inputs.force != true
+        run: echo "Nothing to do." && exit 0
+
+      - name: Install poppler
+        if: steps.discover.outputs.changed == 'true' || inputs.force == true
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+
+      - name: Refresh the lock file and download
+        if: steps.discover.outputs.changed == 'true' || inputs.force == true
+        run: |
+          python3 tools/discover_sources.py || true   # exit 2 just means some source failed
+          python3 tools/fetch_sources.py
+
+      - name: Rebuild
+        if: steps.discover.outputs.changed == 'true' || inputs.force == true
+        run: ./build.sh | tee build.log
+
+      - name: Summarise what changed
+        if: steps.discover.outputs.changed == 'true' || inputs.force == true
+        run: |
+          {
+            echo '## Build'
+            echo '```'
+            tail -25 build.log
+            echo '```'
+            echo '## Files'
+            git diff --stat -- site/data sources.lock.json || true
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open a pull request
+        if: steps.discover.outputs.changed == 'true' || inputs.force == true
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: data/refresh
+          title: 'Data refresh from docs.fortinet.com'
+          commit-message: 'Rebuild bundles from the current Fortinet documents'
+          body-path: build.log
+          add-paths: |
+            sources.lock.json
+            site/data/*.json
+          delete-branch: true
