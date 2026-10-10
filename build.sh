@@ -65,6 +65,7 @@ python3 tools/attach_config_examples.py
 python3 tools/derive_getshow.py
 
 python3 tools/stamp_build.py
+python3 tools/check_bundles.py
 
 echo "== done"
 ls -la "$OUT"
