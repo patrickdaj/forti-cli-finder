@@ -64,5 +64,7 @@ python3 tools/attach_config_examples.py
 # already produced is skipped here.
 python3 tools/derive_getshow.py
 
+python3 tools/stamp_build.py
+
 echo "== done"
 ls -la "$OUT"

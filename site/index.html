@@ -205,6 +205,7 @@ details.dsc[open] summary::before{content:"\25be"}
 <div class="toast" id="toast" hidden></div>
 <script>
 (function(){
+const BUILD='4cdb1a6f2012';   // replaced at build time by tools/stamp_build.py
 const PRODUCTS=[
   {id:'fortios',short:'FGT',name:'FortiOS',vers:[{v:'7.6.7',f:'fortios',src:'CLI Reference + Administration Guide'}]},
   {id:'fortiswitch',short:'FSW',name:'FortiSwitchOS',vers:[{v:'7.6.7',f:'fortiswitch',src:'CLI Reference + Administration and FortiLink guides'}]},
@@ -232,7 +233,8 @@ async function load(id){
   LOADING[id]=(async()=>{
     // Plain JSON: any static host worth using (GitHub Pages included) gzips it in
     // transit, which beats shipping a base64 copy the page has to decode itself.
-    const f='data/'+PRODUCTS.find(x=>x.id===id).file+'.json';
+    // BUILD is stamped by tools/stamp_build.py so new code always fetches its own data.
+    const f='data/'+PRODUCTS.find(x=>x.id===id).file+'.json?v='+BUILD;
     const r=await fetch(f);
     if(!r.ok)throw new Error(f+': HTTP '+r.status);
     const b=await r.json();
