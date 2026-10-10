@@ -204,10 +204,40 @@ exact for a firmware *build*:
 FGT-1 # tree
 ```
 
-Save that output and:
+You can paste that into a file by hand, or collect it automatically:
 
 ```bash
-make tree FILE=work/live/fgt-7.6-tree.txt BUNDLE=fortios
+cp .env.devices.example .env.devices && chmod 600 .env.devices   # then edit it
+make capture                      # every device; DEV=fgt1 for one
+make tree FILE=work/live/fortios-7.6.4-2731/capture.txt --record
+```
+
+`.env.devices` is plain dotenv (`DEVICES=fgt1,fsw1`, then `FGT1_HOST=...`). It is
+gitignored, and `capture_device.py` refuses to run if it is group- or world-readable.
+Prefer `<NAME>_KEY` or your ssh-agent; `<NAME>_PASS` works and goes straight to the
+device's own prompt over the pty, never into a log, a file or an argument list.
+
+The walk runs `get system status`, `tree`, and `<command> ?` for every command the
+bundle ships with no arguments — 3104 of them on FortiOS 7.6. It is all reads and it
+**never enters config mode**, so it runs happily under an accprofile with
+`set cli-config disable`: the device enforces read-only rather than this script
+promising to. Field-level help for config tables would need config mode, and is
+deliberately not collected.
+
+Budget, measured rather than guessed: 5,743 round trips for the tree plus the bare
+commands — 8 minutes at 80ms per round trip, 29 at 300ms. Adding per-field option and
+default help for all 13,336 config fields would be 19,079 round trips, 25 to 95 minutes,
+and would need config mode. It is an unattended coffee, not a project.
+
+One thing nobody can know without a device: whether FortiOS answers `?` through an ssh
+pty at all. It acts on the keystroke rather than on a newline, which is why this uses a
+pty and not a pipe. The script tries both spellings, reports which answered, and gives
+up after 20 unanswered commands — the tree is still captured and still useful.
+
+Then:
+
+```bash
+make tree FILE=work/live/fortios-7.6.4-2731/capture.txt
 ```
 
 `tree` carries what the CLI Reference does not: the arguments of `diagnose` and `execute`
@@ -216,6 +246,16 @@ the `<Enter> or` marker that means an argument is optional. It carries no descri
 defaults, no option values, no sample output — and `get router info *` is opaque to it,
 because that subtree belongs to the routing daemon. The tree is the skeleton; the PDF is
 the flesh; they join on the command path.
+
+A capture identifies itself. Beginning it with `get system status` means the version
+banner names the build, so `make tree` matches it to a bundle on its own — same platform,
+same major.minor — and refuses across a minor boundary rather than guess. A 7.6.4 box
+describes the 7.6 bundle and says nothing trustworthy about 8.0.
+
+`captures.json` is the committed record of what each bundle has been measured against:
+model, firmware, build, command count, content hash, date. Never a serial, never a
+hostname, never an IP — those stay in `work/live/`, which is gitignored. Write it with
+`python3 tools/parse_tree.py <capture> --record`.
 
 Today `make tree` **reports**; it does not write into the bundles. Its value right now is
 as ground truth: every disagreement between a 7.6 device and our parsed 7.6.7 bundle is

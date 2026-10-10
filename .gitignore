@@ -16,6 +16,9 @@ work/baseline/
 # firmware, build) go in captures.json instead.
 work/live/
 
+# device credentials -- the example file is committed, the real one never is
+.env.devices
+
 # local
 .DS_Store
 *.zip

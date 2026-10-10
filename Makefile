@@ -15,11 +15,12 @@ export WORK OUT
 
 # A doc path for `make probe`, e.g. /document/fortigate/8.0.1/administration-guide
 DOC     ?=
+DEV     ?=
 BUNDLE  ?= auto        # `auto` matches the capture's own firmware to a bundle
 
 .DEFAULT_GOAL := help
 .PHONY: help all versions versions-check sources sources-check fetch build check \
-        tree probe serve diff clean distclean
+        capture tree probe serve diff clean distclean
 
 ## ---------------------------------------------------------------- discovery
 
@@ -105,6 +106,23 @@ all: sources fetch build
 ##   Nothing in `make all` needs one. Skip this section entirely and the pipeline
 ##   still builds every bundle from Fortinet's PDFs.
 ##
+## capture         Walk every device in .env.devices over SSH.      ~10-45min, network
+##                 Runs `get system status`, `tree`, and `<command> ?` for the 3104
+##                 FortiOS commands the reference prints bare. All reads, and it never
+##                 enters config mode -- so it works under an accprofile with
+##                 `cli-config disable`, which means the DEVICE enforces read-only
+##                 rather than this script promising to.
+##                 Needs .env.devices (copy .env.devices.example, chmod 600). That file
+##                 and everything under work/live/ are gitignored: a status banner
+##                 carries a serial number and a hostname.
+##                 Expect: one directory per build under work/live/, and a line telling
+##                 you whether `?` survived the ssh pty at all. If it did not, the tree
+##                 is still captured and useful.
+##                   make capture              # every device
+##                   make capture DEV=fgt1     # one
+capture:
+	@$(PY) tools/capture_device.py $(DEV)
+
 ## tree FILE=...   Parse a device's `tree` capture; diff it against a bundle.    instant
 ##                 `tree` on a FortiGate prints its own command tree. It is the only
 ##                 source that is exact for a firmware BUILD rather than for whatever
