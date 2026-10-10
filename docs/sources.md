@@ -72,3 +72,22 @@ needs no column reconstruction. It was not adopted because each topic page ships
 1414-entry table of contents, so harvesting one guide means ~1.1GB of transfer for content
 the PDF already yields. Worth revisiting if the PDF extractor starts losing blocks, or for
 a guide published only as HTML.
+
+## Samples under a build they were not written for
+
+A platform may ship more than one firmware build (`fortios` and `fortios-8.0`), and the
+guides we mine are version-specific -- there is no 8.0 Administration Guide in `output` at
+the time of writing. A `target` list may therefore name several builds of one platform,
+and a sample then attaches to each build whose command tree actually contains the command.
+
+That is deliberate, and it is honest because provenance travels with the sample: a
+`diagnose sniffer packet` capture taken from the FortiOS 7.6 study guide and shown under
+the 8.0 build still prints "FortiOS 7.6 Administrator study guide (annotated), p.488"
+under it. The alternative -- an 8.0 bundle with no sample output at all -- is worse and
+no more truthful.
+
+Builds of one platform never compete with each other for a sample. The platform question
+("is this switch-controller command FortiGate's or FortiSwitch's?") is settled first, by
+the longest path match any of a platform's builds found; then every build of the winning
+platform takes its own best match, or, having none, becomes a candidate for a new entry.
+A command 8.0 documents more deeply must not stop 7.6.7 recording the one it has.

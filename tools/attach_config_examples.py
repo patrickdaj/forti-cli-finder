@@ -18,10 +18,18 @@ SC = os.environ.get('WORK', 'work')
 D = os.environ.get('OUT', 'site/data')
 CFG = json.load(open(os.path.join(ROOT, 'sources.json')))
 
+import importlib.util
+_spec = importlib.util.spec_from_file_location(
+    'check_bundles', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'check_bundles.py'))
+_cb = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_cb)
+
+
 MIN_EX = 5          # below this, a percentage is noise
 MAX_KEEP = 3        # worked examples kept per table
 
 # every example from every output guide, by table
+TARGET = {e['key']: e['target'] for e in CFG['output']}
 by_table = defaultdict(list)
 for e in CFG['output']:
     path = f"{SC}/{e['key']}/config-examples.json"
@@ -32,9 +40,12 @@ for e in CFG['output']:
         r['rank'] = e.get('rank', 0)
         by_table[r['t']].append(r)
 
-seen_global = set()
+# Don't show the same example twice *within a bundle* -- but each build gets its own
+# pool. Two builds of one platform are alternative views of the same CLI, not two halves
+# of it, so the second must not be left with whatever the first declined.
 for e in CFG['cli']:
-    pid = e['product']
+    seen_global = set()
+    pid = _cb.bundle_id(e)
     path = f'{D}/{pid}.json'
     b = json.load(open(path))
     n_ex = n_fq = 0
@@ -62,6 +73,11 @@ for e in CFG['cli']:
         # keep a few short, complete, distinct examples, current firmware first
         keep, sigs = [], set()
         for r in sorted(rows, key=lambda r: (r['rank'], len(r['x']))):
+            # A table name is not unique across platforms -- `system global` exists on all
+            # four -- so honour the guide's target the way attach_outputs.py does, or a
+            # FortiGate example turns up under a FortiSwitch table.
+            if pid not in TARGET.get(r['src'], ()):
+                continue
             sig = '\n'.join(r['x'])
             if sig in sigs or sig in seen_global or len(r['x']) < 3:
                 continue

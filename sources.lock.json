@@ -56,6 +56,13 @@
    "title": "FortiOS 7.6.7 CLI Reference",
    "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/7f08d735-5ac6-11f1-a33a-02356ffb40d9/FortiOS-7.6.7-CLI_Reference.pdf"
   },
+  "fos-cli-80": {
+   "bytes": 19057952,
+   "doc": "/document/fortigate/8.0.1/cli-reference",
+   "name": "FortiOS-8.0.1-CLI_Reference.pdf",
+   "title": "FortiOS 8.0.1 CLI Reference",
+   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/618862e1-3462-11f1-b31d-02356ffb40d9/FortiOS-8.0.1-CLI_Reference.pdf"
+  },
   "fsw-cli": {
    "bytes": 2533633,
    "doc": "/document/fortiswitch/7.6.7/fortiswitchos-cli-reference",

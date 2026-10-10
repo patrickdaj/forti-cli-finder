@@ -31,11 +31,28 @@ for e in CFG['output'] + CFG['hand']:
         SRC[e['lab_key']] = e['lab_title']
         RANK[e['lab_key']] = e.get('rank', 0)
 
-PRODUCTS = [e['product'] for e in CFG['cli']]
-B = {p: json.load(open(f'{D}/{p}.json')) for p in PRODUCTS}
+import importlib.util
+_spec = importlib.util.spec_from_file_location(
+    'check_bundles', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'check_bundles.py'))
+_cb = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_cb)
+
+BUNDLES = [_cb.bundle_id(e) for e in CFG['cli']]
+# Which platform each bundle is a build of. The routing below asks a platform question --
+# is this a switch-controller command, so FortiGate rather than FortiSwitch? -- and that
+# must not be confused with which build it lands in.
+PLATFORM = {_cb.bundle_id(e): e['product'] for e in CFG['cli']}
+B = {b: json.load(open(f'{D}/{b}.json')) for b in BUNDLES}
+_unknown = {k: [t for t in ts if t not in B] for k, ts in TARGET.items()}
+_unknown = {k: v for k, v in _unknown.items() if v}
+if _unknown:
+    raise SystemExit('sources.json: ' + '; '.join(
+        f'source {k!r} targets unknown bundle(s) {v}' for k, v in sorted(_unknown.items()))
+        + f'; known bundles are {sorted(B)}')
 for p, b in B.items():
     assert not any(s.get('ag') or s.get('o') for s in b['secs']), \
         f'{p}: bundle already has samples -- run build_bundles.py first'
+
 
 # ---- index the command paths ------------------------------------------------
 idx = {p: defaultdict(list) for p in B}
@@ -62,9 +79,9 @@ def pathwords(words):
     return out
 
 
-def match(product, kind, rest):
+def match(bundle, kind, rest):
     best = None
-    for pw, i in idx[product].get(kind, []):
+    for pw, i in idx[bundle].get(kind, []):
         if len(pw) <= len(rest) and all(
                 a == b or (len(a) >= 2 and b.startswith(a)) or (len(b) >= 3 and a.startswith(b))
                 for a, b in zip(rest, pw)):
@@ -105,37 +122,62 @@ for e in CFG['output'] + CFG['hand']:
         if smp.get('g'):
             o['g'] = smp['g']
 
-        cands = [p for p in TARGET[key] if p in B]
-        hits = [(p, m) for p, m in ((p, match(p, kind, rest)) for p in cands) if m]
-        if hits:
-            if len(hits) > 1:
-                # A guide that covers both ends of a FortiLink pair: decide by where the
+        cands = list(TARGET[key])
+        ms = {b: match(b, kind, rest) for b in cands}
+        hits = {b: m for b, m in ms.items() if m}
+
+        # Which platform is this sample about? A platform's evidence is the longest match
+        # any of its builds found -- length beats the caption heuristic, which only breaks
+        # a tie. Builds of one platform never compete with each other here: a command the
+        # 8.0 reference documents more deeply must not stop 7.6.7 taking its own match.
+        plats = {PLATFORM[b] for b in cands}
+        if len(plats) > 1:
+            bylen = {}
+            for b, m in hits.items():
+                pl = PLATFORM[b]
+                bylen[pl] = max(bylen.get(pl, 0), m[1][0])
+            if bylen:
+                top = max(bylen.values())
+                win = {pl for pl, n in bylen.items() if n == top}
+            else:
+                win = set(plats)
+            if len(win) > 1:
+                # A guide covering both ends of a FortiLink pair: decide by where the
                 # command actually runs.
                 on_fgt = 'switch-controller' in cmd or (
                     'FortiGate' in smp['cap'] and 'FortiSwitch' not in smp['cap'])
-                hits.sort(key=lambda h: (h[1][1][0], (h[0] == 'fortios') == on_fgt), reverse=True)
-            product, (i, _) = hits[0]
-            att[product][i].append(o)
-            stats[key]['attached:' + product] += 1
-            continue
-
-        # no match: keep it as a new entry, but only where that is safe
-        p = ' '.join(pathwords(rest))
-        if not p:
-            stats[key]['dropped'] += 1
-            continue
-        if len(cands) == 1:
-            product = cands[0]
+                want = 'fortios' if on_fgt else 'fortiswitch'
+                win = {want} if want in win else {
+                    PLATFORM[next(b for b in cands if PLATFORM[b] in win)]}
+            targets = [b for b in cands if PLATFORM[b] in win]
         else:
-            product = 'fortios' if ('switch-controller' in cmd or (
-                'FortiGate' in smp['cap'] and 'FortiSwitch' not in smp['cap'])) else 'fortiswitch'
-        # For a guide that spans products, an unmatched command is as likely to be a third
-        # party's ('show run' on a Cisco switch) as ours -- keep only plausible ones.
-        if len(cands) > 1 and (kind not in ('get', 'show') or p.split()[0] not in tops[product]):
+            targets = cands
+
+        # Then each build of that platform takes its own match, or -- having none -- is a
+        # candidate for a new entry. These are independent: a sample can document a
+        # command 7.6.7 has and 8.0 dropped, or the reverse.
+        took = 0
+        for b in targets:
+            if b in hits:
+                att[b][hits[b][0]].append(o)
+                stats[key]['attached:' + b] += 1
+                took += 1
+
+        miss = [b for b in targets if b not in hits]
+        if miss:
+            # no match: keep it as a new entry, but only where that is safe
+            p = ' '.join(pathwords(rest))
+            # For a guide that spans products, an unmatched command is as likely to be a
+            # third party's ('show run' on a Cisco switch) as ours -- keep only plausible
+            # ones.
+            if p and not (len(plats) > 1 and (kind not in ('get', 'show')
+                                              or p.split()[0] not in tops[targets[0]])):
+                for b in miss:
+                    new[b].setdefault((kind, p), []).append(o)
+                    stats[key]['new:' + b] += 1
+                    took += 1
+        if not took:
             stats[key]['dropped'] += 1
-            continue
-        new[product].setdefault((kind, p), []).append(o)
-        stats[key]['new:' + product] += 1
 
 
 def rank(lst, base):

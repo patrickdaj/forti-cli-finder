@@ -21,23 +21,44 @@ OUT = os.environ.get('OUT', 'site/data')
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CFG = json.load(open(os.path.join(ROOT, 'sources.json')))
 
+import importlib.util
+_spec = importlib.util.spec_from_file_location(
+    'check_bundles', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'check_bundles.py'))
+_cb = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_cb)
+
+
 EDIT = re.compile(r'^\s*edit\s+(<[^>]+>)', re.M)
 
 for e in CFG['cli']:
-    pid = e['product']
+    pid = _cb.bundle_id(e)
     path = f'{OUT}/{pid}.json'
     b = json.load(open(path))
     have = {(s['k'], s['p']) for s in b['secs']}
     add = []
+    # The hand guides give several config subsections one path -- five share
+    # `fmupdate fds-setting` -- and one `show` covers them all. Take the key from
+    # whichever of them documents one, rather than from whichever comes first: it is the
+    # same table, and an `edit <id>` seen on any subsection is true of the whole.
+    keyof = {}
+    for s in b['secs']:
+        if s['k'] != 'config' or s.get('dv') or keyof.get(s['p']):
+            continue
+        m = EDIT.search(s.get('s') or '')
+        if m:
+            keyof[s['p']] = m.group(1)
+
     for s in list(b['secs']):
         if s['k'] != 'config' or s.get('dv'):
             continue
-        # the table's key, from "edit <policyid>" in the syntax block
-        m = EDIT.search(s.get('s') or '')
-        key = m.group(1) if m else None
+        key = keyof.get(s['p'])
         for kind, what in (('show', 'the configuration'), ('get', 'the settings')):
             if (kind, s['p']) in have:
-                continue            # the reference documents this one already
+                continue            # the reference documents this one already, or a
+                                    # sibling config section already derived it: the hand
+                                    # guides give several subsections one path (five share
+                                    # `fmupdate fds-setting`), and one `show` covers them
+            have.add((kind, s['p']))
             o = {'k': kind, 'p': s['p'],
                  'd': f"Display {what} that config {s['p']} sets.",
                  'pg': s['pg'], 's': f"{kind} {s['p']}" + (f" [{key}]" if key else ''),
