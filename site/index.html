@@ -223,7 +223,7 @@ const STOP=new Set(['when','the','a','an','to','of','on','in','is','for','and','
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const S={prod:store.get('cf.prod',['fortios']),kind:(k=>k.length?k:KINDS.slice())(store.get('cf.kind',[])),prevProd:null,prevKind:null,
   q:'',sel:0,res:{toks:[],hits:[],total:0},items:[],hist:store.get('cf.hist',[]),ctxOpen:false,sheet:false,pinned:false,
-  ver:store.get('cf.ver',{}),
+  ver:store.get('cf.ver',{}),top:0,
   detail:null,vals:{},pins:new Set(),xp:new Set(),groups:new Set(),showAll:false};
 const DATA={},LOADING={};
 const $=s=>document.querySelector(s);
@@ -414,14 +414,18 @@ function copyText(t,btn,bar){
 }
 
 // ---------- rendering: terminal ----------
-const LIVE_N=14;
+const LIVE_N=14;     // rows on screen at once
+const REACH=500;     // rows you can arrow to. Past this, "narrow the query" is true advice
 function items(res){ // flat, selectable lines: each command, then its matching parameters
-  const hits=res.hits.slice(0,LIVE_N);
+  const hits=res.hits.slice(0,REACH);
   // A parameter under a hit is there to say why that hit matched. One that turns up under
   // most of them says nothing -- searching "config firewall policy" listed `policyid` below
   // every firewall table, because they all have one. Keep only the discriminating ones.
+  // Counted over the first screen, not all of `hits`: it is a sample of what this query
+  // turns up, and a fixed CUT against 500 rows would drop every parameter. Keeping the
+  // denominator fixed also keeps the rows stable as you scroll.
   const freq={};
-  hits.forEach(h=>{const seen=new Set();(h.pf||[]).forEach(p=>{if(!seen.has(p.k)){seen.add(p.k);freq[p.k]=(freq[p.k]||0)+1}})});
+  hits.slice(0,LIVE_N).forEach(h=>{const seen=new Set();(h.pf||[]).forEach(p=>{if(!seen.has(p.k)){seen.add(p.k);freq[p.k]=(freq[p.k]||0)+1}})});
   const CUT=3;
   const out=[];
   hits.forEach(h=>{
@@ -442,12 +446,22 @@ function liveHtml(){
   const loading=S.prod.some(id=>!DATA[id]);
   if(!S.res.hits.length)return `<div class="live"><div class="none">${loading?'loading reference data\u2026':'% no command or help text matches \u201c'+esc(S.q.trim())+'\u201d'}</div></div>`;
   const multi=S.prod.length>1;
-  const rows=S.items.map((it,n)=>{
+  const n0=S.top,n1=winEnd(n0);
+  const rows=S.items.slice(n0,n1).map((it,i)=>{
+    const n=n0+i;                      // data-it is the index into S.items, not the window
     const s=it.h.s,sel=n===S.sel;
     if(it.p){const p=it.p;return `<div class="li p${sel?' sel':''}" data-it="${n}"><span class="c">${esc(p.k)}</span><span class="h">${esc(p.d||p.n)}</span><span class="t">${esc(p.df||'')}</span></div>`}
     return `<div class="li${sel?' sel':''}" data-it="${n}" style="--kc:var(--t-${s.k})"><span class="c">${tpath(s,S.res.toks)}</span><span class="h">${s.d?esc(s.d):(s.ml?'available on '+s.ml.length+' models':'')}</span><span class="t">${s.dv?'<span class="o dv">derived</span> ':''}${s.o?'<span class="o">out</span> ':(s.po?'<span class="o pa">out\u2191</span> ':'')}${multi?esc(s.short):''}</span></div>`;
   }).join('');
-  const more=S.res.hits.length>LIVE_N?`<div class="more">\u2026 ${S.res.hits.length-LIVE_N} more, keep typing to narrow</div>`:'';
+  // Where you are, not a wall. The old line capped what you could reach at one screen;
+  // only a query past REACH gets told to narrow, and by then it is true.
+  const over=S.res.hits.length-REACH;
+  const cmds=n=>S.items.slice(0,n).reduce((a,it)=>a+(it.p?0:1),0);   // commands, not rows
+  const total=cmds(S.items.length),first=cmds(n0)+1,last=cmds(n1);
+  const more=total>LIVE_N
+    ? `<div class="more">\u2191\u2193 ${first}\u2013${last} of ${total}`
+      + (over>0?` \u00b7 ${over} more, keep typing to narrow`:'') + '</div>'
+    : '';
   return `<div class="live">${rows}${more}</div>`;
 }
 // ---------- slash commands ----------
@@ -567,6 +581,7 @@ function renderTerm(keepScroll){
   S.res=S.q.trim()&&!slash?search(S.q):{toks:[],hits:[],total:0};
   S.items=items(S.res);
   if(!slash&&S.sel>=S.items.length)S.sel=0;
+  if(!slash)clampTop();
   $('#hist').innerHTML=histHtml();
   $('#live').innerHTML=slash?slashHtml():liveHtml();
   $('#ctx').textContent=promptText()+' #';
@@ -574,6 +589,23 @@ function renderTerm(keepScroll){
   $('#ctxwrap').innerHTML=ctxHtml();
   if(!keepScroll){const sc=$('#scroll');sc.scrollTop=sc.scrollHeight}
   if(isWide())preview();
+}
+function winEnd(top){ // row after the last one shown when the window starts at `top`
+  // LIVE_N counts commands, not rows: a command's parameter rows are there to say why it
+  // matched, and they ride along with it rather than eating the screen.
+  let c=0,i=top;
+  while(i<S.items.length){
+    if(!S.items[i].p){ if(c===LIVE_N)break; c++; }
+    i++;
+  }
+  return i;
+}
+function clampTop(){ // scroll the window just far enough to hold the selection
+  if(S.top>=S.items.length)S.top=0;
+  if(S.sel<S.top)S.top=S.sel;
+  while(S.sel>=winEnd(S.top))S.top++;
+  // at the end of the list, pull back so the screen stays full rather than trailing off
+  while(S.top>0&&winEnd(S.top-1)>=S.items.length)S.top--;
 }
 function scrollSel(){const el=document.querySelector('.li.sel')||document.querySelector('.hl.hsel');if(el)el.scrollIntoView({block:'nearest'})}
 // indexes of scrollback lines you can go back to (slash-command echoes are not results)
@@ -847,7 +879,7 @@ function commit(it){
 }
 function openItem(n,user){
   const it=S.items[n];if(!it)return;
-  S.sel=n;commit(it);setDetail(it.h.s,it.p,user);
+  S.sel=n;clampTop();commit(it);setDetail(it.h.s,it.p,user);
   if(!isWide()){S.sheet=true;renderPane();$('#pscroll').scrollTop=0}
   S.pinned=true;
   renderTerm();
@@ -867,10 +899,10 @@ function undoClear(){
   if(!u||u.s!==S.detail){toast('nothing to undo');return}
   S.vals=u.vals;S.pins=u.pins;S.undo=null;renderPane();toast('restored');
 }
-function setQ(q){S.q=q;$('#q').value=q;S.sel=0;renderTerm();$('#q').focus()}
+function setQ(q){S.q=q;$('#q').value=q;S.sel=0;S.top=0;renderTerm();$('#q').focus()}
 function only(group,id){S[group]=[id];afterPick(group)}
 function toggle(group,id){const cur=S[group];S[group]=cur.includes(id)?(cur.length>1?cur.filter(x=>x!==id):cur):[...cur,id];const ALL=group==='prod'?PRODUCTS.map(p=>p.id):KINDS;S[group]=ALL.filter(x=>S[group].includes(x));afterPick(group)}
-function afterPick(group){store.set(group==='prod'?'cf.prod':'cf.kind',S[group]);S.sel=0;if(group==='prod')Promise.all(S.prod.map(load)).then(()=>renderTerm(true));renderTerm(true)}
+function afterPick(group){store.set(group==='prod'?'cf.prod':'cf.kind',S[group]);S.sel=0;S.top=0;if(group==='prod')Promise.all(S.prod.map(load)).then(()=>renderTerm(true));renderTerm(true)}
 function allOf(group){const ALL=group==='prod'?PRODUCTS.map(p=>p.id):KINDS.slice();S[group]=ALL;afterPick(group)}
 
 document.addEventListener('click',e=>{
@@ -904,7 +936,7 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('focusin',e=>{if(!e.target.closest('#pane'))$('#pane').classList.remove('focus')});
 document.addEventListener('input',e=>{
-  if(e.target.id==='q'){S.q=e.target.value;S.sel=0;S.hsel=null;S.slashMoved=false;S.pinned=false;renderTerm();return}
+  if(e.target.id==='q'){S.q=e.target.value;S.sel=0;S.top=0;S.hsel=null;S.slashMoved=false;S.pinned=false;renderTerm();return}
   if(e.target.id==='jin'){S.jump=e.target.value;renderPane();const n=S.rows.findIndex(r=>r.id===S.jumpBest);if(n>=0){S.cur=n;curIntoView()}return}
   if(e.target.id==='vin'&&S.detail){
     const v=e.target;S.vals[v.dataset.vid]=v.value;
@@ -975,11 +1007,11 @@ document.addEventListener('keydown',e=>{
     openItem(S.sel,true);focusPane();return}
   if(e.key==='ArrowDown'){e.preventDefault();
     if(S.hsel!=null){histStep(1);return}
-    if(S.items.length){S.sel=Math.min(S.items.length-1,S.sel+1);renderTerm(true);scrollSel()}}
+    if(S.items.length){S.sel=Math.min(S.items.length-1,S.sel+1);clampTop();renderTerm(true);scrollSel()}}
   else if(e.key==='ArrowUp'){e.preventDefault();
     // past the top of the listing, keep going up into the scrollback
     if(S.hsel!=null||!S.items.length||S.sel===0){if(histStep(-1))return}
-    if(S.items.length){S.sel=Math.max(0,S.sel-1);renderTerm(true);scrollSel()}}
+    if(S.items.length){S.sel=Math.max(0,S.sel-1);clampTop();renderTerm(true);scrollSel()}}
   else if(e.key==='Enter'){e.preventDefault();
     if(S.hsel!=null){openHist(S.hsel);if(isWide())focusPane();return}
     if(S.items.length){openItem(S.sel,true);if(isWide())focusPane()}}
