@@ -28,7 +28,7 @@ Opening `index.html` from disk will not load the data. Any static host works; se
 | prompt | ctrl + L | clear the scrollback |
 | inspector | up / down (j / k) | move between parameters |
 | inspector | left / right | cycle an option value |
-| inspector | `/` | jump to a parameter by name: filters as you type, enter lands the cursor on it |
+| inspector | `/` | jump to a parameter by name: filters as you type, up/down step the matches, enter lands the cursor on one |
 | inspector | space | add to or drop from the block |
 | inspector | enter | edit a number or string (enter saves, esc cancels) |
 | inspector | c | copy the block |
@@ -145,12 +145,37 @@ Worth knowing before you go looking for a bug that is not there. Fortinet genera
   reference's own syntax line is just the command, so that is what Fortinet documents, not
   something lost in parsing. `diagnose sys session filter` is the usual surprise: the box
   takes `src`, `dst`, `proto` and friends; the reference prints the bare command.
-- It contains **no `get` and no `show` commands at all**. Every one in the FortiOS bundle
-  (80 `get`, 9 `show`) exists because an Administration Guide sample showed it, which is
-  why `get router info bgp network` has sample output but no `<network>` to fill in.
+- It contains **no `get` and no `show` commands at all**.
 
-The inspector says which of these applies rather than showing an empty pane. The other
-three platforms use hand-written references and do document `get`.
+That last one is not FortiOS-specific, and it is worth seeing laid out:
+
+| platform | config tables | `show` documented | `get` documented | of those, config views |
+|---|---:|---:|---:|---:|
+| FortiOS | 625 | 0 | 0 | 0 |
+| FortiSwitch | 128 | 0 | 105 | 43 |
+| FortiAnalyzer | 85 | 0 | 54 | 37 |
+| FortiManager | 82 | 0 | 53 | 36 |
+
+**No platform documents a single `show` command.** The three hand-written references do
+document `get`, and 62 of FortiSwitch's are exactly the diagnostic family FortiOS lacks
+(`get router info bgp cidr-only`, `get hardware cpu`), with their arguments -- so the gap
+is an artefact of generating FortiOS's reference from the config tree, not Fortinet policy.
+
+`tools/derive_getshow.py` closes half of it. Wherever `config X` exists, `show X` and
+`get X` are valid and display what it sets, narrowed by the table's key if it has one, so
+those are derived: `show firewall policy [<policyid>]`. They are badged *derived* in the
+listing and say where they came from, and they are skipped wherever a reference or a guide
+already covers the command. It runs after sample attachment, so a guide's
+`get system ha status` still gets its own entry rather than being swallowed by a derived
+`get system ha` that merely prefixes it.
+
+What is deliberately **not** derived is the diagnostic read tree -- `get router info bgp
+network`, `get system performance status`. Those are not views of a config object; they
+have their own arguments and nothing in the FortiOS reference describes them. Inventing
+them would mean inventing their syntax. They stay as whatever the guides happen to show,
+which is why `get router info bgp network` has sample output but no `<network>` to fill in.
+
+The inspector says which of these applies rather than showing an empty pane.
 
 ## Notes
 

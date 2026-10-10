@@ -56,6 +56,10 @@ while read -r key; do
   python3 tools/extract_outputs.py "work/$key/text.txt" "work/$key/samples.json"
 done < work/out.list
 python3 tools/attach_outputs.py
+# after attaching: a sample for `get system ha status` must create that entry, not be
+# swallowed by a derived `get system ha` that merely prefixes it. Anything the guides
+# already produced is skipped here.
+python3 tools/derive_getshow.py
 
 echo "== done"
 ls -la "$OUT"

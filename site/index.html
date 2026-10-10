@@ -57,6 +57,7 @@ kbd{font:11px var(--mono);color:var(--i-dim);border:1px solid var(--i-line);bord
 .li .t{color:var(--t-faint);font-size:11.5px;white-space:nowrap}
 .li .t .o{color:var(--t-config)}
 .li .t .o.pa{color:var(--t-faint)}
+.li .t .o.dv{color:var(--t-faint);font-style:italic}
 .og.alt{border-left-color:var(--i-faint)}
 .og.alt b{color:var(--i-dim)}
 .li.p .c{padding-left:2ch;color:var(--t-fg)}
@@ -438,7 +439,7 @@ function liveHtml(){
   const rows=S.items.map((it,n)=>{
     const s=it.h.s,sel=n===S.sel;
     if(it.p){const p=it.p;return `<div class="li p${sel?' sel':''}" data-it="${n}"><span class="c">${esc(p.k)}</span><span class="h">${esc(p.d||p.n)}</span><span class="t">${esc(p.df||'')}</span></div>`}
-    return `<div class="li${sel?' sel':''}" data-it="${n}" style="--kc:var(--t-${s.k})"><span class="c">${tpath(s,S.res.toks)}</span><span class="h">${s.d?esc(s.d):(s.ml?'available on '+s.ml.length+' models':'')}</span><span class="t">${s.o?'<span class="o">out</span> ':(s.po?'<span class="o pa">out\u2191</span> ':'')}${multi?esc(s.short):''}</span></div>`;
+    return `<div class="li${sel?' sel':''}" data-it="${n}" style="--kc:var(--t-${s.k})"><span class="c">${tpath(s,S.res.toks)}</span><span class="h">${s.d?esc(s.d):(s.ml?'available on '+s.ml.length+' models':'')}</span><span class="t">${s.dv?'<span class="o dv">derived</span> ':''}${s.o?'<span class="o">out</span> ':(s.po?'<span class="o pa">out\u2191</span> ':'')}${multi?esc(s.short):''}</span></div>`;
   }).join('');
   const more=S.res.hits.length>LIVE_N?`<div class="more">\u2026 ${S.res.hits.length-LIVE_N} more, keep typing to narrow</div>`:'';
   return `<div class="live">${rows}${more}</div>`;
@@ -610,8 +611,11 @@ function paneRows(s){ // the ordered, navigable rows for the current command
     const hit=s.x.filter(p=>jscore(p,jq));
     jids=new Set(hit.map(p=>pid(s,p)));
     S.jumpInfo={n:hit.length,of:s.x.length};
-    // the best match is where the cursor should land, whatever order the rows are in
-    S.jumpBest=hit.length?pid(s,hit.slice().sort((a,b)=>jscore(b,jq)-jscore(a,jq))[0]):null;
+    // Land on the best-scoring match -- but only when the current one is no longer a
+    // match. Recomputing it on every render would undo up/down as fast as you press them.
+    if(!hit.length)S.jumpBest=null;
+    else if(!S.jumpBest||!jids.has(S.jumpBest))
+      S.jumpBest=pid(s,hit.slice().sort((a,b)=>jscore(b,jq)-jscore(a,jq))[0]);
   }
   const rest=detailFilter(s);const match=(!jq&&rest.length)?pfilter(s,rest):null;
   const ids=match&&match.length&&!S.showAll?new Set(match.map(p=>pid(s,p))):null;
@@ -687,10 +691,11 @@ function paneHtml(s){
   // Three different reasons a command has nothing to fill in. An empty pane makes them
   // look like the same bug, so name the one that applies.
   const ref=DATA[s.prod]?DATA[s.prod].doc:'the CLI Reference';
-  const fromGuide=(!s.x.length&&s.k!=='config')?(s.ag
+  const derived=s.dv?`<div class="og alt"><b>note</b> ${esc(ref)} documents no ${esc(s.k)} commands, so this one is derived from <b>config ${esc(s.p)}</b> \u2014 the command is real, and it shows what that table sets.</div>`:'';
+  const fromGuide=(!s.dv&&!s.x.length&&s.k!=='config')?(s.ag
     ?`<div class="og alt"><b>note</b> this command is not in the ${esc(ref)}. It is here because ${esc(srcName(s,s.ag))} shows it, so there are no documented arguments.</div>`
     :`<div class="og alt"><b>note</b> ${esc(ref)} lists no arguments for this command \u2014 its syntax there is just <b>${esc(s.k+' '+s.p)}</b>. The box may still accept some.</div>`):'';
-  return `<div class="desc" data-clamp>${esc(s.d||'')}</div>${fromGuide}
+  return `<div class="desc" data-clamp>${esc(s.d||'')}</div>${derived}${fromGuide}
     ${outFirst?outputHtml(s):''}${params}${outFirst?'':outputHtml(s)}
     ${s.ml?`<details class="blk dsc"><summary class="lbl">Models <span>available on ${s.ml.length}</span></summary><div class="desc">${s.ml.map(esc).join(' \u00b7 ')}</div></details>`:''}
     ${(s.n||[]).length?`<details class="blk dsc"><summary class="lbl">Notes</summary><div class="desc">${s.n.map(esc).join('<br>')}</div></details>`:''}
