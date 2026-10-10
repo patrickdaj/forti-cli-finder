@@ -88,6 +88,23 @@ fetch:
 build:
 	@./build.sh
 
+## check           Bundle invariants, and the tree parser's selftest.           instant
+##                 One bundle per cli entry, ids and names well formed, no duplicate
+##                 get/show paths, worked examples not lopsided across builds of one
+##                 platform, and index.html's PRODUCTS list agreeing with sources.json.
+##                 Runs at the end of build too; this is for after a hand edit.
+check:
+	@$(PY) tools/check_bundles.py
+	@$(PY) tools/parse_tree.py --selftest
+
+## all             sources -> fetch -> build. The whole pipeline from nothing.
+all: sources fetch build
+
+##
+##   GROUND TRUTH -- optional, and the only thing here that involves a device.
+##   Nothing in `make all` needs one. Skip this section entirely and the pipeline
+##   still builds every bundle from Fortinet's PDFs.
+##
 ## tree FILE=...   Parse a device's `tree` capture; diff it against a bundle.    instant
 ##                 `tree` on a FortiGate prints its own command tree. It is the only
 ##                 source that is exact for a firmware BUILD rather than for whatever
@@ -104,18 +121,6 @@ build:
 tree:
 	@test -n "$(FILE)" || { echo "set FILE=<a tree capture>"; exit 2; }
 	@$(PY) tools/parse_tree.py "$(FILE)" --diff "$(BUNDLE)"
-
-## check           Bundle invariants, and the tree parser's selftest.           instant
-##                 One bundle per cli entry, ids and names well formed, no duplicate
-##                 get/show paths, worked examples not lopsided across builds of one
-##                 platform, and index.html's PRODUCTS list agreeing with sources.json.
-##                 Runs at the end of build too; this is for after a hand edit.
-check:
-	@$(PY) tools/check_bundles.py
-	@$(PY) tools/parse_tree.py --selftest
-
-## all             sources -> fetch -> build. The whole pipeline from nothing.
-all: sources fetch build
 
 ##
 ##   LOCAL

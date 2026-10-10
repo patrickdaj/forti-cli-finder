@@ -24,7 +24,9 @@ make all                      # sources -> fetch -> build, ~12 minutes the first
 make serve                    # http://localhost:8000
 ```
 
-That is the whole thing. `python3` and `pdftotext` are the only dependencies and they
+That is the whole thing — and no FortiGate is involved. The pipeline reads Fortinet's
+published PDFs over HTTP and parses them offline; a live device is optional and only
+appears in [A device capture](#a-device-capture) below. `python3` and `pdftotext` are the only dependencies and they
 are meant to stay the only ones: the bundles ship to a browser from a static host, so a
 dependency here is a dependency forever.
 
@@ -189,8 +191,14 @@ which were measured and rejected, and why.
 
 ## A device capture
 
-Everything above is Fortinet's documentation. A FortiGate will also describe itself, and
-it is the only source that is exact for a firmware *build*:
+**Optional, and the only part of this document that involves a device.** Nothing above
+needs one: `make all` builds every bundle from Fortinet's published PDFs over HTTP, and
+`make check` runs offline. If you have no FortiGate, skip this section and the pipeline
+is complete without it.
+
+What a device buys you is a second, independent source. Everything above is Fortinet's
+documentation; a FortiGate will also describe itself, and it is the only source that is
+exact for a firmware *build*:
 
 ```
 FGT-1 # tree
