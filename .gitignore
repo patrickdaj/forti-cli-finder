@@ -7,6 +7,7 @@ work/*/text.txt
 work/*/tree.json
 work/*/tree2.json
 work/*/samples.json
+work/*/config-examples.json
 work/*.list
 work/probe/
 work/baseline/

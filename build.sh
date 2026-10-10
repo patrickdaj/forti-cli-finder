@@ -54,8 +54,11 @@ while read -r key; do
   totext "$key"
   printf '%-14s ' "$key"
   python3 tools/extract_outputs.py "work/$key/text.txt" "work/$key/samples.json"
+  printf '%-14s ' "$key"
+  python3 tools/extract_config_examples.py "work/$key/text.txt" "work/$key/config-examples.json"
 done < work/out.list
 python3 tools/attach_outputs.py
+python3 tools/attach_config_examples.py
 # after attaching: a sample for `get system ha status` must create that entry, not be
 # swallowed by a derived `get system ha` that merely prefixes it. Anything the guides
 # already produced is skipped here.

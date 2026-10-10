@@ -39,6 +39,7 @@ kbd{font:11px var(--mono);color:var(--i-dim);border:1px solid var(--i-line);bord
 .hl .pr{color:var(--t-prompt)}
 .hl.res{color:var(--t-dim);cursor:pointer}
 .hl.res:hover{color:var(--t-fg)}
+.hl.res.hsel{color:var(--t-fg);background:var(--t-sel);box-shadow:-10px 0 0 var(--t-sel),2px 0 0 var(--t-selbar) inset}
 .hl.res .arrow{color:var(--t-faint)}
 .hl.sysl{color:var(--t-dim);white-space:pre-wrap}
 .banner{color:var(--t-dim);margin-bottom:12px}
@@ -133,6 +134,8 @@ details.dsc[open] summary::before{content:"\25be"}
 .row.sub .nm{padding-left:2ch}
 .row .val{white-space:nowrap;color:var(--i-dim)}
 .row .hp{color:var(--i-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:12.5px var(--sans);min-width:0}
+.row .fq{color:var(--i-on);opacity:.8;font:11px var(--mono);margin-right:7px}
+.row.com .nm{color:var(--i-fg)}
 .row.cur .hp{white-space:normal;color:var(--i-dim)}
 .row.cur .nm{white-space:normal;overflow-wrap:anywhere}
 .row.grp .nm{color:var(--i-dim)}
@@ -533,7 +536,7 @@ function histHtml(){
   if(!S.hist.length)return `<div class="banner"><b>Forti CLI Finder</b> \u00b7 the <b>?</b> key for the Fortinet CLI guides.
 Type the way you would on the box. Prefixes expand, help text and sample output are searched too. Type <b>/</b> for commands: /fsw, /diag, /fgt fsw show, /ver.
 <div class="ex">${['conf sys ha over','diag sys session list','get sys ha status','diag switch mclag','conf switch trunk','exec ping-options'].map(x=>`<button data-q="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>`;
-  return S.hist.map((h,n)=>h.sys?`<div class="hist"><div class="hl"><span class="pr">${esc(h.pr)} #</span> ${esc(h.q)}</div>${(h.lines||[]).map(l=>`<div class="hl sysl">${esc(l)}</div>`).join('')}</div>`:`<div class="hist"><div class="hl"><span class="pr">${esc(h.pr)} #</span> ${esc(h.q)}</div><div class="hl res" data-h="${n}"><span class="arrow">\u2192</span> ${esc(h.label)}</div></div>`).join('');
+  return S.hist.map((h,n)=>h.sys?`<div class="hist"><div class="hl"><span class="pr">${esc(h.pr)} #</span> ${esc(h.q)}</div>${(h.lines||[]).map(l=>`<div class="hl sysl">${esc(l)}</div>`).join('')}</div>`:`<div class="hist"><div class="hl"><span class="pr">${esc(h.pr)} #</span> ${esc(h.q)}</div><div class="hl res${S.hsel===n?' hsel':''}" data-h="${n}"><span class="arrow">\u2192</span> ${esc(h.label)}</div></div>`).join('');
 }
 function promptText(){
   const ps=PRODUCTS.filter(p=>S.prod.includes(p.id));
@@ -569,7 +572,32 @@ function renderTerm(keepScroll){
   if(!keepScroll){const sc=$('#scroll');sc.scrollTop=sc.scrollHeight}
   if(isWide())preview();
 }
-function scrollSel(){const el=document.querySelector('.li.sel');if(el)el.scrollIntoView({block:'nearest'})}
+function scrollSel(){const el=document.querySelector('.li.sel')||document.querySelector('.hl.hsel');if(el)el.scrollIntoView({block:'nearest'})}
+// indexes of scrollback lines you can go back to (slash-command echoes are not results)
+function histSel(){return S.hist.map((h,n)=>h.sys?-1:n).filter(n=>n>=0)}
+function openHist(n){
+  const h=S.hist[n];if(!h)return;
+  S.hsel=null;setQ(h.q);
+  const i=S.items.findIndex(it=>it.h.s.k===h.k&&it.h.s.p===h.p&&(!h.pk||(it.p&&it.p.k===h.pk)));
+  if(i>=0)openItem(i,true);
+}
+function histStep(d){            // d: -1 further back, +1 forward
+  const sel=histSel();if(!sel.length)return false;
+  if(S.hsel==null){ if(d>0)return false; S.hsel=sel[sel.length-1]; }
+  else{
+    const at=sel.indexOf(S.hsel);
+    const nx=at+d;
+    if(nx<0)return true;                       // already at the oldest, stay put
+    if(nx>=sel.length){S.hsel=null;renderTerm(true);return true}   // back down into the listing
+    S.hsel=sel[nx];
+  }
+  // preview whatever the scrollback line points at
+  const h=S.hist[S.hsel];
+  const bundle=DATA[h.prod];
+  if(bundle){const s=bundle.secs.find(x=>x.k===h.k&&x.p===h.p);if(s){S.pinned=true;setDetail(s,null,false)}}
+  renderTerm(true);scrollSel();
+  return true;
+}
 
 // ---------- inspector (right pane): a keyboard-first view of one command ----------
 // Rows have their own cursor (S.cur). Keys while the inspector has focus:
@@ -659,7 +687,8 @@ function rowHtml(s,r,i){
     const od=(p.o||[]).filter(x=>x[1]&&!/^(Enable|Disable)( this)? setting\.?$/i.test(x[1]));
     more=`<div class="more-info">${meta?`<div class="meta">${esc(meta)}</div>`:''}${od.length?`<div class="odesc">${od.map(x=>`<b>${esc(x[0])}</b><span>${esc(x[1])}</span>`).join('')}</div>`:''}</div>`;
   }
-  return `<div class="row prm${cur?' cur':''}${on?' on':''}${r.sub?' sub':''}" data-row="${i}"><span class="mk" data-pin="${esc(id)}">${on?'\u25cf':'\u25cb'}</span><span class="nm">${esc(p.k)}</span><span class="val">${valueHtml(s,p,id,cur)}</span><span class="hp">${esc(p.d||p.n)}</span>${more}</div>`;
+  const fq=p.fq>=50?`<span class="fq" title="set in ${p.fq}% of this table's examples in the guides">${p.fq}%</span>`:'';
+  return `<div class="row prm${cur?' cur':''}${on?' on':''}${r.sub?' sub':''}${p.fq>=50?' com':''}" data-row="${i}"><span class="mk" data-pin="${esc(id)}">${on?'\u25cf':'\u25cb'}</span><span class="nm">${esc(p.k)}</span><span class="val">${valueHtml(s,p,id,cur)}</span><span class="hp">${fq}${esc(p.d||p.n)}</span>${more}</div>`;
 }
 function srcName(s,key){const b=DATA[s.prod];return (b.srcs&&b.srcs[key])||b.ag||b.doc}
 function outputHtml(s){
@@ -676,7 +705,7 @@ function outputHtml(s){
     h+=`<section class="blk"><div class="lbl">Sample output <span>${outs.length>1?`${i+1} of ${outs.length} \u00b7 <button class="lk" data-onext="-1">\u2039 p</button> <button class="lk" data-onext="1">n \u203a</button>`:'1 of 1'}</span></div>
       <div class="ocap">${esc(o.cap||'')}</div>${o.g?`<div class="og"><b>look for</b> ${esc(o.g)}</div>`:''}<div class="ocmd"><span># ${esc(o.c)}</span><button class="lk" data-copy-text="${esc(o.c)}">copy</button></div><pre class="opre">${esc(o.t)}</pre><div class="osrc">${esc(srcName(s,o.src||'ag'))}, p.${o.pg}</div></section>`;
   }
-  if(ex.length)h+=`<details class="blk dsc"${outs.length?'':' open'}><summary class="lbl">Examples in the CLI reference <span>${ex.length}</span></summary>${ex.map(e=>`<pre class="opre">${esc(e)}</pre>`).join('')}</details>`;
+  if(ex.length)h+=`<details class="blk dsc"${outs.length?'':' open'}><summary class="lbl">Worked examples <span>${ex.length}${s.ex?' \u00b7 from '+s.ex+' in the guides':''}</span></summary>${ex.map(e=>`<pre class="opre">${esc(e)}</pre>`).join('')}</details>`;
   return h;
 }
 function paneHtml(s){
@@ -716,6 +745,7 @@ function emptyPane(){
     <kbd>\u2191 \u2193</kbd><span>move between parameters</span>
     <kbd>\u2190 \u2192</kbd><span>change an option</span>
     <kbd>/</kbd><span>jump to a parameter by name</span>
+    <kbd>e</kbd><span>add the fields the guides usually set</span>
     <kbd>space</kbd><span>add to or drop from the block</span>
     <kbd>enter</kbd><span>type a value, or open a group</span>
     <kbd>c</kbd><span>copy the block</span>
@@ -731,7 +761,7 @@ function headHtml(s){
   return `<div class="ihead"><div class="cmd"><span class="v" style="color:var(--t-${s.k})">${esc(s.k)}</span> ${esc(s.p)}</div></div>
     <div class="block"><pre id="cpre">${esc(c.text)}</pre><div class="bact"><button class="cbtn" data-copy-block>copy <kbd>c</kbd></button>${c.n?'<button class="lk" data-clear-block>clear <kbd>x</kbd></button>':''}<span class="bn">${info}</span></div></div>`;
 }
-const HINTS_FULL='<span><kbd>\u2191\u2193</kbd> move</span><span><kbd>\u2190\u2192</kbd> option</span><span><kbd>space</kbd> add</span><span><kbd>enter</kbd> edit</span><span><kbd>/</kbd> jump</span><span><kbd>c</kbd> copy</span><span><kbd>x</kbd><kbd>u</kbd> clear/undo</span><span><kbd>n</kbd><kbd>p</kbd> output</span><span><kbd>tab</kbd> back to the prompt</span>';
+const HINTS_FULL='<span><kbd>\u2191\u2193</kbd> move</span><span><kbd>\u2190\u2192</kbd> option</span><span><kbd>space</kbd> add</span><span><kbd>enter</kbd> edit</span><span><kbd>/</kbd> jump</span><span><kbd>e</kbd> common fields</span><span><kbd>c</kbd> copy</span><span><kbd>x</kbd><kbd>u</kbd> clear/undo</span><span><kbd>n</kbd><kbd>p</kbd> output</span><span><kbd>tab</kbd> back to the prompt</span>';
 const HINTS_BARE='<span><kbd>c</kbd> copy</span><span><kbd>n</kbd><kbd>p</kbd> output</span><span><kbd>tab</kbd> back to the prompt</span>';
 function hints(s){return (s&&s.x&&s.x.length)?HINTS_FULL:HINTS_BARE}
 function renderPane(){
@@ -745,6 +775,17 @@ function renderPane(){
   if(S.edit){const v=$('#vin');if(v){v.focus();v.setSelectionRange(v.value.length,v.value.length)}}
   else if(S.jump!=null){const j=$('#jin');if(j&&document.activeElement!==j){j.focus();j.setSelectionRange(j.value.length,j.value.length)}}
 }
+// Nothing in the CLI Reference marks a field required -- FortiOS only objects at `end`.
+// What we do have is how often Fortinet's own guides set each one. `e` adds those.
+function addCommon(){
+  const s=S.detail;if(!s)return;
+  const com=s.x.filter(p=>p.fq>=50&&!p.t);
+  if(!com.length){toast('no frequency data for this table');return}
+  let added=0;
+  com.forEach(p=>{const id=pid(s,p);if(!S.pins.has(id)&&!(S.vals[id]!=null&&S.vals[id]!=='')){S.pins.add(id);added++}});
+  renderPane();
+  toast(added?('added '+added+' commonly-set field'+(added>1?'s':'')+' \u00b7 x to clear'):'all '+com.length+' already in the block');
+}
 function openJump(){S.jump='';S.jumpBest=null;renderPane()}
 function closeJump(keep){
   // keep: land the cursor on the match, then get out of the way so the ordinary
@@ -752,7 +793,17 @@ function closeJump(keep){
   const best=keep?S.jumpBest:null;
   S.jump=null;S.jumpInfo=null;
   renderPane();
-  if(best){const n=S.rows.findIndex(r=>r.id===best);if(n>=0){S.cur=n;renderPane()}}
+  if(best){
+    const n=S.rows.findIndex(r=>r.id===best);
+    if(n>=0){
+      S.cur=n;
+      // Looking a field up by name is asking for it, so put it in the block. Enter again
+      // types a value, the arrows change an option, space drops it back out.
+      const r=S.rows[n];
+      if(r&&r.id&&r.type!=='grp'&&!S.pins.has(r.id)&&!(S.vals[r.id]!=null&&S.vals[r.id]!==''))S.pins.add(r.id);
+      renderPane();
+    }
+  }
   focusPane();curIntoView();
 }
 function jumpStep(d){
@@ -850,7 +901,7 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('focusin',e=>{if(!e.target.closest('#pane'))$('#pane').classList.remove('focus')});
 document.addEventListener('input',e=>{
-  if(e.target.id==='q'){S.q=e.target.value;S.sel=0;S.slashMoved=false;S.pinned=false;renderTerm();return}
+  if(e.target.id==='q'){S.q=e.target.value;S.sel=0;S.hsel=null;S.slashMoved=false;S.pinned=false;renderTerm();return}
   if(e.target.id==='jin'){S.jump=e.target.value;renderPane();const n=S.rows.findIndex(r=>r.id===S.jumpBest);if(n>=0){S.cur=n;curIntoView()}return}
   if(e.target.id==='vin'&&S.detail){
     const v=e.target;S.vals[v.dataset.vid]=v.value;
@@ -875,6 +926,7 @@ function paneKeys(e){
   if(k==='x'){e.preventDefault();clearBlock();return}
   if(k==='u'){e.preventDefault();undoClear();return}
   if(k==='a'){e.preventDefault();S.showAll=!S.showAll;S.cur=0;renderPane();return}
+  if(k==='e'){e.preventDefault();addCommon();return}
   if(k==='n'||k==='p'){e.preventDefault();const d=S.detail,n=((d.o&&d.o.length?d.o:(d.po&&d.po.o)||[])).length;if(n){S.oi=((S.oi||0)+(k==='n'?1:-1)+n)%n;renderPane()}return}
   if(k==='Escape'||k==='Tab'||k==='q'){e.preventDefault();$('#pane').classList.remove('focus');if(!isWide()){S.sheet=false;renderPane()}$('#q').focus();return}
   if(k==='/'){e.preventDefault();openJump();return}
@@ -918,9 +970,16 @@ document.addEventListener('keydown',e=>{
     const comp=completion(it);
     if(S.q.trim()!==comp){setQ(comp+' ');return}
     openItem(S.sel,true);focusPane();return}
-  if(e.key==='ArrowDown'){e.preventDefault();if(S.items.length){S.sel=Math.min(S.items.length-1,S.sel+1);renderTerm(true);scrollSel()}}
-  else if(e.key==='ArrowUp'){e.preventDefault();if(S.items.length){S.sel=Math.max(0,S.sel-1);renderTerm(true);scrollSel()}}
-  else if(e.key==='Enter'){e.preventDefault();if(S.items.length){openItem(S.sel,true);if(isWide())focusPane()}}
+  if(e.key==='ArrowDown'){e.preventDefault();
+    if(S.hsel!=null){histStep(1);return}
+    if(S.items.length){S.sel=Math.min(S.items.length-1,S.sel+1);renderTerm(true);scrollSel()}}
+  else if(e.key==='ArrowUp'){e.preventDefault();
+    // past the top of the listing, keep going up into the scrollback
+    if(S.hsel!=null||!S.items.length||S.sel===0){if(histStep(-1))return}
+    if(S.items.length){S.sel=Math.max(0,S.sel-1);renderTerm(true);scrollSel()}}
+  else if(e.key==='Enter'){e.preventDefault();
+    if(S.hsel!=null){openHist(S.hsel);if(isWide())focusPane();return}
+    if(S.items.length){openItem(S.sel,true);if(isWide())focusPane()}}
 });
 let sx=null;document.addEventListener('touchstart',e=>{sx=e.touches[0].clientX<24?e.touches[0].clientX:null},{passive:true});
 document.addEventListener('touchend',e=>{if(sx!=null&&S.sheet&&e.changedTouches[0].clientX-sx>80){S.sheet=false;renderPane()}sx=null},{passive:true});

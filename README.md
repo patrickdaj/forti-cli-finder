@@ -20,7 +20,7 @@ Opening `index.html` from disk will not load the data. Any static host works; se
 | Where | Key | Does |
 |---|---|---|
 | prompt | type | live `?`-style listing above the prompt |
-| prompt | up / down | move through the listing (the inspector follows) |
+| prompt | up / down | move through the listing, then on past the top into the scrollback |
 | prompt | enter | open in the inspector, keep it in the scrollback, move focus there |
 | prompt | tab | complete the path (extra words stay as a parameter filter); tab again moves to the inspector |
 | prompt | `/` | slash commands (below) |
@@ -29,6 +29,7 @@ Opening `index.html` from disk will not load the data. Any static host works; se
 | inspector | up / down (j / k) | move between parameters |
 | inspector | left / right | cycle an option value |
 | inspector | `/` | jump to a parameter by name: filters as you type, up/down step the matches, enter lands the cursor on one |
+| inspector | `e` | add the fields the guides usually set (the 9 a firewall policy needs) |
 | inspector | space | add to or drop from the block |
 | inspector | enter | edit a number or string (enter saves, esc cancels) |
 | inspector | c | copy the block |
@@ -132,6 +133,25 @@ The bundles total ~7.5MB and are committed on every refresh, so the repo grows b
 that much each time the data changes. At a handful of refreshes a year that is fine; if it
 becomes a problem, build in CI instead and drop `site/data` from the repo — at the cost of
 downloading 500MB of PDFs on every deploy.
+
+### Which fields a table actually needs
+
+Nothing in the CLI Reference marks a field required -- 42 of 13336 descriptions say
+"required" and all of them are prose. FortiOS only objects at `end`.
+
+What does exist is evidence. The guides configure these tables thousands of times, and
+`tools/extract_config_examples.py` mines those blocks -- 3786 of them in the FortiOS
+Administration Guide alone, which the output extractor had been discarding as "not sample
+output". Each parameter gets `fq`, the share of that table's examples which set it,
+counted once per example and only where there are at least five to count.
+
+For `config firewall policy`, across 223 examples: dstintf 87%, schedule 87%, action 85%,
+srcaddr 84%, service 83%, dstaddr 81%, srcintf 81%, nat 56%, name 54% -- the nine fields
+every admin knows, arrived at from Fortinet's own examples. `e` in the inspector adds them
+all. Fields at 50% or more show their percentage in the row.
+
+It also gives FortiOS worked examples, which the CLI Reference ships none of: 714 of them
+across 317 tables.
 
 ## What the CLI Reference does not cover
 
