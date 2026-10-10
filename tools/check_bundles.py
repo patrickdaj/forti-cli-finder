@@ -45,6 +45,25 @@ def main():
         if not d.get('secs'):
             fail.append(f'{b}: no sections')
 
+    # One derived `show`/`get` per path. The hand guides give several config subsections
+    # one path, and a guard that missed that shipped five identical rows for one command.
+    for e in cfg['cli']:
+        b = bundle_id(e)
+        path = os.path.join(ROOT, OUT, f'{b}.json')
+        if not os.path.exists(path):
+            continue
+        d = json.load(open(path))
+        for kind in ('show', 'get'):
+            seen, dupe = set(), set()
+            for sec in d['secs']:
+                if sec['k'] != kind:
+                    continue
+                if sec['p'] in seen:
+                    dupe.add(sec['p'])
+                seen.add(sec['p'])
+            if dupe:
+                fail.append(f'{b}: duplicate {kind} entries for {sorted(dupe)[:3]}')
+
     # Two builds of one platform are alternative views of the same CLI. If one has worked
     # examples and the other has almost none, something is sharing a pool it should not --
     # which is invisible in the section counts, so assert it here.
