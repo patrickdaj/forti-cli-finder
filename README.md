@@ -37,6 +37,11 @@ Opening `index.html` from disk will not load the data. Any static host works; se
 | inspector | n / p | next / previous sample output |
 | inspector | tab or esc | back to the prompt |
 
+Arguments to `diagnose`, `execute` and `get` commands are positional and fillable the same
+way parameters are: `diagnose sniffer packet` gives you `<interface> <filter> <verbose>
+<count>`, and the block keeps the placeholders for any you skip, so
+`diagnose sniffer packet port1 "host 10.0.0.5 and port 443" 4 0` composes without typing.
+
 On a big table (`config firewall policy` has 186 parameters) `/` is how you work: `/dstaddr`
 enter, set it, `/dstintf` enter, set it, and so on without scrolling. While the bar is open
 the list filters to matches, up/down steps between them, enter picks one and restores the
@@ -127,6 +132,25 @@ The bundles total ~7.5MB and are committed on every refresh, so the repo grows b
 that much each time the data changes. At a handful of refreshes a year that is fine; if it
 becomes a problem, build in CI instead and drop `site/data` from the repo — at the cost of
 downloading 500MB of PDFs on every deploy.
+
+## What the CLI Reference does not cover
+
+Worth knowing before you go looking for a bug that is not there. Fortinet generates the
+7.6.x FortiOS CLI Reference from the configuration tree, so:
+
+- `config` is documented exhaustively: 625 tables, 16477 parameters with types, defaults,
+  ranges and option values.
+- The `diagnose` and `execute` trees are *enumerated* -- 5100 command names -- but most
+  carry no arguments. 3113 non-config commands have none, and for all but 11 of them the
+  reference's own syntax line is just the command, so that is what Fortinet documents, not
+  something lost in parsing. `diagnose sys session filter` is the usual surprise: the box
+  takes `src`, `dst`, `proto` and friends; the reference prints the bare command.
+- It contains **no `get` and no `show` commands at all**. Every one in the FortiOS bundle
+  (80 `get`, 9 `show`) exists because an Administration Guide sample showed it, which is
+  why `get router info bgp network` has sample output but no `<network>` to fill in.
+
+The inspector says which of these applies rather than showing an empty pane. The other
+three platforms use hand-written references and do document `get`.
 
 ## Notes
 

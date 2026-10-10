@@ -17,6 +17,8 @@ CFG = json.load(open(os.path.join(ROOT, 'sources.json')))
 for e in CFG['cli']:
     S = json.load(open(f"{WORK}/{e['key']}/tree.json"))
     secs = []
+    # the same 133-model list is repeated by dozens of sections; store each one once
+    model_lists, model_idx = [], {}
     for s in S:
         if s.get('index'):
             continue
@@ -25,6 +27,12 @@ for e in CFG['cli']:
         syn = '\n'.join(l for l in s['syntax'] if not l.strip().startswith('Description:')).strip('\n')
         syn = re.sub(r'\n{2,}', '\n\n', syn)
         o = {'k': s['kind'], 'p': s['path'], 'd': s['desc'], 'pg': s['page'], 's': syn}
+        if s.get('models'):
+            sig = '\u0000'.join(s['models'])
+            if sig not in model_idx:
+                model_idx[sig] = len(model_lists)
+                model_lists.append(s['models'])
+            o['mi'] = model_idx[sig]
         if s.get('notes'):
             o['n'] = s['notes']
         if s.get('examples'):
@@ -56,6 +64,8 @@ for e in CFG['cli']:
         o['x'] = ps
         secs.append(o)
     b = {'id': e['product'], 'label': e['label'], 'short': e['short'], 'doc': e['title'], 'secs': secs}
+    if model_lists:
+        b['models'] = model_lists
     raw = json.dumps(b, ensure_ascii=False, separators=(',', ':'))
     open(f"{OUT}/{e['product']}.json", 'w').write(raw)
     gz = gzip.compress(raw.encode(), 9)

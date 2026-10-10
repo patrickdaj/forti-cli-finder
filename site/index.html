@@ -63,7 +63,7 @@ kbd{font:11px var(--mono);color:var(--i-dim);border:1px solid var(--i-line);bord
 .li.p .c::before{content:"\2514 ";color:var(--t-faint)}
 .li.sel .c{white-space:normal;overflow:visible;direction:ltr;overflow-wrap:anywhere;grid-column:1/3}
 .li.sel .t{grid-column:3;grid-row:1}
-.li.sel .h{grid-column:1/-1;grid-row:2;white-space:normal;overflow:visible;color:color-mix(in srgb,var(--t-fg) 78%,var(--t-dim));padding:1px 0 3px 2ch}
+.li.sel .h{grid-column:1/-1;grid-row:2;white-space:normal;overflow:hidden;color:color-mix(in srgb,var(--t-fg) 78%,var(--t-dim));padding:1px 0 3px 2ch;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;max-height:6em}
 .li.p.sel .h{padding-left:4ch}
 .more{color:var(--t-faint);padding:2px 0}
 .none{color:var(--t-dim)}
@@ -241,6 +241,7 @@ async function load(id){
       s.text=(s.p+' '+s.d+' '+s.cap.join(' ')).toLowerCase();
       s.otext=(s.o||[]).map(o=>o.t).join(' ').toLowerCase();
       s.srcdoc=s.ag?b.ag:b.doc;
+      if(s.mi!=null&&b.models)s.ml=b.models[s.mi];   // "available for model(s): ...", stored once
       s.x.forEach((p,j)=>{p.j=j;p.kl=p.k.toLowerCase();p.tl=(p.n+' '+p.d+' '+(p.o||[]).map(o=>o[0]+' '+o[1]).join(' ')).toLowerCase()});
       s.ptext=s.x.map(p=>p.kl).join(' ');
       // root edit line, e.g. "edit <name>", from the syntax block
@@ -325,6 +326,10 @@ function editKey(s){const m=(s.edit||'').match(/^edit\s+<?([^>\s]+)>?/);return m
 // or a numeric range would break it, since the CLI reads those as separate tokens.
 const QTY=new Set(['string','var-string','user','password']);
 function qv(p,v){return QTY.has(p&&p.ty)?'"'+String(v).replace(/"/g,'')+'"':v}
+// An argument is not a `set` value. The CLI Reference types nearly all of them "string",
+// so quoting by type would turn `diagnose sniffer packet port1 ... 4 0` into a line of
+// quoted numbers. Quote only what actually needs it -- a filter expression with spaces.
+function qarg(v){return /[\s"']/.test(v)?'"'+String(v).replace(/"/g,'')+'"':v}
 function composed(s){
   if(!s)return {text:'',n:0};
   const lines=[];const chosen=[];
@@ -343,8 +348,14 @@ function composed(s){
   const root=chosen.filter(([p])=>!p.t), subs={};
   chosen.filter(([p])=>p.t).forEach(([p,v])=>{(subs[p.t]=subs[p.t]||[]).push([p,v])});
   if(s.k!=='config'){
-    const args=chosen.map(([p,v])=>v?qv(p,v):p.n).join(' ').replace(/\s+/g,' ');
-    return {text:(s.k+' '+s.p+(args?' '+args:'')).trim(),n:chosen.length};
+    // Arguments are positional -- the guide prints them in one line, e.g.
+    // `diagnose sniffer packet <interface> <filter> <verbose> <count>`. Emit up to the
+    // last one you filled in, leaving the placeholder for any you skipped over.
+    let last=-1,set=0;
+    s.x.forEach((p,ix)=>{const v=S.vals[pid(s,p)];const has=v!=null&&v!=='';if(has)set++;if(has||S.pins.has(pid(s,p)))last=ix});
+    const args=[];
+    for(let ix=0;ix<=last;ix++){const p=s.x[ix],v=S.vals[pid(s,p)];args.push((v!=null&&v!=='')?qarg(v):p.n)}
+    return {text:(s.k+' '+s.p+(args.length?' '+args.join(' '):'')).trim(),n:set};
   }
   lines.push('config '+s.p);
   let ind='    ';
@@ -398,12 +409,19 @@ function copyText(t,btn,bar){
 // ---------- rendering: terminal ----------
 const LIVE_N=14;
 function items(res){ // flat, selectable lines: each command, then its matching parameters
+  const hits=res.hits.slice(0,LIVE_N);
+  // A parameter under a hit is there to say why that hit matched. One that turns up under
+  // most of them says nothing -- searching "config firewall policy" listed `policyid` below
+  // every firewall table, because they all have one. Keep only the discriminating ones.
+  const freq={};
+  hits.forEach(h=>{const seen=new Set();(h.pf||[]).forEach(p=>{if(!seen.has(p.k)){seen.add(p.k);freq[p.k]=(freq[p.k]||0)+1}})});
+  const CUT=3;
   const out=[];
-  res.hits.slice(0,LIVE_N).forEach(h=>{
+  hits.forEach(h=>{
     out.push({h,p:null});
     if(h.pf&&h.pf.length&&(h.mode===2||out.length<=1)){
       const seen=new Set();
-      h.pf.filter(p=>!seen.has(p.k)&&seen.add(p.k)).slice(0,4).forEach(p=>out.push({h,p}));
+      h.pf.filter(p=>!seen.has(p.k)&&seen.add(p.k)&&(freq[p.k]||0)<CUT).slice(0,4).forEach(p=>out.push({h,p}));
     }
   });
   return out;
@@ -420,7 +438,7 @@ function liveHtml(){
   const rows=S.items.map((it,n)=>{
     const s=it.h.s,sel=n===S.sel;
     if(it.p){const p=it.p;return `<div class="li p${sel?' sel':''}" data-it="${n}"><span class="c">${esc(p.k)}</span><span class="h">${esc(p.d||p.n)}</span><span class="t">${esc(p.df||'')}</span></div>`}
-    return `<div class="li${sel?' sel':''}" data-it="${n}" style="--kc:var(--t-${s.k})"><span class="c">${tpath(s,S.res.toks)}</span><span class="h">${esc(s.d)}</span><span class="t">${s.o?'<span class="o">out</span> ':(s.po?'<span class="o pa">out\u2191</span> ':'')}${multi?esc(s.short):''}</span></div>`;
+    return `<div class="li${sel?' sel':''}" data-it="${n}" style="--kc:var(--t-${s.k})"><span class="c">${tpath(s,S.res.toks)}</span><span class="h">${s.d?esc(s.d):(s.ml?'available on '+s.ml.length+' models':'')}</span><span class="t">${s.o?'<span class="o">out</span> ':(s.po?'<span class="o pa">out\u2191</span> ':'')}${multi?esc(s.short):''}</span></div>`;
   }).join('');
   const more=S.res.hits.length>LIVE_N?`<div class="more">\u2026 ${S.res.hits.length-LIVE_N} more, keep typing to narrow</div>`:'';
   return `<div class="live">${rows}${more}</div>`;
@@ -448,8 +466,14 @@ function slashParse(q){ // returns {prod,kind,vers,act,err}
     else if(t==='any'||t==='types'||t==='alltypes')r.kind.push(...KINDS);
     else if(['ver','version','versions','clear','cls','help','reset','?'].includes(t))r.act=r.act||t;
     else if(/^\d+(\.\d+)*$/.test(t)){
+      // "/fgt@7.6.7" names its platform; a bare "/ver 7.6.7" means the one you are on.
+      // Setting every platform at once from one number is not something anyone wants.
       if(lastP)setVer(lastP,t);
-      else{const m=PRODUCTS.filter(P=>P.vers.some(x=>x.v===t||x.v.startsWith(t+'.')));if(!m.length)r.err.push(t+' is not available. Builds: '+PRODUCTS.map(P=>P.short+' '+P.vers.map(x=>x.v).join('/')).join(', ')+'.');else m.forEach(P=>setVer(P,t))}
+      else{
+        const sel=PRODUCTS.filter(P=>S.prod.includes(P.id));
+        if(sel.length===1)setVer(sel[0],t);
+        else r.err.push('which platform? '+sel.map(P=>'/'+P.short.toLowerCase()+'@'+t).join(' or ')+'. One platform has to be selected to set a build by number.');
+      }
     }
     else r.err.push('unknown: /'+t);
   });
@@ -459,7 +483,14 @@ function slashRun(q){
   const r=slashParse(q);const lines=[];
   if(r.act==='clear'||r.act==='cls'){S.hist=[];store.set('cf.hist',S.hist);return}
   if(r.act==='help'||r.act==='?')SLASH.forEach(([c,d])=>lines.push(c.padEnd(9)+d)),lines.push('combine them: /fsw diag, /fgt fsw show, /fgt@7.6.7');
-  if((r.act==='ver'||r.act==='version'||r.act==='versions')&&!Object.keys(r.vers).length)PRODUCTS.forEach(P=>P.vers.forEach(x=>lines.push((x.v===P.ver?'* ':'  ')+P.short.padEnd(5)+x.v.padEnd(8)+P.name+' \u00b7 '+x.src)));
+  if((r.act==='ver'||r.act==='version'||r.act==='versions')&&!Object.keys(r.vers).length){
+    // list builds for what is selected, not for everything
+    const sel=PRODUCTS.filter(P=>S.prod.includes(P.id));
+    const show=sel.length?sel:PRODUCTS;
+    show.forEach(P=>P.vers.forEach(x=>lines.push((x.v===P.ver?'* ':'  ')+P.short.padEnd(5)+x.v.padEnd(8)+P.name+' \u00b7 '+x.src)));
+    if(show.length===1)lines.push('set one with /ver <build>, e.g. /ver '+show[0].vers[0].v+'.');
+    else lines.push('several platforms are selected; name one to set a build: /'+show[0].short.toLowerCase()+'@'+show[0].vers[0].v+'.');
+  }
   Object.entries(r.vers).forEach(([id,v])=>{if(S.ver[id]!==v){S.ver[id]=v;delete DATA[id]}});store.set('cf.ver',S.ver);
   if(r.act==='reset'){S.prod=['fortios'];S.kind=KINDS.slice()}
   if(r.prod.length)S.prod=PRODUCTS.map(p=>p.id).filter(id=>r.prod.includes(id));
@@ -604,7 +635,7 @@ function valueHtml(s,p,id,cur){
   }
   if(S.edit===id){const r=range(p);return `<input class="vin" id="vin" data-vid="${esc(id)}" value="${esc(v)}" placeholder="${esc(p.df||(r?r[0]+'-'+r[1]:p.ty||'value'))}" inputmode="${r?'numeric':'text'}" autocomplete="off" spellcheck="false">`}
   const r=range(p);
-  const shown=v!==''?`<b>${esc(v)}</b>`:`<span class="dfv">${esc(p.df||(p.m&&p.el?p.el+' \u2026':'')||(isKey(p)?'<name>':'\u2014'))}</span>`;
+  const shown=v!==''?`<b>${esc(v)}</b>`:`<span class="dfv">${esc(p.df||(p.m&&p.el?p.el+' \u2026':'')||(isKey(p)?p.n:'\u2014'))}</span>`;
   const bad=v!==''&&r&&(isNaN(+v)||+v<r[0]||+v>r[1]);
   return `<span class="tv${bad?' bad':''}" data-edit="${esc(id)}">${shown}${r?`<span class="rg"> ${r[0]}\u2013${r[1]}</span>`:''}</span>`;
 }
@@ -613,8 +644,9 @@ function rowHtml(s,r,i){
   if(r.type==='grp')return `<div class="row grp${cur?' cur':''}" data-row="${i}"><span class="mk">${r.open?'\u25be':'\u25b8'}</span><span class="nm">config ${esc(r.t)}</span><span class="val dim">${r.n===r.of?r.n:r.n+' of '+r.of}</span><span class="hp"></span></div>`;
   const p=r.p,id=r.id;
   if(r.type==='arg'){
-    const on=S.pins.has(id);const full=(s.k+' '+s.p+' '+p.n).replace(/\s+/g,' ').trim();
-    return `<div class="row arg${cur?' cur':''}${on?' on':''}" data-row="${i}"><span class="mk">${on?'\u25cf':'\u25cb'}</span><span class="nm full">${esc(full)}</span><span class="hp">${esc(p.d)}</span></div>`;
+    const on=(S.vals[id]!=null&&S.vals[id]!=='')||S.pins.has(id);
+    const meta=cur?[p.ty,p.sz&&p.sz!=='Not Specified'?p.sz:''].filter(Boolean).join(' \u00b7 '):'';
+    return `<div class="row prm${cur?' cur':''}${on?' on':''}" data-row="${i}"><span class="mk" data-pin="${esc(id)}">${on?'\u25cf':'\u25cb'}</span><span class="nm">${esc(p.n)}</span><span class="val">${valueHtml(s,p,id,cur)}</span><span class="hp">${esc(p.d)}</span>${meta?`<div class="more-info"><div class="meta">${esc(meta)}</div></div>`:''}</div>`;
   }
   const on=(S.vals[id]!=null&&S.vals[id]!=='')||S.pins.has(id);
   let more='';
@@ -650,8 +682,17 @@ function paneHtml(s){
   const jbar=S.jump!=null?`<div class="jump"><span class="js">/</span><input id="jin" value="${esc(S.jump)}" placeholder="jump to a parameter" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Jump to a parameter"><span class="jn">${S.jumpInfo?(S.jumpInfo.n?S.jumpInfo.n+' of '+S.jumpInfo.of:'no match'):''}</span><span class="jk"><kbd>\u21b5</kbd> go <kbd>esc</kbd> cancel</span></div>`:'';
   const params=S.rows.length||S.jump!=null?`<section class="blk"><div class="lbl">${s.k==='config'?'Parameters':'Arguments'} <span>${S.matchInfo?`${S.matchInfo.n} of ${S.matchInfo.of} match \u201c${esc(S.matchInfo.words)}\u201d \u00b7 <button class="lk" data-all="${S.showAll?0:1}">${S.showAll?'matches only':'show all'}</button>`:s.x.length}</span></div>${jbar}<div class="rows">${S.rows.map((r,i)=>rowHtml(s,r,i)).join('')}</div></section>`:'';
   const outFirst=s.k!=='config';
-  return `<div class="desc" data-clamp>${esc(s.d||'')}</div>
+  // 106 commands exist here only because a guide showed one: the CLI Reference has no
+  // `get router info ...` entries at all. Say so, rather than showing an empty pane.
+  // Three different reasons a command has nothing to fill in. An empty pane makes them
+  // look like the same bug, so name the one that applies.
+  const ref=DATA[s.prod]?DATA[s.prod].doc:'the CLI Reference';
+  const fromGuide=(!s.x.length&&s.k!=='config')?(s.ag
+    ?`<div class="og alt"><b>note</b> this command is not in the ${esc(ref)}. It is here because ${esc(srcName(s,s.ag))} shows it, so there are no documented arguments.</div>`
+    :`<div class="og alt"><b>note</b> ${esc(ref)} lists no arguments for this command \u2014 its syntax there is just <b>${esc(s.k+' '+s.p)}</b>. The box may still accept some.</div>`):'';
+  return `<div class="desc" data-clamp>${esc(s.d||'')}</div>${fromGuide}
     ${outFirst?outputHtml(s):''}${params}${outFirst?'':outputHtml(s)}
+    ${s.ml?`<details class="blk dsc"><summary class="lbl">Models <span>available on ${s.ml.length}</span></summary><div class="desc">${s.ml.map(esc).join(' \u00b7 ')}</div></details>`:''}
     ${(s.n||[]).length?`<details class="blk dsc"><summary class="lbl">Notes</summary><div class="desc">${s.n.map(esc).join('<br>')}</div></details>`:''}
     ${s.s&&s.s.split('\n').length>1?`<details class="blk dsc"><summary class="lbl">Syntax in the guide <span>${s.s.split('\n').length} lines</span></summary><pre class="opre">${esc(s.s)}</pre></details>`:''}
     <div class="srcline">${esc(src)}, page ${s.pg} \u00b7 ${esc(P.short||'')}-${esc(P.ver||'')}</div>`;
@@ -685,7 +726,9 @@ function headHtml(s){
   return `<div class="ihead"><div class="cmd"><span class="v" style="color:var(--t-${s.k})">${esc(s.k)}</span> ${esc(s.p)}</div></div>
     <div class="block"><pre id="cpre">${esc(c.text)}</pre><div class="bact"><button class="cbtn" data-copy-block>copy <kbd>c</kbd></button>${c.n?'<button class="lk" data-clear-block>clear <kbd>x</kbd></button>':''}<span class="bn">${info}</span></div></div>`;
 }
-const HINTS='<span><kbd>\u2191\u2193</kbd> move</span><span><kbd>\u2190\u2192</kbd> option</span><span><kbd>space</kbd> add</span><span><kbd>enter</kbd> edit</span><span><kbd>/</kbd> jump</span><span><kbd>c</kbd> copy</span><span><kbd>x</kbd><kbd>u</kbd> clear/undo</span><span><kbd>n</kbd><kbd>p</kbd> output</span><span><kbd>tab</kbd> back to the prompt</span>';
+const HINTS_FULL='<span><kbd>\u2191\u2193</kbd> move</span><span><kbd>\u2190\u2192</kbd> option</span><span><kbd>space</kbd> add</span><span><kbd>enter</kbd> edit</span><span><kbd>/</kbd> jump</span><span><kbd>c</kbd> copy</span><span><kbd>x</kbd><kbd>u</kbd> clear/undo</span><span><kbd>n</kbd><kbd>p</kbd> output</span><span><kbd>tab</kbd> back to the prompt</span>';
+const HINTS_BARE='<span><kbd>c</kbd> copy</span><span><kbd>n</kbd><kbd>p</kbd> output</span><span><kbd>tab</kbd> back to the prompt</span>';
+function hints(s){return (s&&s.x&&s.x.length)?HINTS_FULL:HINTS_BARE}
 function renderPane(){
   const s=S.detail;
   $('#pane').classList.toggle('open',!!(S.sheet&&s));
@@ -693,7 +736,7 @@ function renderPane(){
   const sc=$('#pscroll');const top=sc.scrollTop;
   sc.innerHTML=s?paneHtml(s):emptyPane();
   sc.scrollTop=top;
-  $('#hints').hidden=!s||!matchMedia('(pointer:fine)').matches;$('#hints').innerHTML=HINTS;
+  $('#hints').hidden=!s||!matchMedia('(pointer:fine)').matches;$('#hints').innerHTML=hints(s);
   if(S.edit){const v=$('#vin');if(v){v.focus();v.setSelectionRange(v.value.length,v.value.length)}}
   else if(S.jump!=null){const j=$('#jin');if(j&&document.activeElement!==j){j.focus();j.setSelectionRange(j.value.length,j.value.length)}}
 }
@@ -720,7 +763,6 @@ function rowAct(r,how){ // how: toggle | left | right | edit
   const s=S.detail;if(!r||!s)return;
   if(r.type==='grp'){if(how==='left')S.groups.delete(r.t);else if(how==='right')S.groups.add(r.t);else{if(S.groups.has(r.t))S.groups.delete(r.t);else S.groups.add(r.t)}renderPane();return}
   const id=r.id,p=r.p;
-  if(r.type==='arg'){S.pins=S.pins.has(id)?new Set():new Set([id]);renderPane();return}
   const o=opts(p);
   if((how==='left'||how==='right')&&o){
     const curv=S.vals[id]||p.df||o[0];let i=o.indexOf(curv);i=(i+(how==='right'?1:-1)+o.length)%o.length;
@@ -858,7 +900,12 @@ document.addEventListener('keydown',e=>{
     if(e.key==='Tab'){e.preventDefault();if(m[S.sel])setQ(slashComplete(m[S.sel][0]));return}
     if(e.key==='ArrowDown'){e.preventDefault();S.sel=Math.min(m.length-1,S.sel+1);S.slashMoved=true;renderTerm(true);scrollSel();return}
     if(e.key==='ArrowUp'){e.preventDefault();S.sel=Math.max(0,S.sel-1);S.slashMoved=true;renderTerm(true);scrollSel();return}
-    if(e.key==='Enter'){e.preventDefault();const q=(S.slashMoved||/^\/ver(sions?)?\s*$/i.test(S.q.trim())&&m[S.sel])&&m[S.sel]?slashComplete(m[S.sel][0]):slashResolve(S.q,m[S.sel]);S.slashMoved=false;slashRun(q);setQ('');return}
+    if(e.key==='Enter'){e.preventDefault();
+      // Only take the highlighted menu row if the cursor was actually moved onto it.
+      // Bare "/ver" used to auto-pick the first build in the menu, so you could never
+      // just ask what builds there are.
+      const q=S.slashMoved&&m[S.sel]?slashComplete(m[S.sel][0]):slashResolve(S.q,m[S.sel]);
+      S.slashMoved=false;slashRun(q);setQ('');return}
     return;
   }
   if(e.key==='Tab'&&!e.shiftKey){

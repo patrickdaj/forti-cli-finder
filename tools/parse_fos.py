@@ -130,6 +130,11 @@ while idx < N:
         if syn:
             ind = min(len(s) - len(s.lstrip()) for s in syn if s.strip())
             syn = [s[ind:] if s.strip() else '' for s in syn]
+        # "This topic includes the following commands:" marks a contents page, not a
+        # command. It usually sits in the description, but when the description is a bare
+        # repeat of the heading it lands here instead.
+        if syn and re.match(r'^This topic includes', syn[0].strip()):
+            cur['index'] = True
         cur['syntax'] = syn
         continue
 
@@ -281,6 +286,17 @@ def fold_elements(sections):
     return n
 
 folded = fold_elements(sections)
+
+# 124 sections have no description at all -- just "This command is available for
+# model(s):" and 133 model names, ~2500 characters of it. Left in `desc` it is what the
+# listing shows for the command and it is taller than the viewport when selected. Pull it
+# out; build_bundles.py interns the handful of distinct lists.
+MODELS = re.compile(r'^This command is available for model\(s\):\s*(.+)$', re.S)
+for s in sections:
+    m = MODELS.match((s.get('desc') or '').strip())
+    if m:
+        s['models'] = [x.strip() for x in re.sub(r'\s+', ' ', m.group(1)).split(',') if x.strip()]
+        s['desc'] = ''
 
 for s in sections:
     s.pop('_table', None)
