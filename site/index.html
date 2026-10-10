@@ -114,6 +114,13 @@ kbd{font:11px var(--mono);color:var(--i-dim);border:1px solid var(--i-line);bord
 details.dsc summary{list-style:none;cursor:pointer}
 details.dsc summary::before{content:"\25b8";margin-right:2px}
 details.dsc[open] summary::before{content:"\25be"}
+.jump{display:flex;align-items:center;gap:8px;padding:6px 8px;margin:0 -8px 2px;border:1px solid var(--i-on);border-radius:6px;background:var(--i-block)}
+.jump .js{color:var(--i-on);font:600 14px var(--mono)}
+.jump input{flex:1;min-width:0;border:0;background:transparent;color:var(--i-fg);font:13.5px var(--mono);outline:0;padding:1px 0}
+.jump input::placeholder{color:var(--i-faint)}
+.jump .jn{color:var(--i-dim);font:12px var(--mono);white-space:nowrap}
+.jump .jk{color:var(--i-faint);font:11.5px var(--sans);white-space:nowrap}
+@media (max-width:899px){.jump .jk{display:none}}
 .rows{border-top:1px solid var(--i-line)}
 .row{display:grid;grid-template-columns:2ch minmax(12ch,26ch) minmax(0,auto) minmax(0,1fr);gap:0 12px;align-items:baseline;padding:4px 8px;margin:0 -8px;border-left:2px solid transparent;cursor:pointer;min-width:0}
 .row:hover{background:color-mix(in srgb,var(--i-cur) 55%,transparent)}
@@ -313,11 +320,11 @@ function pid(s,p){return s.prod+':'+s.i+':'+p.j}
 // The table's key, from the syntax block: "edit <name>" -> "name". A parameter with that
 // key is the edit line's value, never a `set` of its own.
 function editKey(s){const m=(s.edit||'').match(/^edit\s+<?([^>\s]+)>?/);return m?m[1]:''}
-// Values that need quoting in the CLI: free text that carries a space or a quote. Never
-// quote an address pair ("0.0.0.0 0.0.0.0") or a numeric range, which the CLI takes as
-// separate tokens -- so only the string-ish types qualify.
+// Quote the way the box does: `show` prints string values quoted and everything else
+// bare. Only the string-ish types qualify -- quoting an address pair ("0.0.0.0 0.0.0.0")
+// or a numeric range would break it, since the CLI reads those as separate tokens.
 const QTY=new Set(['string','var-string','user','password']);
-function qv(p,v){return (QTY.has(p&&p.ty)&&/[\s"']/.test(v))?'"'+String(v).replace(/"/g,'\\"')+'"':v}
+function qv(p,v){return QTY.has(p&&p.ty)?'"'+String(v).replace(/"/g,'')+'"':v}
 function composed(s){
   if(!s)return {text:'',n:0};
   const lines=[];const chosen=[];
@@ -553,18 +560,37 @@ function setDetail(s,p,user){
   if(!p&&user){S.cur=0;renderPane()}
   if(p&&(!same||user)){const n=S.rows.findIndex(r=>r.p===p);if(n>=0){S.cur=n;renderPane()}}
 }
+// How well a parameter answers what you typed into the jump bar. 0 = not at all.
+// Keys first, so "/act" lands on `action` rather than on something whose help text
+// happens to mention actions.
+function jscore(p,q){
+  const k=p.kl;
+  if(k===q)return 4;
+  if(k.startsWith(q))return 3;
+  if(k.includes(q))return 2;
+  return (p.d||'').toLowerCase().includes(q)?1:0;
+}
 function paneRows(s){ // the ordered, navigable rows for the current command
-  const rows=[];S.matchInfo=null;
+  const rows=[];S.matchInfo=null;S.jumpInfo=null;
   if(s.k!=='config'){s.x.forEach(p=>rows.push({type:'arg',p,id:pid(s,p)}));return rows}
-  const rest=detailFilter(s);const match=rest.length?pfilter(s,rest):null;
+  const jq=(S.jump||'').trim().toLowerCase();
+  let jids=null;
+  if(jq){
+    const hit=s.x.filter(p=>jscore(p,jq));
+    jids=new Set(hit.map(p=>pid(s,p)));
+    S.jumpInfo={n:hit.length,of:s.x.length};
+    // the best match is where the cursor should land, whatever order the rows are in
+    S.jumpBest=hit.length?pid(s,hit.slice().sort((a,b)=>jscore(b,jq)-jscore(a,jq))[0]):null;
+  }
+  const rest=detailFilter(s);const match=(!jq&&rest.length)?pfilter(s,rest):null;
   const ids=match&&match.length&&!S.showAll?new Set(match.map(p=>pid(s,p))):null;
   S.matchInfo=match&&match.length?{n:match.length,of:s.x.length,words:rest.join(' ')}:null;
-  const vis=p=>!ids||ids.has(pid(s,p));
+  const vis=p=>jids?jids.has(pid(s,p)):(!ids||ids.has(pid(s,p)));
   s.x.filter(p=>!p.t&&vis(p)).forEach(p=>rows.push({type:'param',p,id:pid(s,p)}));
   const subs={};s.x.filter(p=>p.t).forEach(p=>{(subs[p.t]=subs[p.t]||[]).push(p)});
   Object.keys(subs).forEach(t=>{
     const ps=subs[t].filter(vis);if(!ps.length)return;
-    const open=S.groups.has(t)||!!ids;
+    const open=S.groups.has(t)||!!ids||!!jids;
     rows.push({type:'grp',t,n:ps.length,of:subs[t].length,open});
     if(open)ps.forEach(p=>rows.push({type:'param',p,id:pid(s,p),sub:true}));
   });
@@ -621,7 +647,8 @@ function paneHtml(s){
   S.rows=paneRows(s);if(S.cur>=S.rows.length)S.cur=Math.max(0,S.rows.length-1);
   const P=PRODUCTS.find(x=>x.id===s.prod)||{};
   const src=s.ag?srcName(s,s.ag):s.doc;
-  const params=S.rows.length?`<section class="blk"><div class="lbl">${s.k==='config'?'Parameters':'Arguments'} <span>${S.matchInfo?`${S.matchInfo.n} of ${S.matchInfo.of} match \u201c${esc(S.matchInfo.words)}\u201d \u00b7 <button class="lk" data-all="${S.showAll?0:1}">${S.showAll?'matches only':'show all'}</button>`:s.x.length}</span></div><div class="rows">${S.rows.map((r,i)=>rowHtml(s,r,i)).join('')}</div></section>`:'';
+  const jbar=S.jump!=null?`<div class="jump"><span class="js">/</span><input id="jin" value="${esc(S.jump)}" placeholder="jump to a parameter" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Jump to a parameter"><span class="jn">${S.jumpInfo?(S.jumpInfo.n?S.jumpInfo.n+' of '+S.jumpInfo.of:'no match'):''}</span><span class="jk"><kbd>\u21b5</kbd> go <kbd>esc</kbd> cancel</span></div>`:'';
+  const params=S.rows.length||S.jump!=null?`<section class="blk"><div class="lbl">${s.k==='config'?'Parameters':'Arguments'} <span>${S.matchInfo?`${S.matchInfo.n} of ${S.matchInfo.of} match \u201c${esc(S.matchInfo.words)}\u201d \u00b7 <button class="lk" data-all="${S.showAll?0:1}">${S.showAll?'matches only':'show all'}</button>`:s.x.length}</span></div>${jbar}<div class="rows">${S.rows.map((r,i)=>rowHtml(s,r,i)).join('')}</div></section>`:'';
   const outFirst=s.k!=='config';
   return `<div class="desc" data-clamp>${esc(s.d||'')}</div>
     ${outFirst?outputHtml(s):''}${params}${outFirst?'':outputHtml(s)}
@@ -642,6 +669,7 @@ function emptyPane(){
   <div class="keys">
     <kbd>\u2191 \u2193</kbd><span>move between parameters</span>
     <kbd>\u2190 \u2192</kbd><span>change an option</span>
+    <kbd>/</kbd><span>jump to a parameter by name</span>
     <kbd>space</kbd><span>add to or drop from the block</span>
     <kbd>enter</kbd><span>type a value, or open a group</span>
     <kbd>c</kbd><span>copy the block</span>
@@ -657,7 +685,7 @@ function headHtml(s){
   return `<div class="ihead"><div class="cmd"><span class="v" style="color:var(--t-${s.k})">${esc(s.k)}</span> ${esc(s.p)}</div></div>
     <div class="block"><pre id="cpre">${esc(c.text)}</pre><div class="bact"><button class="cbtn" data-copy-block>copy <kbd>c</kbd></button>${c.n?'<button class="lk" data-clear-block>clear <kbd>x</kbd></button>':''}<span class="bn">${info}</span></div></div>`;
 }
-const HINTS='<span><kbd>\u2191\u2193</kbd> move</span><span><kbd>\u2190\u2192</kbd> option</span><span><kbd>space</kbd> add</span><span><kbd>enter</kbd> edit</span><span><kbd>c</kbd> copy</span><span><kbd>x</kbd><kbd>u</kbd> clear/undo</span><span><kbd>n</kbd><kbd>p</kbd> output</span><span><kbd>tab</kbd> back to the prompt</span>';
+const HINTS='<span><kbd>\u2191\u2193</kbd> move</span><span><kbd>\u2190\u2192</kbd> option</span><span><kbd>space</kbd> add</span><span><kbd>enter</kbd> edit</span><span><kbd>/</kbd> jump</span><span><kbd>c</kbd> copy</span><span><kbd>x</kbd><kbd>u</kbd> clear/undo</span><span><kbd>n</kbd><kbd>p</kbd> output</span><span><kbd>tab</kbd> back to the prompt</span>';
 function renderPane(){
   const s=S.detail;
   $('#pane').classList.toggle('open',!!(S.sheet&&s));
@@ -667,6 +695,23 @@ function renderPane(){
   sc.scrollTop=top;
   $('#hints').hidden=!s||!matchMedia('(pointer:fine)').matches;$('#hints').innerHTML=HINTS;
   if(S.edit){const v=$('#vin');if(v){v.focus();v.setSelectionRange(v.value.length,v.value.length)}}
+  else if(S.jump!=null){const j=$('#jin');if(j&&document.activeElement!==j){j.focus();j.setSelectionRange(j.value.length,j.value.length)}}
+}
+function openJump(){S.jump='';S.jumpBest=null;renderPane()}
+function closeJump(keep){
+  // keep: land the cursor on the match, then get out of the way so the ordinary
+  // keys (space to add, enter to type a value) work on it straight away.
+  const best=keep?S.jumpBest:null;
+  S.jump=null;S.jumpInfo=null;
+  renderPane();
+  if(best){const n=S.rows.findIndex(r=>r.id===best);if(n>=0){S.cur=n;renderPane()}}
+  focusPane();curIntoView();
+}
+function jumpStep(d){
+  const n=S.rows.length;if(!n)return;
+  let i=S.rows.findIndex(r=>r.id===S.jumpBest);
+  i=i<0?0:(i+d+n)%n;
+  S.jumpBest=S.rows[i].id;S.cur=i;renderPane();curIntoView();
 }
 function curIntoView(){const el=document.querySelector('.row.cur');if(el)el.scrollIntoView({block:'nearest'})}
 function focusPane(){$('#pane').focus({preventScroll:true});$('#pane').classList.add('focus')}
@@ -759,6 +804,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('focusin',e=>{if(!e.target.closest('#pane'))$('#pane').classList.remove('focus')});
 document.addEventListener('input',e=>{
   if(e.target.id==='q'){S.q=e.target.value;S.sel=0;S.slashMoved=false;S.pinned=false;renderTerm();return}
+  if(e.target.id==='jin'){S.jump=e.target.value;renderPane();const n=S.rows.findIndex(r=>r.id===S.jumpBest);if(n>=0){S.cur=n;curIntoView()}return}
   if(e.target.id==='vin'&&S.detail){
     const v=e.target;S.vals[v.dataset.vid]=v.value;
     const p=S.detail.x.find(p=>pid(S.detail,p)===v.dataset.vid);const r=p&&range(p);
@@ -784,10 +830,17 @@ function paneKeys(e){
   if(k==='a'){e.preventDefault();S.showAll=!S.showAll;S.cur=0;renderPane();return}
   if(k==='n'||k==='p'){e.preventDefault();const d=S.detail,n=((d.o&&d.o.length?d.o:(d.po&&d.po.o)||[])).length;if(n){S.oi=((S.oi||0)+(k==='n'?1:-1)+n)%n;renderPane()}return}
   if(k==='Escape'||k==='Tab'||k==='q'){e.preventDefault();$('#pane').classList.remove('focus');if(!isWide()){S.sheet=false;renderPane()}$('#q').focus();return}
-  if(k==='/'){e.preventDefault();$('#pane').classList.remove('focus');setQ('/');return}
+  if(k==='/'){e.preventDefault();openJump();return}
 }
 document.addEventListener('keydown',e=>{
   const inQ=e.target===$('#q');
+  if(e.target.id==='jin'){ // jumping to a parameter by name
+    if(e.key==='Enter'){e.preventDefault();closeJump(true);return}
+    if(e.key==='Escape'){e.preventDefault();closeJump(false);return}
+    if(e.key==='ArrowDown'||(e.key==='Tab'&&!e.shiftKey)){e.preventDefault();jumpStep(1);return}
+    if(e.key==='ArrowUp'||(e.key==='Tab'&&e.shiftKey)){e.preventDefault();jumpStep(-1);return}
+    return;
+  }
   if(e.target.id==='vin'){ // editing a value in the inspector
     if(e.key==='Enter'||e.key==='Tab'){e.preventDefault();const id=S.edit;if((S.vals[id]??'')!=='')S.pins.add(id);S.edit=null;renderPane();focusPane();return}
     if(e.key==='Escape'){e.preventDefault();S.edit=null;renderPane();focusPane();return}

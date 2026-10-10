@@ -28,6 +28,7 @@ Opening `index.html` from disk will not load the data. Any static host works; se
 | prompt | ctrl + L | clear the scrollback |
 | inspector | up / down (j / k) | move between parameters |
 | inspector | left / right | cycle an option value |
+| inspector | `/` | jump to a parameter by name: filters as you type, enter lands the cursor on it |
 | inspector | space | add to or drop from the block |
 | inspector | enter | edit a number or string (enter saves, esc cancels) |
 | inspector | c | copy the block |
@@ -35,6 +36,12 @@ Opening `index.html` from disk will not load the data. Any static host works; se
 | inspector | a | matching or all parameters |
 | inspector | n / p | next / previous sample output |
 | inspector | tab or esc | back to the prompt |
+
+On a big table (`config firewall policy` has 186 parameters) `/` is how you work: `/dstaddr`
+enter, set it, `/dstintf` enter, set it, and so on without scrolling. While the bar is open
+the list filters to matches, up/down steps between them, enter picks one and restores the
+full list with the cursor on your choice, esc cancels. Values are quoted the way `show`
+prints them: string types quoted, numbers, options and addresses bare.
 
 Slash commands: `/fgt /fsw /faz /fmg /all` (platform), `/config /diag /exec /get /show /any`
 (command type), `/ver` (list and pick a firmware build), `/fgt@7.6.7`, `/reset`, `/clear`,
