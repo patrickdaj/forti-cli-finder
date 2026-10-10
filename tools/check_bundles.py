@@ -35,7 +35,7 @@ def main():
 
     for e in cfg['cli']:
         b = bundle_id(e)
-        path = f'{OUT}/{b}.json'
+        path = os.path.join(ROOT, OUT, f'{b}.json')
         if not os.path.exists(path):
             fail.append(f'{b}: {path} was not built')
             continue
@@ -45,11 +45,45 @@ def main():
         if not d.get('secs'):
             fail.append(f'{b}: no sections')
 
+    # Two builds of one platform are alternative views of the same CLI. If one has worked
+    # examples and the other has almost none, something is sharing a pool it should not --
+    # which is invisible in the section counts, so assert it here.
+    byplat = {}
+    for e in cfg['cli']:
+        byplat.setdefault(e['product'], []).append(bundle_id(e))
+    for plat, bs in sorted(byplat.items()):
+        have = {}
+        for b in bs:
+            path = os.path.join(ROOT, OUT, f'{b}.json')
+            if not os.path.exists(path):
+                continue
+            d = json.load(open(path))
+            have[b] = sum(len(s.get('e') or ()) for s in d['secs'])
+        if len(have) > 1 and max(have.values()):
+            lo, hi = min(have.values()), max(have.values())
+            if lo < hi * 0.5:
+                fail.append(f'{plat}: worked examples are lopsided across builds {have} '
+                            f'-- a shared example pool is starving one of them')
+
+    # Check the generated literal itself. A substring search over the whole file would
+    # pass on a literal that closed early and left JS dangling -- which is a blank page,
+    # not a missing bundle, and exactly the failure a generated literal invites.
     page = open(os.path.join(ROOT, 'site/index.html'), encoding='utf-8').read()
+    m = re.search(r'const PRODUCTS=\[[\s\S]*?\];', page)
+    if not m:
+        fail.append('index.html has no PRODUCTS literal -- run stamp_build.py')
+    else:
+        named = set(re.findall(r'f:"([^"]*)"', m.group(0)))
+        want = set(ids)
+        for b in sorted(want - named):
+            fail.append(f'{b}: not named in index.html PRODUCTS -- run stamp_build.py')
+        for b in sorted(named - want):
+            fail.append(f'{b}: named in index.html PRODUCTS but not in sources.json '
+                        f'-- stale literal, run stamp_build.py')
+        if page.count('const PRODUCTS=[') != 1:
+            fail.append('index.html has more than one PRODUCTS literal')
     for e in cfg['cli']:
         b = bundle_id(e)
-        if f'f:"{b}"' not in page:
-            fail.append(f'{b}: not named in index.html PRODUCTS -- run stamp_build.py')
         if not e.get('ver'):
             fail.append(f'{b}: sources.json entry has no "ver", so /ver cannot label it')
     seen = {}

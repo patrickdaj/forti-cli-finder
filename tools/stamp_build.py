@@ -26,6 +26,18 @@ for e in CFG['cli']:
     pl['vers'].append({'v': e.get('ver', ''), 'f': _cb.bundle_id(e),
                        'src': e.get('src', e['title'])})
 
+# json.dumps escapes for JS, not for HTML, and the literal is terminated by the first
+# `];`. Either in a label or src would produce a page that parses as a syntax error --
+# a blank screen from a build that printed nothing wrong. Refuse instead.
+for pl in plats.values():
+    for text in [pl['name'], pl['short'], pl['id']] + [x[k] for x in pl['vers']
+                                                       for k in ('v', 'f', 'src')]:
+        for bad in ('];', '</', '\\'):
+            if bad in text:
+                raise SystemExit(
+                    f'sources.json: {text!r} contains {bad!r}, which would break the '
+                    f'generated PRODUCTS literal in site/index.html')
+
 j = json.dumps
 products = 'const PRODUCTS=[\n' + ',\n'.join(
     '  {id:%s,short:%s,name:%s,vers:[%s]}' % (

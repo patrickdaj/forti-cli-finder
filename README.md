@@ -115,12 +115,10 @@ re-run discovery, fetch and build. Measure it first:
 One entry in `sources.json` under `cli`, with a `bundle` naming its own file and a `ver`
 and `src` for the `/ver` listing:
 
-    {"key": "fos-cli-74", "product": "fortios", "bundle": "fortios-7.4",
-     "parser": "fos", "short": "FGT",
-     "label": "FortiOS 7.4.12", "ver": "7.4.12", "src": "CLI Reference",
-     "doc": "/document/fortigate/7.4.12/cli-reference",
-     "title": "FortiOS 7.4.12 CLI Reference",
-     "expect": "FortiOS-7.4.12-CLI_Reference"}
+    { "key": "fos-cli-74", "product": "fortios",   "parser": "fos",  "short": "FGT", "label": "FortiOS 7.4.12",
+      "ver": "7.4.12", "src": "CLI Reference",
+      "bundle": "fortios-7.4",
+      "doc": "/document/fortigate/7.4.12/cli-reference",      "title": "FortiOS 7.4.12 CLI Reference", "expect": "FortiOS-7.4.12-CLI_Reference" }
 
 `product` says which platform it is a build of; `bundle` says which file it is written to.
 Leave `bundle` out and it defaults to `product`, which is why the original four bundles

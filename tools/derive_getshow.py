@@ -36,12 +36,22 @@ for e in CFG['cli']:
     b = json.load(open(path))
     have = {(s['k'], s['p']) for s in b['secs']}
     add = []
+    # The hand guides give several config subsections one path -- five share
+    # `fmupdate fds-setting` -- and one `show` covers them all. Take the key from
+    # whichever of them documents one, rather than from whichever comes first: it is the
+    # same table, and an `edit <id>` seen on any subsection is true of the whole.
+    keyof = {}
+    for s in b['secs']:
+        if s['k'] != 'config' or s.get('dv') or keyof.get(s['p']):
+            continue
+        m = EDIT.search(s.get('s') or '')
+        if m:
+            keyof[s['p']] = m.group(1)
+
     for s in list(b['secs']):
         if s['k'] != 'config' or s.get('dv'):
             continue
-        # the table's key, from "edit <policyid>" in the syntax block
-        m = EDIT.search(s.get('s') or '')
-        key = m.group(1) if m else None
+        key = keyof.get(s['p'])
         for kind, what in (('show', 'the configuration'), ('get', 'the settings')):
             if (kind, s['p']) in have:
                 continue            # the reference documents this one already, or a
