@@ -153,9 +153,14 @@ def merge_args(args, params):
                   if q['key'] == a['key'] and id(q) not in taken), None)
         if t:
             taken.add(id(t))
-            a = dict(t, name=a['name'], pos=1,
-                     options=a['options'] or t.get('options') or [],
-                     type=a['type'] or t.get('type') or '')
+            # built from the table row, so anything only the syntax knew has to be
+            # carried over by hand -- `elem` (this argument repeats) is one of those
+            merged = dict(t, name=a['name'], pos=1,
+                          options=a['options'] or t.get('options') or [],
+                          type=a['type'] or t.get('type') or '')
+            if a.get('elem'):
+                merged['elem'] = a['elem']
+            a = merged
         out.append(a)
     # Rows the syntax line never mentioned are still documentation; they keep their
     # own order behind the positional ones.
@@ -319,12 +324,17 @@ def params_from_args(args):
     while i < len(args):
         a = args[i]
         if a.strip(' .\u2026') == '' and flat:
+            base = flat[-1][0] if isinstance(flat[-1], tuple) else flat[-1]
             nxt = args[i + 1] if i + 1 < len(args) else None
-            if nxt == flat[-1]:
-                i += 2              # `<x> .. <x>` -> the one `<x>` already kept
-            else:
-                i += 1              # a stray marker: drop it, keep what follows
-            flat[-1] = (flat[-1], True)
+            i += 2 if nxt == base else 1    # skip the repeat of what we already kept
+            # `<x> <x> ... <x>` is ONE argument you may repeat, however many times the
+            # document chose to spell the run out before the marker
+            while len(flat) > 1:
+                prev = flat[-2][0] if isinstance(flat[-2], tuple) else flat[-2]
+                if prev != base:
+                    break
+                flat.pop()
+            flat[-1] = (base, True)
             continue
         flat.append(a)
         i += 1
@@ -475,10 +485,28 @@ def _selftest():
     # `<parameter> .. <parameter>` is one argument you may repeat, not three arguments
     # the middle of which is called `..`. The schema already has a list argument, so
     # say it that way.
+    # The FortiAnalyzer and FortiManager documents write the run out in full:
+    # `diagnose test application apiproxyd <integer> <integer> ... <integer>` is one
+    # integer you may repeat, not two plus a repeat.
+    runs = params_from_args(['<integer>', '<integer>', '...', '<integer>'])
+    if [q['name'] for q in runs] != ['<integer>'] or not runs[0].get('elem'):
+        fails.append(f'  a written-out run should collapse to one list: '
+                     f'{[(q["name"], q.get("elem")) for q in runs]}')
+
     rep = params_from_args(['<parameter>', '..', '<parameter>'])
     if [q['name'] for q in rep] != ['<parameter>'] or not rep[0].get('elem'):
         fails.append(f'  a repeated argument should collapse to one list: '
                      f'{[(q["name"], q.get("elem")) for q in rep]}')
+
+    # Merging in the table's description must not erase what the SYNTAX knew. The row
+    # is rebuilt from the table entry, so anything only the syntax could tell us -- that
+    # the argument repeats -- has to be carried across explicitly.
+    kept_list = merge_args(['<parameter>', '..', '<parameter>'],
+                           [row('parameter', '<parameter>', 'A benchmark parameter.')])
+    if len(kept_list) != 1 or not kept_list[0].get('elem') \
+            or kept_list[0]['desc'] != 'A benchmark parameter.':
+        fails.append(f'  merge lost the repeat flag: '
+                     f'{[(q["name"], q.get("elem"), q["desc"]) for q in kept_list]}')
 
     # A nested table's fields must not land beside the root's. The syntax block states
     # the nesting by indentation; the FortiManager and FortiAnalyzer Variable tables
