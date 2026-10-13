@@ -397,6 +397,15 @@ Stated plainly so nobody rediscovers it:
   in a `set`/`edit` line in the block, so the block cannot place them either. Note the
   obvious cure is wrong: on FortiSwitch, 90 of 159 same-name pairs are genuinely
   different sub-tables, so deduplicating by name would delete real fields.
+- **Six `get` commands label output fields as arguments.** For a handful of FortiSwitch
+  `get` commands the Variable table describes what the command PRINTS, not what you type:
+  `get system cmdb status` lists `version`, `owner id`, `update index`, and the page
+  offers them as arguments. Detecting this needs a heuristic, and the obvious one is
+  dangerous — my first attempt (a `get` whose syntax line carries no placeholder) flagged
+  26 commands whose arguments are perfectly real, like `get router info bgp community
+  {AA:NN | exact-match | ...}`. A narrower rule (the syntax takes nothing at all AND
+  every row is a bare word) finds exactly these six, which is too few to justify a
+  classifier that can delete real arguments when it is wrong. Left alone deliberately.
 - **Sample output coverage.** Thin, and unevenly: FortiAnalyzer ships 9 commands with
   output, FortiManager 7.
 - **Anything about a device's actual configuration.** Nothing here reads one, and the
