@@ -216,7 +216,10 @@ def apply_overlay():
         added = filled = described = 0
         for f in facts:
             key = (f['k'], f['p'])
-            x = [{'n': a['n'], 'd': a['d']} for a in f.get('x', [])]
+            # `k` as well as `n`: the page indexes on p.k, and for a positional
+            # argument the key IS the name. Omitting it threw inside the loader and
+            # left the page stuck on "loading reference data".
+            x = [{'n': a['n'], 'k': a['n'], 'd': a['d']} for a in f.get('x', [])]
             sec = idx.get(key)
             if sec is None:
                 bun['secs'].append({'k': f['k'], 'p': f['p'],

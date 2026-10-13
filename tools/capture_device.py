@@ -12,6 +12,7 @@ second half. tools/parse_tree.py reads what it writes.
     python3 tools/capture_device.py fgt1             # just one
     python3 tools/capture_device.py fgt1 --probe-all # ? every bare command, not a sample
     python3 tools/capture_device.py fgt1 --config-walk  # also field help (enters config)
+    python3 tools/capture_device.py fgt1 --crawl get    # walk ? down the get tree (long)
 
 What it runs: `get system status`, `tree`, and `<command> ?` for commands we ship with no
 arguments. All reads. It never enters `config` mode, so it works against an account with
@@ -288,7 +289,7 @@ def help_rows(text):
     return {'complete': complete, 'args': args, 'subs': subs, 'rows': rows}
 
 
-def crawl(s, root, out, max_nodes=4000, max_depth=8):
+def crawl(s, root, out, max_nodes=40000, max_depth=10):
     """Walk `?` down from a command prefix, breadth first.
 
     This is the only way to reach `get router info bgp neighbors` and its family: the
@@ -498,6 +499,11 @@ def main():
     verbose = '--verbose' in args
     probe_all = '--probe-all' in args
     config_walk_on = '--config-walk' in args
+    crawl_roots = []
+    if '--crawl' in args:
+        i = args.index('--crawl')
+        crawl_roots = [r.strip() for r in args[i + 1].split(',') if r.strip()]
+        args = args[:i] + args[i + 2:]
     want = [a for a in args if not a.startswith('--')]
     devices = load_env()
     if want:
@@ -507,6 +513,36 @@ def main():
         devices = {k: v for k, v in devices.items() if k in want}
 
     print(f'{len(devices)} device(s): {", ".join(devices)}')
+    if crawl_roots:
+        # Crawl only: walk `?` down from each root on each device. This is the long one,
+        # and the only way to reach the get tree -- the reference documents none of it and
+        # the device's own `tree` cannot expand the routing daemon's subtree.
+        for dev in devices.values():
+            try:
+                print(f"\n=== {dev['name']}  crawl {crawl_roots}")
+                s = Session(dev, verbose)
+                s.read(idle=1.5, timeout=90, until=PROMPT)
+                status = s.run('get system status', idle=1.0, timeout=60)
+                ident = identify(status)
+                if not ident:
+                    print('  no version banner -- skipped')
+                    s.close()
+                    continue
+                out = os.path.join(LIVE, f"{KIND_PRODUCT[dev['kind']]}-"
+                                         f"{ident['ver']}-{ident['build']}")
+                os.makedirs(out, exist_ok=True)
+                write(out, 'status.txt', status)
+                write(out, 'capture.txt',
+                      f"Version: {ident['model']} v{ident['ver']},build{ident['build']}")
+                for root in crawl_roots:
+                    print(f'  crawling {root!r}', flush=True)
+                    crawl(s, root, out)
+                s.close()
+                print(f'  -> {os.path.relpath(out, ROOT)}/')
+            except Exception as e:
+                print(f"  {dev['name']}: {type(e).__name__}: {e}")
+        return 0
+
     done = []
     for dev in devices.values():
         try:

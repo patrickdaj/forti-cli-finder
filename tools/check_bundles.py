@@ -44,6 +44,15 @@ def main():
             fail.append(f"{b}: bundle id is {d.get('id')!r}, expected {e['product']!r}")
         if not d.get('secs'):
             fail.append(f'{b}: no sections')
+        # The page does p.k.toLowerCase() on every parameter while indexing, so a
+        # parameter MISSING its key throws and leaves the page stuck on "loading
+        # reference data". An empty key is harmless -- ''.toLowerCase() is fine -- and
+        # three of those exist from a `threshold(default)` field the parser splits oddly.
+        nok = [(x['k'], x['p'], p2.get('n'))
+               for x in d['secs'] for p2 in (x.get('x') or []) if 'k' not in p2]
+        if nok:
+            fail.append(f'{b}: {len(nok)} parameters have no "k" key at all '
+                        f'(the page throws on these) -- first: {nok[0]}')
         empty = [x for x in d['secs'] if not (x.get('p') or '').strip()]
         if empty:
             fail.append(f'{b}: {len(empty)} sections have no path')
