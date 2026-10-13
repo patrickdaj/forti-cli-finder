@@ -53,7 +53,8 @@ def main():
         old = json.load(open(lock_path)).get('documents', {})
 
     new, failed, changed = {}, [], []
-    for entry in cfg['cli'] + cfg['output']:
+    # every section that names a doc path; `hand` entries are local files
+    for entry in cfg['cli'] + cfg['output'] + cfg.get('cheat', []):
         key = entry['key']
         try:
             got = resolve(entry)

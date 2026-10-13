@@ -1,0 +1,389 @@
+CLI troubleshooting cheat sheet
+This reference lists some important command line interface (CLI)
+commands that can be used for log gathering, analysis, and
+troubleshooting.
+It provides a basic understanding of CLI usage for users with different skill
+levels. Exploring additional commands beyond the ones listed here to gain
+a comprehensive understanding of the CLI is recommended.
+
+Enable/Disable debugging
+
+Command                                Description
+diagnose debug reset                   Stop all the prior debugs that were
+                                       enabled and running in the
+                                       foreground or background.
+diagnose debug enable                  Start printing debugs in the console.
+diagnose debug disable                 Stop printing debugs in the console.
+                                       The debugs are still running in the
+                                       background; use diagnose debug
+                                       reset to completely stop them.
+diagnose debug duration 0              Start debugging for infinite duration.
+                                       By default, debug is set for 30
+                                       minutes.
+
+System
+
+Command                                Description
+get system status                      Show system information.
+execute time                           Show current system time.
+get system performance status          Show CPU and memory utilization.
+execute tac report                     Execute TAC report used to open a
+                                       support ticket with Fortinet Support.
+diagnose sys top {s} {n} {i}           Show a list of the first n processes
+                                       every s seconds for i iterations.
+                                          l Shift +C: Sort by highest CPU
+
+                                          l Shift + M: Sort by highest
+
+                                             memory
+diagnose debug crashlog read           Show system and application
+                                       crashes.
+diagnose sys process pidof <daemon>    Show PID of the daemon that is
+                                       running. The names of currently
+                                       running daemons can be found
+                                       using diagnose sys top.
+                                       For example: diagnose sys
+                                       process pidof httpsd
+diagnose sys kill 11 <pid>             Kill the PID with signal 11.
+diagnose sys session stat              Show session statistics.
+diagnose sys session exp-stat          Show expectation session statistics.
+diagnose sys vd list                   Show virtual domain information and
+                                       system statistics.
+diagnose sys cmdb info                 Show information about the latest
+                                       configuration change performed by
+                                       the daemon.
+execute factoryreset [keepvmlicense]   Immediately reset to factory
+                                       defaults and reboot.
+                                       If keepvmlicense is specified (VM
+                                       models only), the VM license is
+                                       retained after reset.
+execute factoryreset-shutdown          Immediately reset to factory
+  [keepvmlicense]                      defaults and shutdown.
+                                       If keepvmlicense is specified (VM
+                                       models only), the VM license is
+                                       retained after reset.
+diagnose sys session clear             Clear the session table for the
+                                       specified filter.
+diagnose firewall iprope list          Show FortiGate’s internal firewall
+                                       table.
+
+Network diagnostics
+
+Command                                Description
+execute ping-options {options}         Ping IP address <x.x.x.x> using the
+execute ping <x.x.x.x>                 specified options.
+execute ssh-options {options}          SSH to IP address <x.x.x.x> using
+execute ssh <x.x.x.x>                  the specified options.
+execute traceroute-options {options}   Traceroute IP address <x.x.x.x>
+execute traceroute <x.x.x.x>           using the specified options.
+get system arp                         Show ARP entries.
+diagnose ip arp list
+diagnose netlink brctl list            Show the names of all of the
+                                       switches on the FortiGate.
+diagnose netlink brctl name host       Show the switching table of the
+  <switch-name>                        specified switch.
+get system interface                   Show a summary of interface
+get sys interface physical             details, including IP address
+                                       information.
+diagnose ip address list               Show IP address information.
+diagnose hardware deviceinfo nic       Show detailed interface information.
+  <interface>
+get hardware nic <interface>
+get sys interface transceiver          Show connected transceivers.
+
+Packet sniffer
+
+Command                                Description
+diagnose sniffer packet <interface>    Execute the inbuilt packet sniffer,
+  <'filter'> <verbose> <count> <a|l>   filtered on a particular interface with
+                                       the specified filter. For more
+                                       information, see Performing a sniffer
+                                       trace or packet capture.
+
+Debug flow
+
+Command                                Description
+diagnose debug reset                   Stop all the prior debugs that were
+                                       enabled and running in the
+                                       foreground or background.
+diagnose debug flow filter clear       Clear any IPv4 debug flow filters.
+diagnose debug flow filter6 clear      Clear any IPv6 debug flow filters.
+diagnose debug flow filter <filter>    Set a filter for running IPv4 traffic
+                                       debug flows.
+diagnose debug flow filter6 <filter>   Set a filter for running IPv6 traffic
+                                       debug flows.
+diagnose debug flow show function-name Show the function name of the code
+  enable                               that the traffic accesses.
+diagnose debug flow show iprope enable Show which internal firewall policy
+                                       that the traffic is going through.
+diagnose debug console timestamp       Start printing timestamps on
+  enable                               debugs.
+diagnose debug flow trace start <n>    Show n lines of IPv4 debugs.
+diagnose debug flow trace start6 <n>   Show n lines of IPv6 debugs.
+diagnose debug enable                  Start printing debugs in the console.
+
+
+               For more detailed debug flow filter information, see
+               Technical Tip: Using filters to review traffic traversing the
+               FortiGate.
+The WAD daemon handles proxy related processing.
+
+                Real-time debugs are CPU intensive tasks. Running real-
+                time WAD debugs with proper filters can result in high
+                CPU usage.
+
+
+Command                                 Description
+diagnose test application wad 1000    Show all WAD processes.
+diagnose test application wad 2       Show total memory usage.
+diagnose test application wad 99      Restart all WAD processes.
+diagnose wad debug display pid enable Start real-time debugging of the
+diagnose wad filter <filter>          traffic processed by WAD daemon.
+diagnose wad filter list
+diagnose wad debug enable level
+  <level>
+diagnose wad debug enable category
+  <category>
+diagnose debug enable
+diagnose wad filter <filter>            Set the filter for the WAD debugs.
+diagnose wad filter list                Show all the filters that have been
+                                        set for debugging.
+diagnose wad filter clear               Clear the WAD filter settings.
+diagnose wad debug enable level         Set the verbosity level of the
+  <level>                               debugs.
+diagnose wad debug enable category      Set the traffic category.
+  <category>
+diagnose wad debug display pid enable   Show the WAS worker PID in debugs
+                                        that handle the session request.
+diagnose debug enable                   Start printing debugs in the console.
+
+CPU profiling
+
+Command                                 Description
+diagnose sys profile cpumask <cpu_id>   Set the CPU core to profile.
+diagnose sys profile start              Start CPU profiling and wait for one
+                                        to two minutes to stop.
+diagnose sys profile stop               Stop CPU profiling.
+diagnose sys profile module             Show the applied kernel modules.
+diagnose sys profile show detail        Show the CPU profiling result for the
+diagnose sys profile show order         respective core.
+
+Tree
+
+Command                                 Description
+tree                                    Show the entire command tree.
+tree execute                            Show the execute command tree.
+tree diagnose                           Show the diagnose command tree.
+
+IPv4 and IPv6 routing
+
+Command                                 Description
+get router info routing-table all       Show routing table.
+get router info routing-table database Show IPv4 and IPv6 routing
+get router info6 routing-table         database information.
+  database
+diagnose ip route list                  Show the IPv4 and IPv6 kernel
+get router info kernel                  routing table.
+diagnose ipv6 route list
+get router info6 kernel
+get router info protocols               Show routing protocol information
+get router info6 protocols              for IPv4 and IPv6.
+execute router restart                  Restart the routing daemon
+get router info ospf status             Show OSPF status for IPv4 and
+get router info6 ospf status            IPv6.
+Command                                 Description
+get router info multicast igmp        Show IGMP statistics for an
+  interface                           interface.
+get router info multicast igmp groups Show multicast groups subscribed
+                                      to with IGMP.
+diagnose ip multicast get-igmp-limit  Show maximum IGMP states.
+diagnose ip router igmp decode enable Start real-time debugging of IGMP
+diagnose ip router igmp level info    daemon.
+diagnose debug console timestamp
+  enable
+diagnose debug enable
+execute mrouter clear igmp-interface    Clear all IGMP entries from one
+  <interface>                           interface.
+execute mrouter clear igmp-group        Clear all IGMP entries for one or all
+  <group-address>                       groups.
+get router info multicast pim sparse-   Show sparse-mode interface
+  mode <interface>.                     information.
+get router info multicast pim sparse-   Show sparse-mode neighbor
+  mode <neighbor>                       information.
+get router info multicast pim sparse-   Show RP to group mapping
+  mode rp-mapping                       information.
+get router info multicast pim sparse-   Show sparse-mode routing table.
+  mode table
+diagnose ip router pim-sm events        Start real-time debugging of PIM
+  enable                                sparse mode.
+diagnose ip router pim-sm all enable
+diagnose ip router pim-sm level info
+diagnose debug enable
+
+
+SD-WAN
+
+Command                                 Description
+diagnose sys sdwan health-check status Show SD-WAN health check
+                                        statistics.
+diagnose sys sdwan service4             Show SD-WAN rules in control
+diagnose sys sdwan service6             plane.
+diagnose sys sdwan member               Show SD-WAN members.
+diagnose firewall proute list           Show SDWAN rule and policy routes
+                                        in the data plane.
+diagnose sys link-monitor status        Show link monitoring statistics.
+diagnose sys link-monitor interface
+  <interface>
+diagnose debug application link-        Start real-time link monitor
+  monitor -1                            debugging.
+diagnose debug enable
+diagnose test application lnkmtd 1      Show link monitoring statistics.
+diagnose test application lnkmtd 2
+diagnose test application lnkmtd 3
+
+
+Authentication
+
+Command                                 Description
+diagnose firewall auth filter <filter> Set the filter used to list entries.
+diagnose firewall auth list             List filtered, authenticated IPv4
+                                        users.
+diagnose wad user list                  List current users authenticated by
+                                        proxy (wad daemon).
+diagnose debug application fnbamd -1    Start real-time debugging for
+diagnose debug application authd -1     remote and local authentication.
+diagnose debug enable
+diagnose test authserver <auth_         Test authentication directly from the
+  protocol> <server_name> <user>        CLI.
+  <password>
+                                        Caution: The password is visible in
+                                        clear text; be careful when capture
+                                        this command to a log file.
+               SSL VPN web mode has become Agentless VPN, and SSL
+               VPN tunnel mode is no longer supported in 7.6.3 and
+               later. Therefore, SSL VPN related debug commands may
+               not work as expected.
+
+
+Command                                Description
+diagnose vpn ssl debug-filter list     Show any filters that are set for SSL
+                                       VPN debug.
+diagnose vpn ssl debug-filter clear    Clear any filters that are set for SSL
+                                       VPN daemon debug.
+diagnose vpn ssl debug-filter <filter> Set a filter for SSL VPN debugs.
+diagnose debug application sslvpn -1   Start SSL VPN debugs for traffic
+diagnose debug enable                  that the filter is applied to.
+diagnose vpn ssl list                  Show the current SSL VPN sessions
+get vpn ssl monitor                    for both web and tunnel mode.
+execute vpn sslvpn list
+diagnose vpn ssl statistics            Show the SSL VPN statistics.
+diagnose vpn ssl mux-stat
+execute vpn sslvpn list                Show all SSL VPN web and tunnel
+                                       mode connections.
+execute vpn sslvpn del-tunnel          Disconnect the users from tunnel
+                                       mode SSL VPN connection.
+execute vpn sslvpn del-web             Disconnect the users from web
+                                       mode SSL VPN connection.
+
+Managed FortiSwitches
+
+               The successful execution of commands for managed
+               FortiSwitches requires that the feature is available on the
+               FortiSwitch device itself. See the FortiSwitchOS Feature
+               Matrix.
+
+               Enter ? to view additional options or parameters required
+               to obtain the required information in the diagnose
+               switch-controller switch-info commands.
+
+
+Command                                Description
+diagnose switch-controller switch-info Show managed FortiSwitch MAC
+  mac-table                            address list.
+diagnose switch-controller switch-info Show managed FortiSwitch port
+  port-stats                           statistics.
+diagnose switch-controller switch-info Show managed FortiSwitch trunk
+  trunk status                         information.
+diagnose switch-controller switch-info Show MCLAG related information
+  mclag                                from FortiSwitch.
+diagnose switch-controller switch-info Show POE-related information.
+  poe
+diagnose switch-controller switch-info Show LLDP-related information.
+  lldp
+diagnose switch-controller switch-info Show managed FortiSwitch port
+  port-properties                      properties.
+diagnose switch-controller switch-info Show managed FortiSwitch port
+  acl-counters                         ACL counters information.
+diagnose switch-controller switch-info Show managed FortiSwitch pdu-
+  pdu-counters-list                    counters information.
+diagnose switch-controller switch-info Show managed FortiSwitch
+  flapguard                            flapguard information.
+diagnose switch-controller switch-info Show managed FortiSwitch QoS
+  qos-stats                            statistics.
+diagnose switch-controller switch-info Show modules related information
+  modules                              from FortiSwitch.
+diagnose switch-controller switch-info Show managed FortiSwitch STP
+  stp                                  instance status.
+Command                                 Description
+diagnose system ha status               Show HA status and information.
+get system ha status
+execute ha manage <index> <username>    Log into and manage a specific HA
+                                        member.
+diagnose sys ha checksum cluster        Show checksum information of all
+                                        cluster members.
+diagnose sys ha checksum show <vdom>    Show detailed checksum
+                                        information for a VDOM.
+diagnose sys ha checksum recalculate    Recalculate HA checksums.
+diagnose sys ha recalculate-extfile-    Recalculate HA external files
+  signature                             signatures.
+diagnose sys ha reset-uptime            Reset the HA uptime. This is used to
+                                        test failover.
+diagnose debug application hatalk -1    Start real-time debugging of HA
+diagnose debug application hasync -1    daemons.
+diagnose debug application harelay -1
+diagnose debug enable
+diagnose sys ha history read            Show HA history.
+execute ha synchronize stop             Manually start and stop HA
+execute ha synchronize start            synchronization.
+
+ZTNA
+
+               The WAD daemon handles proxy related processing.
+               The FortiClient NAC daemon (fcnacd) handles FortiGate
+               to EMS connectivity.
+
+
+Command                                 Description
+diagnose endpoint fctems test-          Verify FortiGate to FortiClient EMS
+  connectivity <EMS>                    connectivity.
+execute fctems verify <EMS>             Verify the FortiClient EMS’s
+                                        certificate.
+diagnose test application fcnacd 2      Dump the EMS connectivity
+                                        information.
+diagnose debug app fcnacd -1            Run real-time FortiClient NAC
+diagnose debug enable                   daemon debugs.
+diagnose endpoint ec-shm list <ip>      Show the endpoint record list.
+  <mac> <EMS_serial_number> <EMS_       Optionally, add filters.
+  tenant_id>
+diagnose endpoint lls-comm send ztna    Query endpoints by client UID, EMS
+  find-uid <uid> <EMS_serial_number>    serial number, and EMS tenant ID.
+  <EMS_tenant_id>
+diagnose endpoint lls-comm send ztna   Query endpoints by the client IP-
+  find-ip-vdom <ip> <vdom>             VDOM pair.
+diagnose wad dev query-by uid <uid>    Query from WAD diagnose
+  <EMS_serial_number> <EMS_tenant_id> command by UID, EMS serial
+                                       number, and EMS tenant ID.
+diagnose wad dev query-by ipv4 <ip>    Query from WAD diagnose
+                                       command by IP address.
+diagnose firewall dynamic list         List EMS security posture tags and
+                                       all dynamic IP and MAC addresses.
+diagnose test application fcnacd 7     Check the FortiClient NAC daemon
+diagnose test application fcnacd 8     ZTNA and route cache.
+diagnose wad worker policy list        Display statistics associated with
+                                       application gateway rules.
+diagnose wad debug enable category all Run real-time WAD debugs.
+diagnose wad debug enable level
+  verbose
+diagnose debug enable
+diagnose debug reset                    Reset debugs when completed
+

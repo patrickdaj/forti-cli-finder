@@ -1,0 +1,2590 @@
+{
+ "_comment": [
+  "Commands and arguments mined from the CLI troubleshooting cheat sheets.",
+  "Written by tools/parse_cheat.py. Regenerate rather than hand-edit.",
+  "Rows on those sheets are examples, not syntax, so any whose path carried a",
+  "literal value was skipped rather than invented into a command."
+ ],
+ "skipped_as_examples": [
+  "diagnose debug app fcnacd -1",
+  "diagnose debug application authd -1",
+  "diagnose debug application fnbamd -1",
+  "diagnose debug application fssod -1",
+  "diagnose debug application hasync -1",
+  "diagnose debug application hatalk -1",
+  "diagnose debug application ike -1",
+  "diagnose debug application link-",
+  "diagnose debug application modemd -1",
+  "diagnose debug application samld -1",
+  "diagnose debug application sip -1",
+  "diagnose debug application smbcd -1",
+  "diagnose debug application sslvpn -1",
+  "diagnose debug application update -1",
+  "diagnose debug authd fsso refresh-",
+  "diagnose debug authd fsso server-",
+  "diagnose debug duration 0",
+  "diagnose debug fsso-polling refresh-",
+  "diagnose endpoint fctems test-",
+  "diagnose firewall shaper traffic-",
+  "diagnose sys ha recalculate-extfile-",
+  "diagnose sys kill 11 <pid>",
+  "diagnose test application bfd 1",
+  "diagnose test application fcnacd 2",
+  "diagnose test application fcnacd 7",
+  "diagnose test application fcnacd 8",
+  "diagnose test application lnkmtd 1",
+  "diagnose test application wad 1000",
+  "diagnose test application wad 2",
+  "diagnose test application wad 99",
+  "execute log fortianalyzer test-",
+  "execute switch-controller diagnose-",
+  "execute switch-controller get-",
+  "execute switch-controller get-conn-",
+  "get router info multicast pim sparse-"
+ ],
+ "facts": {
+  "fortios": [
+   {
+    "k": "diagnose",
+    "p": "autoupdate status",
+    "d": "Show license information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug authd fsso list",
+    "d": "Fortigate polls the DC.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug config-error-log read",
+    "d": "Show errors in the configuration file.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug console timestamp",
+    "d": "Start printing timestamps on",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug disable",
+    "d": "Stop printing debugs in the console. The debugs are still running in the background; use diagnose debug reset to completely stop them.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug enable",
+    "d": "Start printing debugs in the console.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug flow filter",
+    "d": "Set a filter for running IPv4 traffic debug flows.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "debug flow filter clear",
+    "d": "Clear any IPv4 debug flow filters.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug flow filter6",
+    "d": "Set a filter for running IPv6 traffic debug flows. that the traffic is going through.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "debug flow filter6 clear",
+    "d": "Clear any IPv6 debug flow filters.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug flow trace start",
+    "d": "Show n lines of IPv4 debugs.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<n>",
+      "k": "<n>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "debug flow trace start6",
+    "d": "Show n lines of IPv6 debugs.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<n>",
+      "k": "<n>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "debug fsso-polling detail",
+    "d": "Show information about the polls",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug fsso-polling summary",
+    "d": "from FortiGate to DC.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug fsso-polling user",
+    "d": "Show FSSO logged on users when",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug rating",
+    "d": "Show web filter rating server information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug reset",
+    "d": "Stop all the prior debugs that were enabled and running in the foreground or background.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug urlfilter",
+    "d": "Start real-time debugging for web",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "disktest block",
+    "d": "is faulty.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<block>",
+      "k": "<block>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "disktest device",
+    "d": "Execute a disk check to check if disk",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<device>",
+      "k": "<device>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "disktest size",
+    "d": "l <device>: Device to test",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<mb>",
+      "k": "<mb>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "endpoint ec-shm list",
+    "d": "Show the endpoint record list.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<ip>",
+      "k": "<ip>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "endpoint lls-comm send ztna",
+    "d": "Query endpoints by client UID, EMS",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "firewall auth list",
+    "d": "List filtered, authenticated IPv4 users.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "firewall dynamic list",
+    "d": "List EMS security posture tags and all dynamic IP and MAC addresses.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "firewall iprope list",
+    "d": "Show FortiGate’s internal firewall table.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "firewall proute list",
+    "d": "Show SDWAN rule and policy routes in the data plane.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "hardware deviceinfo disk",
+    "d": "Show disk information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "hardware deviceinfo nic",
+    "d": "Show detailed interface information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "hardware sysinfo cpu",
+    "d": "Show CPU information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "hardware sysinfo interrupts",
+    "d": "Show hardware interrupts statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "hardware sysinfo memory",
+    "d": "Show system memory information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ip address list",
+    "d": "Show IP address information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ip multicast get-igmp-limit",
+    "d": "Show maximum IGMP states.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ip route list",
+    "d": "Show the IPv4 and IPv6 kernel",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ip router igmp level info",
+    "d": "daemon.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ip router pim-sm events",
+    "d": "Start real-time debugging of PIM statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ips debug enable all",
+    "d": "profile",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ips debug enable av",
+    "d": "Start real-time debugging for",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ips debug status show",
+    "d": "antivirus profile when antivirus",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ips session list",
+    "d": "Show the IPS sessions in each",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "log test",
+    "d": "Generate logs for testing.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "netlink brctl list",
+    "d": "Show the names of all of the switches on the FortiGate.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sniffer packet",
+    "d": "Execute the inbuilt packet sniffer, the specified filter. For more information, see Performing a sniffer trace or packet capture.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<interface>",
+      "k": "<interface>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "snmp ip frags",
+    "d": "Show fragmentation and reassembly information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys cmdb info",
+    "d": "Show information about the latest configuration change performed by the daemon.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys flash list",
+    "d": "Show flash partitions.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha checksum cluster",
+    "d": "Show checksum information of all cluster members.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha checksum recalculate",
+    "d": "Recalculate HA checksums.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha checksum show",
+    "d": "Show detailed checksum information for a VDOM.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<vdom>",
+      "k": "<vdom>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha history read",
+    "d": "Show HA history.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha reset-uptime",
+    "d": "Reset the HA uptime. This is used to test failover.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha status",
+    "d": "Show HA status and information.",
+    "src": "FortiOS 8.0 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys link-monitor status",
+    "d": "Show link monitoring statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys modem detect",
+    "d": "Detect the modem and start real-",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys mpstat",
+    "d": "Show CPU usage every n seconds.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "{n}",
+      "k": "{n}",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys process dump",
+    "d": "Show essential process related",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<PID>",
+      "k": "<PID>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys process pidof",
+    "d": "Show PID of the daemon that is running. The names of currently running daemons can be found using diagnose sys top. For example: diagnose sys process pidof httpsd",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<daemon>",
+      "k": "<daemon>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys process pstack",
+    "d": "information for a particular process",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<PID>",
+      "k": "<PID>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys process trace",
+    "d": "PID.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<PID>",
+      "k": "<PID>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys profile cpumask",
+    "d": "Set the CPU core to profile.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<cpu_id>",
+      "k": "<cpu_id>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys profile module",
+    "d": "Show the applied kernel modules.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys profile show detail",
+    "d": "Show the CPU profiling result for the",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys profile show order",
+    "d": "respective core.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys profile start",
+    "d": "Start CPU profiling and wait for one to two minutes to stop.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys profile stop",
+    "d": "Stop CPU profiling.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sdwan member",
+    "d": "Show SD-WAN members.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sdwan service4",
+    "d": "Show SD-WAN rules in control",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sdwan service6",
+    "d": "plane.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys session clear",
+    "d": "Clear the session table for the specified filter.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys session exp-stat",
+    "d": "Show expectation session statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys session filter",
+    "d": "Set session table filters.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys session list",
+    "d": "Show session table after filtering.",
+    "src": "FortiOS 8.0 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys session stat",
+    "d": "Show session statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sip dialog list",
+    "d": "Show SIP dialogue list.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sip mapping list",
+    "d": "Show SIP mapping list.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sip status",
+    "d": "Show SIP status.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sip-proxy calls list",
+    "d": "Show list of active SIP proxy calls.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sip-proxy session list",
+    "d": "Show SIP proxy session list.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sip-proxy stats",
+    "d": "Show SIP proxy statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys top",
+    "d": "Show a list of the first n processes every s seconds for i iterations. l Shift +C: Sort by highest CPU l Shift + M: Sort by highest memory",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "{s}",
+      "k": "{s}",
+      "d": ""
+     },
+     {
+      "n": "{n}",
+      "k": "{n}",
+      "d": ""
+     },
+     {
+      "n": "{i}",
+      "k": "{i}",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys vd list",
+    "d": "Show virtual domain information and system statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "test application dnsproxy",
+    "d": "Show the DNS proxy debug output",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "test application ipsmonitor",
+    "d": "Restart all IPS engines and monitor.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "test application urlfilter",
+    "d": "Show the web filter debug output",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "test authserver radius",
+    "d": "Test user authentication using a Caution: The password is visible in clear text; be careful when capture this command to a log file.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike counts",
+    "d": "Show other information, such as IKE",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike gateway filter",
+    "d": "Use various options to filter the IKE gateways.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike gateway list",
+    "d": "Show IPsec phase 1 information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike log filter",
+    "d": "Set a filter for IKE daemon debugs.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike restart",
+    "d": "Restart the IKE process.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike routes",
+    "d": "counts, routes, errors, and statistics. operating with rapid PVST network.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ipsec status",
+    "d": "Show information about encryption counters.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ssl debug-filter clear",
+    "d": "Clear any filters that are set for SSL VPN daemon debug.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ssl debug-filter list",
+    "d": "Show any filters that are set for SSL VPN debug.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ssl list",
+    "d": "Show the current SSL VPN sessions",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ssl statistics",
+    "d": "Show the SSL VPN statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn tunnel flush",
+    "d": "Flush one or more specific Phase2",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<name>",
+      "k": "<name>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn tunnel list",
+    "d": "Show IPsec phase 2 information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad debug display pid enable",
+    "d": "Show the WAS worker PID in debugs that handle the session request.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad debug enable category",
+    "d": "Set the traffic category.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad debug enable level",
+    "d": "Set the verbosity level of the",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad dev query-by ipv4",
+    "d": "Query from WAD diagnose command by IP address.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<ip>",
+      "k": "<ip>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "wad dev query-by uid",
+    "d": "Query from WAD diagnose number, and EMS tenant ID.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<uid>",
+      "k": "<uid>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "wad filter",
+    "d": "traffic processed by WAD daemon.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "wad filter clear",
+    "d": "Clear the WAD filter settings.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad filter list",
+    "d": "Show all the filters that have been set for debugging.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad stream-scan av-test",
+    "d": "profile is configured in proxy mode. status.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad user list",
+    "d": "List current users authenticated by proxy (wad daemon).",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad worker policy list",
+    "d": "Display statistics associated with application gateway rules.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "disk list",
+    "d": "Show available mounted disks.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "factoryreset-shutdown",
+    "d": "Immediately reset to factory If keepvmlicense is specified (VM models only), the VM license is retained after reset.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "fctems verify",
+    "d": "Verify the FortiClient EMS’s certificate.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<EMS>",
+      "k": "<EMS>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "execute",
+    "p": "formatlogdisk",
+    "d": "Format the log disk.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "ha manage",
+    "d": "Log into and manage a specific HA member.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<index>",
+      "k": "<index>",
+      "d": ""
+     },
+     {
+      "n": "<username>",
+      "k": "<username>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "execute",
+    "p": "log delete",
+    "d": "Delete filtered logs.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "log display",
+    "d": "Show filtered logs.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "log filter",
+    "d": "Set log filters.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "execute",
+    "p": "log filter dump",
+    "d": "Show log filters.",
+    "src": "FortiOS 8.0 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "mrouter clear igmp-group",
+    "d": "Clear all IGMP entries for one or all",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "mrouter clear igmp-interface",
+    "d": "Clear all IGMP entries from one",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "ping",
+    "d": "specified options.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<x.x.x.x>",
+      "k": "<x.x.x.x>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "execute",
+    "p": "reboot",
+    "d": "Reboot the device.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "router restart",
+    "d": "Restart the routing daemon",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "ssh",
+    "d": "the specified options.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<x.x.x.x>",
+      "k": "<x.x.x.x>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "execute",
+    "p": "tac report",
+    "d": "Execute TAC report used to open a support ticket with Fortinet Support.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "time",
+    "d": "Show current system time.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "traceroute",
+    "d": "using the specified options.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<x.x.x.x>",
+      "k": "<x.x.x.x>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "execute",
+    "p": "update-now",
+    "d": "Execute the FortiGuard update manually.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "vpn sslvpn del-tunnel",
+    "d": "Disconnect the users from tunnel mode SSL VPN connection.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "vpn sslvpn del-web",
+    "d": "Disconnect the users from web mode SSL VPN connection.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "vpn sslvpn list",
+    "d": "Show all SSL VPN web and tunnel mode connections.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info bfd neighbor",
+    "d": "Show BFD neighbors for IPv4 and",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info bgp neighbors",
+    "d": "Show BGP peer and the advertised",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info bgp summary",
+    "d": "Show BGP summary for IPv4 and",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info kernel",
+    "d": "routing table.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info ospf database brief",
+    "d": "Show OSPF database in brief.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info ospf interface",
+    "d": "Show OSPF running on interface for",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info ospf neighbor all",
+    "d": "Show OSFP neighbor information for",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info ospf status",
+    "d": "Show OSPF status for IPv4 and",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info protocols",
+    "d": "Show routing protocol information",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info routing-table all",
+    "d": "Show routing table.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 bfd neighbor",
+    "d": "IPv6.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 bgp neighbors",
+    "d": "and received routes from the BGP",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 bgp summary",
+    "d": "IPv6.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 ospf interface",
+    "d": "IPv4 and IPv6.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 ospf neighbor",
+    "d": "IPv6.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 ospf status",
+    "d": "IPv6.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 protocols",
+    "d": "for IPv4 and IPv6.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 routing-table",
+    "d": "database information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "system arp",
+    "d": "Show ARP entries.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "system interface",
+    "d": "Show a summary of interface",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "system performance status",
+    "d": "Show CPU and memory utilization.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "system status",
+    "d": "Show system information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "vpn ipsec tunnel summary",
+    "d": "Show summary and detailed",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "vpn ssl monitor",
+    "d": "for both web and tunnel mode.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   }
+  ],
+  "fortios-8.0": [
+   {
+    "k": "diagnose",
+    "p": "autoupdate status",
+    "d": "Show license information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug authd fsso list",
+    "d": "Fortigate polls the DC.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug config-error-log read",
+    "d": "Show errors in the configuration file.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug console timestamp",
+    "d": "Start printing timestamps on",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug disable",
+    "d": "Stop printing debugs in the console. The debugs are still running in the background; use diagnose debug reset to completely stop them.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug enable",
+    "d": "Start printing debugs in the console.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug flow filter",
+    "d": "Set a filter for running IPv4 traffic debug flows.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "debug flow filter clear",
+    "d": "Clear any IPv4 debug flow filters.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug flow filter6",
+    "d": "Set a filter for running IPv6 traffic debug flows. that the traffic is going through.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "debug flow filter6 clear",
+    "d": "Clear any IPv6 debug flow filters.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug flow trace start",
+    "d": "Show n lines of IPv4 debugs.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<n>",
+      "k": "<n>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "debug flow trace start6",
+    "d": "Show n lines of IPv6 debugs.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<n>",
+      "k": "<n>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "debug fsso-polling detail",
+    "d": "Show information about the polls",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug fsso-polling summary",
+    "d": "from FortiGate to DC.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug fsso-polling user",
+    "d": "Show FSSO logged on users when",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug rating",
+    "d": "Show web filter rating server information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug reset",
+    "d": "Stop all the prior debugs that were enabled and running in the foreground or background.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "debug urlfilter",
+    "d": "Start real-time debugging for web",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "disktest block",
+    "d": "is faulty.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<block>",
+      "k": "<block>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "disktest device",
+    "d": "Execute a disk check to check if disk",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<device>",
+      "k": "<device>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "disktest size",
+    "d": "l <device>: Device to test",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<mb>",
+      "k": "<mb>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "endpoint ec-shm list",
+    "d": "Show the endpoint record list.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<ip>",
+      "k": "<ip>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "endpoint lls-comm send ztna",
+    "d": "Query endpoints by client UID, EMS",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "firewall auth list",
+    "d": "List filtered, authenticated IPv4 users.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "firewall dynamic list",
+    "d": "List EMS security posture tags and all dynamic IP and MAC addresses.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "firewall iprope list",
+    "d": "Show FortiGate’s internal firewall table.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "firewall proute list",
+    "d": "Show SDWAN rule and policy routes in the data plane.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "hardware deviceinfo disk",
+    "d": "Show disk information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "hardware deviceinfo nic",
+    "d": "Show detailed interface information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "hardware sysinfo cpu",
+    "d": "Show CPU information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "hardware sysinfo interrupts",
+    "d": "Show hardware interrupts statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "hardware sysinfo memory",
+    "d": "Show system memory information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ip address list",
+    "d": "Show IP address information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ip multicast get-igmp-limit",
+    "d": "Show maximum IGMP states.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ip route list",
+    "d": "Show the IPv4 and IPv6 kernel",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ip router igmp level info",
+    "d": "daemon.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ip router pim-sm events",
+    "d": "Start real-time debugging of PIM statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ips debug enable all",
+    "d": "profile",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ips debug enable av",
+    "d": "Start real-time debugging for",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ips debug status show",
+    "d": "antivirus profile when antivirus",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "ips session list",
+    "d": "Show the IPS sessions in each",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "log test",
+    "d": "Generate logs for testing.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "netlink brctl list",
+    "d": "Show the names of all of the switches on the FortiGate.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sniffer packet",
+    "d": "Execute the inbuilt packet sniffer, the specified filter. For more information, see Performing a sniffer trace or packet capture.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<interface>",
+      "k": "<interface>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "snmp ip frags",
+    "d": "Show fragmentation and reassembly information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys cmdb info",
+    "d": "Show information about the latest configuration change performed by the daemon.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys flash list",
+    "d": "Show flash partitions.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha checksum cluster",
+    "d": "Show checksum information of all cluster members.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha checksum recalculate",
+    "d": "Recalculate HA checksums.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha checksum show",
+    "d": "Show detailed checksum information for a VDOM.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<vdom>",
+      "k": "<vdom>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha history read",
+    "d": "Show HA history.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha reset-uptime",
+    "d": "Reset the HA uptime. This is used to test failover.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha status",
+    "d": "Show HA status and information.",
+    "src": "FortiOS 8.0 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys link-monitor status",
+    "d": "Show link monitoring statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys modem detect",
+    "d": "Detect the modem and start real-",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys mpstat",
+    "d": "Show CPU usage every n seconds.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "{n}",
+      "k": "{n}",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys process dump",
+    "d": "Show essential process related",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<PID>",
+      "k": "<PID>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys process pidof",
+    "d": "Show PID of the daemon that is running. The names of currently running daemons can be found using diagnose sys top. For example: diagnose sys process pidof httpsd",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<daemon>",
+      "k": "<daemon>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys process pstack",
+    "d": "information for a particular process",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<PID>",
+      "k": "<PID>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys process trace",
+    "d": "PID.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<PID>",
+      "k": "<PID>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys profile cpumask",
+    "d": "Set the CPU core to profile.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<cpu_id>",
+      "k": "<cpu_id>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys profile module",
+    "d": "Show the applied kernel modules.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys profile show detail",
+    "d": "Show the CPU profiling result for the",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys profile show order",
+    "d": "respective core.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys profile start",
+    "d": "Start CPU profiling and wait for one to two minutes to stop.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys profile stop",
+    "d": "Stop CPU profiling.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sdwan member",
+    "d": "Show SD-WAN members.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sdwan service4",
+    "d": "Show SD-WAN rules in control",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sdwan service6",
+    "d": "plane.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys session clear",
+    "d": "Clear the session table for the specified filter.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys session exp-stat",
+    "d": "Show expectation session statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys session filter",
+    "d": "Set session table filters.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys session list",
+    "d": "Show session table after filtering.",
+    "src": "FortiOS 8.0 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys session stat",
+    "d": "Show session statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sip dialog list",
+    "d": "Show SIP dialogue list.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sip mapping list",
+    "d": "Show SIP mapping list.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sip status",
+    "d": "Show SIP status.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sip-proxy calls list",
+    "d": "Show list of active SIP proxy calls.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sip-proxy session list",
+    "d": "Show SIP proxy session list.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sip-proxy stats",
+    "d": "Show SIP proxy statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "sys top",
+    "d": "Show a list of the first n processes every s seconds for i iterations. l Shift +C: Sort by highest CPU l Shift + M: Sort by highest memory",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "{s}",
+      "k": "{s}",
+      "d": ""
+     },
+     {
+      "n": "{n}",
+      "k": "{n}",
+      "d": ""
+     },
+     {
+      "n": "{i}",
+      "k": "{i}",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "sys vd list",
+    "d": "Show virtual domain information and system statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "test application dnsproxy",
+    "d": "Show the DNS proxy debug output",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "test application ipsmonitor",
+    "d": "Restart all IPS engines and monitor.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "test application urlfilter",
+    "d": "Show the web filter debug output",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "test authserver radius",
+    "d": "Test user authentication using a Caution: The password is visible in clear text; be careful when capture this command to a log file.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike counts",
+    "d": "Show other information, such as IKE",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike gateway filter",
+    "d": "Use various options to filter the IKE gateways.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike gateway list",
+    "d": "Show IPsec phase 1 information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike log filter",
+    "d": "Set a filter for IKE daemon debugs.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike restart",
+    "d": "Restart the IKE process.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike routes",
+    "d": "counts, routes, errors, and statistics. operating with rapid PVST network.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ipsec status",
+    "d": "Show information about encryption counters.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ssl debug-filter clear",
+    "d": "Clear any filters that are set for SSL VPN daemon debug.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ssl debug-filter list",
+    "d": "Show any filters that are set for SSL VPN debug.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ssl list",
+    "d": "Show the current SSL VPN sessions",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ssl statistics",
+    "d": "Show the SSL VPN statistics.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn tunnel flush",
+    "d": "Flush one or more specific Phase2",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<name>",
+      "k": "<name>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn tunnel list",
+    "d": "Show IPsec phase 2 information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad debug display pid enable",
+    "d": "Show the WAS worker PID in debugs that handle the session request.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad debug enable category",
+    "d": "Set the traffic category.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad debug enable level",
+    "d": "Set the verbosity level of the",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad dev query-by ipv4",
+    "d": "Query from WAD diagnose command by IP address.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<ip>",
+      "k": "<ip>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "wad dev query-by uid",
+    "d": "Query from WAD diagnose number, and EMS tenant ID.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<uid>",
+      "k": "<uid>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "wad filter",
+    "d": "traffic processed by WAD daemon.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "diagnose",
+    "p": "wad filter clear",
+    "d": "Clear the WAD filter settings.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad filter list",
+    "d": "Show all the filters that have been set for debugging.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad stream-scan av-test",
+    "d": "profile is configured in proxy mode. status.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad user list",
+    "d": "List current users authenticated by proxy (wad daemon).",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "wad worker policy list",
+    "d": "Display statistics associated with application gateway rules.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "diagnose",
+    "p": "webfilter fortiguard",
+    "d": "Show rating cache and daemon",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "disk list",
+    "d": "Show available mounted disks.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "factoryreset-shutdown",
+    "d": "Immediately reset to factory If keepvmlicense is specified (VM models only), the VM license is retained after reset.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "fctems verify",
+    "d": "Verify the FortiClient EMS’s certificate.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<EMS>",
+      "k": "<EMS>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "execute",
+    "p": "formatlogdisk",
+    "d": "Format the log disk.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "ha manage",
+    "d": "Log into and manage a specific HA member.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<index>",
+      "k": "<index>",
+      "d": ""
+     },
+     {
+      "n": "<username>",
+      "k": "<username>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "execute",
+    "p": "log delete",
+    "d": "Delete filtered logs.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "log display",
+    "d": "Show filtered logs.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "log filter",
+    "d": "Set log filters.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<filter>",
+      "k": "<filter>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "execute",
+    "p": "log filter dump",
+    "d": "Show log filters.",
+    "src": "FortiOS 8.0 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "mrouter clear igmp-group",
+    "d": "Clear all IGMP entries for one or all",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "mrouter clear igmp-interface",
+    "d": "Clear all IGMP entries from one",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "ping",
+    "d": "specified options.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<x.x.x.x>",
+      "k": "<x.x.x.x>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "execute",
+    "p": "reboot",
+    "d": "Reboot the device.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "router restart",
+    "d": "Restart the routing daemon",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "ssh",
+    "d": "the specified options.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<x.x.x.x>",
+      "k": "<x.x.x.x>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "execute",
+    "p": "tac report",
+    "d": "Execute TAC report used to open a support ticket with Fortinet Support.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "time",
+    "d": "Show current system time.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "traceroute",
+    "d": "using the specified options.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": [
+     {
+      "n": "<x.x.x.x>",
+      "k": "<x.x.x.x>",
+      "d": ""
+     }
+    ]
+   },
+   {
+    "k": "execute",
+    "p": "update-now",
+    "d": "Execute the FortiGuard update manually.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "vpn sslvpn del-tunnel",
+    "d": "Disconnect the users from tunnel mode SSL VPN connection.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "vpn sslvpn del-web",
+    "d": "Disconnect the users from web mode SSL VPN connection.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "execute",
+    "p": "vpn sslvpn list",
+    "d": "Show all SSL VPN web and tunnel mode connections.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info bfd neighbor",
+    "d": "Show BFD neighbors for IPv4 and",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info bgp neighbors",
+    "d": "Show BGP peer and the advertised",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info bgp summary",
+    "d": "Show BGP summary for IPv4 and",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info kernel",
+    "d": "routing table.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info ospf status",
+    "d": "Show OSPF status for IPv4 and",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info routing-table all",
+    "d": "Show routing table.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 bfd neighbor",
+    "d": "IPv6.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 bgp neighbors",
+    "d": "and received routes from the BGP",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 bgp summary",
+    "d": "IPv6.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 ospf neighbor",
+    "d": "IPv6.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 ospf status",
+    "d": "IPv6.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "router info6 routing-table",
+    "d": "database information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "system arp",
+    "d": "Show ARP entries.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "system interface",
+    "d": "Show a summary of interface",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "system performance status",
+    "d": "Show CPU and memory utilization.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "system status",
+    "d": "Show system information.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "vpn ipsec tunnel summary",
+    "d": "Show summary and detailed",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   },
+   {
+    "k": "get",
+    "p": "vpn ssl monitor",
+    "d": "for both web and tunnel mode.",
+    "src": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+    "x": []
+   }
+  ]
+ }
+}

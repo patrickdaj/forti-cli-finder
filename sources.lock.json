@@ -14,6 +14,20 @@
    "title": "FortiOS 7.4.12 Administration Guide",
    "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/c673a09c-47e1-11f1-b31d-02356ffb40d9/FortiOS-7.4.12-Administration_Guide.pdf"
   },
+  "cheat76": {
+   "bytes": 159140,
+   "doc": "/document/fortigate/7.6.0/cli-troubleshooting-cheat-sheet",
+   "name": "FortiOS-7.6-Troubleshooting_Cheat_Sheet.pdf",
+   "title": "FortiOS 7.6 Troubleshooting Cheat Sheet",
+   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/ab3b58c0-3a4d-11ef-bfe5-fa163e15d75b/FortiOS-7.6-Troubleshooting_Cheat_Sheet.pdf"
+  },
+  "cheat80": {
+   "bytes": 158412,
+   "doc": "/document/fortigate/8.0.0/cli-troubleshooting-cheat-sheet",
+   "name": "FortiOS-8.0-Troubleshooting_Cheat_Sheet.pdf",
+   "title": "FortiOS 8.0 Troubleshooting Cheat Sheet",
+   "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/389f4e0d-59e9-11f1-a33a-02356ffb40d9/FortiOS-8.0-Troubleshooting_Cheat_Sheet.pdf"
+  },
   "faz-cli": {
    "bytes": 2272162,
    "doc": "/document/fortianalyzer/7.6.7/cli-reference",

@@ -1,0 +1,358 @@
+Command                                 Description
+execute factoryreset2 [keepvmlicense] Reset to factory default, except
+                                      system settings, system interfaces,
+                                      VDOMs, static routes, and virtual
+                                      switches.
+                                      If keepvmlicense is specified (VM
+                                      models only), the VM license is
+                                      retained after reset.
+diagnose debug config-error-log read  Show errors in the configuration file.
+diagnose snmp ip frags                Show fragmentation and
+                                      reassembly information.
+diagnose sys process dump <PID>       Show essential process related
+diagnose sys process pstack <PID>     information for a particular process
+diagnose sys process trace <PID>      PID.
+diagnose sys mpstat {n}               Show CPU usage every n seconds.
+diagnose hardware sysinfo memory      Show system memory information.
+diagnose firewall packet distribution Show packet distribution statistics.
+execute reboot                        Reboot the device.
+
+Hardware
+
+Command                                 Description
+diagnose hardware sysinfo interrupts    Show hardware interrupts statistics.
+diagnose hardware test suite all        Execute a hardware diagnostic test,
+                                        also known as an HQIP test.
+diagnose hardware deviceinfo disk       Show disk information.
+diagnose sys flash list                 Show flash partitions.
+execute disk list                       Show available mounted disks.
+execute disk format <partition ref>     Format the referenced partition.
+diagnose disktest device <device>       Execute a disk check to check if disk
+diagnose disktest block <block>         is faulty.
+diagnose disktest size <mb>               l <device>: Device to test
+diagnose disk test run                    l <block>: Block size of each
+
+                                             read/write operation.
+                                          l <mb>: Test size limit for each
+
+                                             cycle
+execute formatlogdisk                   Format the log disk.
+diagnose hardware sysinfo cpu           Show CPU information.
+diagnose sys modem detect               Detect the modem and start real-
+diagnose debug application modemd -1    time debugging of the modem
+diagnose debug enable                   daemon.
+
+FortiGuard
+
+Command                                 Description
+diagnose webfilter fortiguard           Show rating cache and daemon
+  statistics                            statistics.
+diagnose debug rating                   Show web filter rating server
+                                        information.
+diagnose debug application update -1    Start debugging for updated
+diagnose debug enable                   daemon to troubleshoot FortiGuard
+                                        update issues.
+execute update-now                      Execute the FortiGuard update
+                                        manually.
+diagnose autoupdate status              Show license information.
+diagnose autoupdate versions
+          Tip: Using filters to review traffic traversing the FortiGate.
+
+
+UTM
+
+Command                                Description
+diagnose debug urlfilter <filter>      Start real-time debugging for web
+diagnose debug application urlfilter - filter traffic.
+  1
+diagnose debug enable
+diagnose debug enable                  List the web filter debug outputs.
+diagnose test application urlfilter
+diagnose test application urlfilter    Show the web filter debug output
+  <option>                             for the specified option.
+diagnose debug application dnsproxy -1 Start real-time debugging for DNS
+diagnose debug enable                  proxy. DNS proxy is responsible for
+                                       DNS filter, DNS translation, DNS
+                                       resolution etc.
+diagnose debug enable                  List the DNS proxy debug outputs.
+diagnose test application dnsproxy
+diagnose test application dnsproxy     Show the DNS proxy debug output
+  <option>                             for the specified option.
+diagnose ips filter set "host          Start IPS engine debugs for
+  <x.x.x.x> and port <port>"           Application Control and IPS Security
+diagnose ips debug enable all          profile
+diagnose debug enable
+diagnose ips debug enable av           Start real-time debugging for
+diagnose ips debug status show         antivirus profile when antivirus
+diagnose sys scanunit debug all enable profile is configured in flow mode.
+diagnose sys scanunit debug level
+  verbose
+diagnose sys scanunit debug show
+diagnose debug enable
+diagnose wad debug enable category     Start real time debugging for
+  scan                                 antivirus profile when antivirus
+diagnose wad stream-scan av-test       profile is configured in proxy mode.
+  "debug enable"
+diagnose wad stream-scan av-test
+  "debug all:debug"
+diagnose sys scanunit debug all enable
+diagnose sys scanunit debug level
+  verbose
+diagnose sys scanunit debug show
+diagnose debug enable
+
+
+IPS engine
+The IPS engine handles traffic related to flow-based processing.
+
+
+          Real-time debugs are CPU intensive tasks. Running real-time
+          IPS engine debugs with proper filters can result in high CPU
+          usage.
+
+
+Command                                Description
+diagnose test application ipsmonitor 1 Show IPS engine information
+diagnose test application ipsmonitor 2 Set the IPS engine enable/disable
+                                       status.
+diagnose test application ipsmonitor   Restart all IPS engines and monitor.
+  99
+diagnose test application ipsmonitor   Start all IPS engines.
+  97
+diagnose test application ipsmonitor   Stop all IPS engines.
+  98
+diagnose ips session list              Show the IPS sessions in each
+diagnose test application ipsmonitor   engine's memory space.
+  13
+diagnose ips filter set "host          Show IPS engine debugs for the
+  <x.x.x.x> and port <port>"           traffic specified by the filter.
+diagnose ips debug enable all
+diagnose debug enable
+diagnose test application bfd 3
+diagnose debug application bfdd <debug Start real-time BFD debugging .
+  level>
+diagnose debug enable
+get router info bgp summary            Show BGP summary for IPv4 and
+get router info6 bgp summary           IPv6.
+get router info bgp neighbors          Show BGP peer and the advertised
+get router info6 bgp neighbors         and received routes from the BGP
+get router info bgp neighbors          peer.
+  <x.x.x.x> advertised-routes            l Substitute <x.x.x.x> with IPv4
+get router info6 bgp neighbors
+                                           address of the peer.
+  <x:x::x:x/m> advertised-routes
+                                         l Substitute <x:x::x:x/m> with
+get router info bgp neighbors
+  <x.x.x.x> received-routes                IPv6 address of the peer.
+get router info6 bgp neighbors
+  <x:x::x:x/m> received-routes
+get router info bgp neighbors
+  <x.x.x.x> routes
+get router info6 bgp neighbors
+  <x:x::x:x/m> routes
+diagnose ip router bgp all enable      Start real-time BGP debugging.
+diagnose ip router bgp level info
+diagnose debug enable
+execute router clear bgp {all | as     Execute a hard reset based on the
+  <ASN> | ip x.x.x.x | ipv6            specified parameters:
+  y:y:y:y:y:y:y:y}                       l all: all BGP peers
+
+                                         l as <ASN>: BGP peers specified
+
+                                           by AS number
+                                         l ip x.x.x.x: BGP peer
+
+                                           specified by IPv4 address
+                                           (x.x.x.x)
+                                         l ipv6 y:y:y:y:y:y:y:y: BGP
+
+                                           peer specified by IPv6 address
+                                           (y:y:y:y:y:y:y:y)
+execute router clear bgp {all | ip      Executea soft reset based on the
+  x.x.x.x | ipv6 y:y:y:y:y:y:y:y} soft specified parameter:
+  {in|out}                               l all: all BGP peers
+
+                                         l ip x.x.x.x: BGP peer
+
+                                           specified by IPv4 address
+                                           (x.x.x.x)
+                                         l ipv6 y:y:y:y:y:y:y:y: BGP
+
+                                           peer specified by IPv6 address
+                                           (y:y:y:y:y:y:y:y)
+                                         l in: received BGP routes only
+
+                                         l out: advertised BGP routes
+
+                                           only
+                                           A soft reset will occur in both
+                                           directions if neither in nor out is
+                                           specified.
+get router info ospf status            Show OSPF status for IPv4 and
+get router info6 ospf status           IPv6.
+get router info ospf interface         Show OSPF running on interface for
+get router info6 ospf interface        IPv4 and IPv6.
+get router info ospf neighbor all      Show OSFP neighbor information for
+get router info6 ospf neighbor all     IPv4 and IPv6.
+get router info ospf database brief     Show OSPF database in brief for
+get router info6 ospf database brief   IPv4 and IPv6.
+diagnose ip router ospf all enable     Start real-time OSPF debugging.
+diagnose ip router ospf level info
+diagnose debug enable
+ name> <user> <password>               LDAP server.
+                                       Caution: The password is visible in
+                                       clear text; be careful when capture
+                                       this command to a log file.
+diagnose test authserver radius        Test user authentication using a
+  <server_name> <auth_type> <user>     Radius server.
+  <password>
+                                       Caution: The password is visible in
+                                       clear text; be careful when capture
+                                       this command to a log file.
+diagnose debug fsso-polling detail     Show information about the polls
+diagnose debug fsso-polling summary    from FortiGate to DC.
+diagnose debug fsso-polling user       Show FSSO logged on users when
+diagnose debug authd fsso list         Fortigate polls the DC.
+diagnose debug application fssod -1    Start real-time debugging when the
+diagnose debug application smbcd -1    FortiGate is used for FSSO polling.
+diagnose debug enable
+diagnose debug fsso-polling refresh-  Refresh the current logged on FSSO
+  user <id>                           users and refresh the list.
+execute fsso refresh
+                                      Caution: This command can cause
+                                      an outage, use it carefully.
+diagnose debug authd fsso server-     Show current status of connection
+  status                              between FortiGate and the collector
+                                      agent.
+diagnose debug application authd 8256 Start real-time debugging for the
+diagnose debug enable                 connection between FortiGate and
+                                      the collector agent.
+diagnose debug authd fsso refresh-    Resend the logged-on users list to
+  logons                              FortiGate from the collector agent.
+diagnose debug application authd 8256 Start real-time debugging for the
+diagnose debug enable                 connection between FortiGate and
+                                      the collector agent.
+diagnose debug application samld -1   Start real-time SAML debugging.
+diagnose debug enable
+
+
+IPsec
+
+Command                                Description
+diagnose vpn ike gateway list          Show IPsec phase 1 information.
+diagnose vpn tunnel list               Show IPsec phase 2 information.
+get vpn ipsec tunnel summary           Show summary and detailed
+get vpn ipsec tunnel details           information about IPsec tunnels.
+diagnose vpn tunnel flush              Flush all Phase2 tunnel SAs
+                                       (Security Associations).
+diagnose vpn tunnel flush <name>       Flush one or more specific Phase2
+  [name]                               tunnels by name.
+diagnose vpn ike gateway <clear |      Clear/flush IKE gateways (Phase1).
+  flush>                               Apply diagnose vpn ike gateway
+                                       filter to filter on specific
+                                       gateways.
+diagnose vpn ike gateway <clear |      Clear/flush a specific IKE gateway
+  flush> name <name>                   (Phase1) by name.
+diagnose vpn ike gateway filter        Use various options to filter the IKE
+                                       gateways.
+diagnose vpn ipsec status              Show information about encryption
+                                       counters.
+diagnose vpn ike log filter <filter>   Set a filter for IKE daemon debugs.
+diagnose debug application ike -1      Start real-time debugging of IKE
+diagnose debug enable                  daemon with the filter set.
+diagnose vpn ike restart               Restart the IKE process.
+diagnose vpn ike counts                Show other information, such as IKE
+diagnose vpn ike routes                counts, routes, errors, and statistics.
+diagnose vpn ike errors
+diagnose vpn ike stats
+diagnose vpn ike status
+diagnose vpn ike crypto
+ rpvst                                  port information when inter-
+                                        operating with rapid PVST network.
+execute switch-controller get-conn-     Show FortiSwitch connection
+  status <fortiswitch>                  status.
+execute switch-controller get-          Show FortiLink connectivity graph.
+  physical-conn standard <fortilink-
+  name>
+execute switch-controller diagnose-     Show FortiSwitch connection
+  connection <fortiswitch>              diagnostics.
+
+Managed FortiAPs
+
+Command                                 Description
+diagnose wireless-controller wlac -c    Show information about the FortiAP
+  wtp                                   devices.
+diagnose wireless-controller wlac -d
+  wtp
+diagnose wireless-controller wlac -c    Show information about the wireless
+  sta                                   clients connected to the FortiAP
+diagnose wireless-controller wlac -d    devices.
+  sta
+diagnose wireless-controller wlac help Show a list of debug options
+                                        available for the wireless controller.
+diagnose wireless-controller wlac sta_ Start real-time debugging of a
+  filter                               wireless client/station that connects
+diagnose wireless-controller wlac sta_ to the FortiAP.
+  filter clear                           l <aa:bb:cc:dd:ee:ff>: MAC
+diagnose wireless-controller wlac sta_
+                                            address of endpoint/station
+  filter <aa:bb:cc:dd:ee:ff> 255
+diagnose debug enable
+diagnose wireless-controller wlac -c   Show virtual access point
+  vap                                  information, including its MAC
+                                       address, BSSID, SSID, the interface
+                                       name, and the IP address of the APs
+                                       that are broadcasting it.
+diagnose wireless-controller wlac wtp_ Show the wireless termination point
+  filter                               (WTP), or FortiAP, debugging on the
+diagnose wireless-controller wlac wtp_ wireless controller if FortiAP is
+  filter clear                         failing to connect to FortiGate.
+diagnose wireless-controller wlac wtp_ l
+                                             <FAP-SN>: FortiAP serial
+  filter <FAP-SN> 0-<x.x.x.x>:5246 255
+diagnose debug application cw_acd
+                                             number
+                                         l <x.x.x.x>: FortiAP IP address
+  0x7ff
+
+
+High availability
+
+Command                                 Description
+diagnose sys ha status                  Show HA status and information.
+get system ha status
+execute ha manage <index> <username>    Log into and manage a specific HA
+                                        member.
+diagnose sys ha checksum cluster        Show checksum information of all
+                                        cluster members.
+diagnose sys ha checksum show <vdom>    Show detailed checksum
+                                        information for a VDOM.
+diagnose sys ha checksum recalculate    Recalculate HA checksums.
+diagnose sys ha recalculate-extfile-    Recalculate HA external files
+  signature                             signatures.
+diagnose sys ha reset-uptime            Reset the HA uptime. This is used to
+                                        test failover.
+diagnose debug application hatalk -1    Start real-time debugging of HA
+diagnose debug application hasync -1    daemons.
+diagnose debug application harelay -1
+diagnose debug enable
+diagnose sys ha history read            Show HA history.
+execute ha synchronize stop             Manually start and stop HA
+execute ha synchronize start            synchronization.
+Command                               Description
+diagnose sys sip status               Show SIP status.
+diagnose sys sip mapping list         Show SIP mapping list.
+diagnose sys sip dialog list          Show SIP dialogue list.
+diagnose debug application sip -1     Start real-time SIP debugging.
+diagnose debug enable
+
+
+SIP ALG
+
+Command                               Description
+diagnose sys sip-proxy calls list     Show list of active SIP proxy calls.
+diagnose sys sip-proxy stats          Show SIP proxy statistics.
+diagnose sys sip-proxy session list   Show SIP proxy session list.
+diagnose debug application sip -1     Start real-time SIP debugging.
+diagnose debug enable
+

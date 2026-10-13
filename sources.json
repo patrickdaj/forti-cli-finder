@@ -7,6 +7,10 @@
     "re-running discovery, which is what the scheduled workflow does.",
     "",
     "cli    - parsed into the command tree (the bundles themselves).",
+    "cheat  - two-column 'command | description' sheets. Mined for arguments the",
+    "         generated reference omits and for commands it never lists. Their rows are",
+    "         EXAMPLES, not syntax ('diagnose sys kill 11 <pid>'), so a path containing",
+    "         a literal value is never taken as a command.",
     "         bundle: which file it is written to; defaults to product. A platform may",
     "                 have several builds, each its own bundle; the first is the default.",
     "         ver, src: how /ver labels the build on the page.",
@@ -61,6 +65,15 @@
     { "key": "fmgag", "rank": 0, "target": ["fortimanager"],
       "doc": "/document/fortimanager/7.6.7/administration-guide",
       "title": "FortiManager 7.6.7 Administration Guide", "expect": "FortiManager-7.6.7-Administration_Guide" }
+  ],
+
+  "cheat": [
+    { "key": "cheat76", "target": ["fortios", "fortios-8.0"],
+      "doc": "/document/fortigate/7.6.0/cli-troubleshooting-cheat-sheet",
+      "title": "FortiOS 7.6 Troubleshooting Cheat Sheet", "expect": "Troubleshooting_Cheat_Sheet" },
+    { "key": "cheat80", "target": ["fortios-8.0", "fortios"],
+      "doc": "/document/fortigate/8.0.0/cli-troubleshooting-cheat-sheet",
+      "title": "FortiOS 8.0 Troubleshooting Cheat Sheet", "expect": "Troubleshooting_Cheat_Sheet" }
   ],
 
   "hand": [

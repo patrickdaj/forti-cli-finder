@@ -202,11 +202,21 @@ def apply_overlay():
     empty and adds what is absent. `dvc` marks what came from a box, so the page can
     say "FortiGate-70G-POE v7.6.7 build3704" where it would otherwise cite a page.
     """
-    if not os.path.exists(OVERLAY):
-        print('  no device-overlay.json -- nothing to apply')
+    files = sorted(glob.glob(os.path.join(ROOT, '*-overlay.json')))
+    if not files:
+        print('  no *-overlay.json -- nothing to apply')
         return 0
-    doc = json.load(open(OVERLAY))
-    for b, facts in sorted(doc.get('facts', {}).items()):
+    merged = {}
+    for fn in files:
+        doc = json.load(open(fn))
+        dev = 'devices' in doc          # a device overlay, as opposed to a document one
+        for b, facts in doc.get('facts', {}).items():
+            for f in facts:
+                merged.setdefault(b, {})[(f['k'], f['p'])] = dict(f, _dev=dev)
+        print(f'  {os.path.basename(fn):22s} '
+              f'{sum(len(v) for v in doc.get("facts", {}).values()):5d} facts')
+    for b, by_key in sorted(merged.items()):
+        facts = list(by_key.values())
         path = os.path.join(ROOT, OUT, f'{b}.json')
         if not os.path.exists(path):
             print(f'  {b}: no bundle, skipped')
@@ -222,15 +232,19 @@ def apply_overlay():
             x = [{'n': a['n'], 'k': a['n'], 'd': a['d']} for a in f.get('x', [])]
             sec = idx.get(key)
             if sec is None:
-                bun['secs'].append({'k': f['k'], 'p': f['p'],
-                                    'd': f.get('d') or '', 'pg': '',
-                                    's': ' '.join([f['k'], f['p']]
-                                                  + [a['n'] for a in x]).strip(),
-                                    'x': x, 'dvc': f['src']})
+                sec = {'k': f['k'], 'p': f['p'], 'd': f.get('d') or '', 'pg': '',
+                       's': ' '.join([f['k'], f['p']]
+                                     + [a['n'] for a in x]).strip(),
+                       'x': x, 'osrc': f['src']}
+                if f['_dev']:
+                    sec['odev'] = 1
+                bun['secs'].append(sec)
                 added += 1
             elif x and not sec.get('x'):
                 sec['x'] = x
-                sec['dvc'] = f['src']
+                sec['osrc'] = f['src']
+                if f['_dev']:
+                    sec['odev'] = 1
                 # a guide-scraped entry often has neither arguments nor a description;
                 # fill the description too rather than leaving it blank next to a
                 # perfectly good one the box just gave us
@@ -239,7 +253,9 @@ def apply_overlay():
                 filled += 1
             elif f.get('d') and not (sec.get('d') or '').strip():
                 sec['d'] = f['d']
-                sec['dvc'] = f['src']
+                sec['osrc'] = f['src']
+                if f['_dev']:
+                    sec['odev'] = 1
                 described += 1
         raw = json.dumps(bun, ensure_ascii=False, separators=(',', ':'))
         open(path, 'w').write(raw)

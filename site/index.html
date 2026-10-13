@@ -205,7 +205,7 @@ details.dsc[open] summary::before{content:"\25be"}
 <div class="toast" id="toast" hidden></div>
 <script>
 (function(){
-const BUILD='e691f3c705a9';   // replaced at build time by tools/stamp_build.py
+const BUILD='ea8857b78d56';   // replaced at build time by tools/stamp_build.py
 const PRODUCTS=[
   {id:"fortios",short:"FGT",name:"FortiOS",vers:[{v:"7.6.7",f:"fortios",src:"CLI Reference + Administration Guide"},{v:"8.0.1",f:"fortios-8.0",src:"CLI Reference (samples from the 7.6 and 7.4 guides)"}]},
   {id:"fortiswitch",short:"FSW",name:"FortiSwitchOS",vers:[{v:"7.6.7",f:"fortiswitch",src:"CLI Reference + Administration and FortiLink guides"}]},
@@ -761,14 +761,16 @@ function paneHtml(s){
     :`<div class="og alt"><b>note</b> ${esc(ref)} lists no arguments for this command \u2014 its syntax there is just <b>${esc(s.k+' '+s.p)}</b>. The box may still accept some.</div>`):'';
   // A command the reference does not document at all: the arguments and the description
   // came from asking a real box `?`. Say so plainly rather than print a blank page cite.
-  const fromDevice=s.dvc?`<div class="og alt"><b>note</b> the ${esc(ref)} does not document this command. Its ${(s.x&&s.x.length)?'arguments and description were':'description was'} read from <b>${esc(s.dvc)}</b> by asking it <b>?</b>.</div>`:'';
+  const fromDevice=s.osrc?(s.odev
+    ?`<div class="og alt"><b>note</b> the ${esc(ref)} does not document this command. Its ${(s.x&&s.x.length)?'arguments and description were':'description was'} read from <b>${esc(s.osrc)}</b> by asking it <b>?</b>.</div>`
+    :`<div class="og alt"><b>note</b> the ${esc(ref)} lists no arguments for this command. These come from <b>${esc(s.osrc)}</b>.</div>`):'';
   return `<div class="desc" data-clamp>${esc(s.d||'')}</div>${derived}${fromGuide}${fromDevice}
     ${outFirst?outputHtml(s):''}${params}${outFirst?'':outputHtml(s)}
     ${s.ml?`<details class="blk dsc"><summary class="lbl">Models <span>available on ${s.ml.length}</span></summary><div class="desc">${s.ml.map(esc).join(' \u00b7 ')}</div></details>`:''}
     ${(s.n||[]).length?`<details class="blk dsc"><summary class="lbl">Notes</summary><div class="desc">${s.n.map(esc).join('<br>')}</div></details>`:''}
     ${s.s&&s.s.split('\n').length>1?`<details class="blk dsc"><summary class="lbl">Syntax in the guide <span>${s.s.split('\n').length} lines</span></summary><pre class="opre">${esc(s.s)}</pre></details>`:''}
-    <div class="srcline">${s.dvc
-      ? esc(s.dvc)+' \u00b7 read from the device, not a document'
+    <div class="srcline">${s.osrc
+      ? esc(s.osrc)+(s.odev?' \u00b7 read from the device, not a document':'')
       : esc(src)+', page '+s.pg} \u00b7 ${esc(P.short||'')}-${esc(P.ver||'')}</div>`;
 }
 function emptyPane(){
