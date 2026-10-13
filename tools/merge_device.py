@@ -38,6 +38,103 @@ _pt = __import__('importlib.util', fromlist=['util']).module_from_spec(_sp)
 _sp.loader.exec_module(_pt)
 
 HELP_HEAD = re.compile(r'^### (\S+) (.+)$')
+
+
+DATA_ID = re.compile(r'^\d+$')
+
+
+def data_listing(subs):
+    """Is this `?` output the device's own DATA rather than sub-commands?
+
+    `get firewall internet-service-sld ?` answers
+
+        id    Second Level Domain ID.
+        4     google.com
+        7     playstation.com
+
+    ...and 1,425 more: rows of that device's internet-service database. They differ
+    between devices and change with every signature update, so they are values, never
+    commands -- and the named row is the argument they are values FOR. Read literally
+    they added 1,960 "commands" like `get firewall internet-service-sld 1007`, which is
+    exactly the kind of thing this reference must not claim.
+
+    Returns the argument as (name, description) when the listing is data, else None.
+    """
+    nums = [n for n, _ in subs if DATA_ID.match(n)]
+    named = [(n, d) for n, d in subs if not DATA_ID.match(n)]
+    if len(nums) >= 3 and len(nums) > len(subs) / 2 and len(named) <= 1:
+        n, d = named[0] if named else ('id', '')
+        return f'<{n}>', d
+    return None
+
+
+NOTATION_SUB = re.compile(r'^\*\S|^\[.*\]$')
+
+# A last line of defence on what leaves work/live/. Some `?` answers are not help text
+# at all but the device's live configuration: `get system interface ?` on FortiManager
+# answers with the interface TABLE --
+#     port1   enable  static  192.0.2.12 255.255.255.0  auto  active  operational
+# -- so the "description" was the box's own addressing. The overlay is committed to a
+# public repository, so this is categorical rather than clever: a fact carrying anything
+# shaped like an address, a MAC or a serial is dropped, not sanitised. All 24 it catches
+# today are that one interface table, and none of them were help text worth keeping.
+PRIVATE = re.compile(r"""
+      \b(?:\d{1,3}\.){3}\d{1,3}\b                 # an IPv4 address, 0.0.0.0 included
+    | \b(?:[0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}\b     # a MAC
+    | \b[A-Z]{2,}[0-9A-Z]{8,}\b                    # a serial, e.g. FGT70Gxxxxxxxxxx
+""", re.X)
+
+
+def private(fact):
+    """Does this fact carry anything that identifies the device it came from?"""
+    blob = ' '.join([fact.get('p', ''), fact.get('d') or ''] +
+                    [(a.get('n') or '') + ' ' + (a.get('d') or '')
+                     for a in fact.get('x') or []])
+    return bool(PRIVATE.search(blob))
+
+
+def arg_subs(subs):
+    """The rows of a `?` listing that are argument descriptors, not sub-commands.
+
+    FortiOS marks a table's key with `*` and an optional argument with brackets -- the
+    same notation `tree` uses. `get firewall region ?` answers `*id  Region ID.`: one
+    argument, not a sub-command called `*id`. Walking into those produced
+    `get firewall region *id` and `get wireless-controller status [1|2]`, neither of
+    which anyone can type.
+
+    Only this notation counts. A bare word is a sub-command even when it reads like a
+    placeholder -- `get application name status` is real, and 72 of the 82 nodes whose
+    `?` listed a single row list a genuine sub-command (`get system cmdb` -> `status`),
+    so "one row means it is an argument" would have thrown away most of what the crawl
+    is for.
+    """
+    out = []
+    for n, d in subs:
+        if n.startswith('*') and len(n) > 1:
+            out.append((f'<{n[1:]}>', d))
+        elif n.startswith('[') and n.endswith(']'):
+            out.append((n, d))
+    return out
+
+
+def records(path):
+    """Every intact record in a crawl file, skipping any that is not.
+
+    A crawl appends and flushes per record, so a hangup can leave the last line half
+    written -- and before the writer lock existed, two crawls racing on one file could
+    overwrite each other mid-record. One damaged line used to abort the whole merge,
+    which is a bad trade: the other 2,623 records in that file are fine.
+    """
+    bad = 0
+    for line in open(path):
+        if not line.strip():
+            continue
+        try:
+            yield json.loads(line)
+        except ValueError:
+            bad += 1
+    if bad:
+        print(f'  {os.path.relpath(path, ROOT)}: skipped {bad} damaged record(s)')
 ROW = re.compile(r'^\s*(\S+)\s{2,}(\S.*?)\s*$')
 
 
@@ -58,26 +155,42 @@ def read_capture(d):
     # files once to build that map, then again for the nodes themselves.
     desc = {}
     for f in sorted(glob.glob(os.path.join(d, 'crawl-*.jsonl'))):
-        for line in open(f):
-            r = json.loads(line)
+        for r in records(f):
             for name, dd in r['subs']:
                 desc[f"{r['p']} {name}"] = dd
 
     # the `?` crawl: every node it described, with its arguments
     for f in sorted(glob.glob(os.path.join(d, 'crawl-*.jsonl'))):
-        for line in open(f):
-            r = json.loads(line)
+        for r in records(f):
             words = r['p'].split()
             if len(words) < 2:
                 continue
+            # A bare number in the path is one of the device's own records, reached by
+            # walking into a data listing. Not a command, and not the same number on
+            # the next box.
+            if any(DATA_ID.match(w) for w in words[1:]):
+                continue
+            # same for a segment that is argument NOTATION rather than a word: it was
+            # reached by walking into the descriptor of the argument, not into a command
+            if any(NOTATION_SUB.match(w) for w in words[1:]):
+                continue
+            args = [{'n': n, 'd': dd} for n, dd in r['args']]
+            # ...and the node ABOVE either of those is a real command whose argument the
+            # listing names, which is the only reason to read those rows at all
+            if not args:
+                args = [{'n': n, 'd': d} for n, d in arg_subs(r['subs'])]
+            if not args:
+                got = data_listing(r['subs'])
+                if got:
+                    args = [{'n': got[0], 'd': got[1]}]
             # Only what the box confirmed is a command: `<Enter>` means complete, and
             # an argument implies it. A node with neither is a namespace branch --
             # `get alertemail` is a path you type through, not a command you run.
-            if not (r['complete'] or r['args']):
+            if not (r['complete'] or args):
                 continue
             facts.append({'k': words[0], 'p': ' '.join(words[1:]),
                           'complete': r['complete'], 'd': desc.get(r['p'], ''),
-                          'x': [{'n': n, 'd': dd} for n, dd in r['args']]})
+                          'x': args})
 
     # help.txt: `?` asked about commands the bundle ships bare
     hp = os.path.join(d, 'help.txt')
@@ -134,7 +247,7 @@ def bundle_for(prov):
 
 def collect():
     """Every capture directory -> {bundle: {(k,p): fact}} plus the provenance seen."""
-    out, provs = {}, {}
+    out, provs, scrubbed = {}, {}, []
     for d in sorted(glob.glob(os.path.join(LIVE, '*'))):
         if not os.path.isdir(d):
             continue
@@ -148,11 +261,18 @@ def collect():
         provs.setdefault(b, set()).add(prov)
         dest = out.setdefault(b, {})
         for f in facts:
+            if private(f):
+                scrubbed.append(f"{f['k']} {f['p']}")
+                continue
             key = (f['k'], f['p'])
             old = dest.get(key)
             # prefer the record that actually names arguments
             if not old or (len(f['x']) > len(old['x'])):
                 dest[key] = dict(f, src=prov)
+    if scrubbed:
+        print(f'  dropped {len(scrubbed)} fact(s) carrying an address, MAC or serial '
+              f'-- the box answered `?` with its own configuration: '
+              f'{", ".join(sorted(scrubbed)[:3])}...')
     return out, provs
 
 
@@ -264,8 +384,79 @@ def apply_overlay():
     return 0
 
 
+def selftest():
+    """The rules that decide what a `?` listing actually means."""
+    fails = []
+
+    def check(name, got, want):
+        if got != want:
+            fails.append(f'  {name}: got {got!r}, want {want!r}')
+        else:
+            print(f'  ok   {name}')
+
+    # the device's own data, not sub-commands
+    sld = [['id', 'Second Level Domain ID.'], ['4', 'google.com'],
+           ['7', 'playstation.com'], ['9', 'psvue.com']]
+    check('a data listing becomes one argument', data_listing(sld),
+          ('<id>', 'Second Level Domain ID.'))
+    # a real namespace must NOT be mistaken for one
+    check('sub-commands are not a data listing',
+          data_listing([['status', 'list cmdb information']]), None)
+    check('a short numeric listing is not assumed to be data',
+          data_listing([['1', 'one'], ['2', 'two']]), None)
+
+    # argument notation in a listing row
+    check('an mkey marker is an argument', arg_subs([['*id', 'Region ID.']]),
+          [('<id>', 'Region ID.')])
+    check('a bracketed row is an argument', arg_subs([['[1|2]', 'Verbose.']]),
+          [('[1|2]', 'Verbose.')])
+    # ...and a bare word never is, however much it reads like a placeholder:
+    # `get application name status` is a real command
+    check('a bare word stays a sub-command',
+          arg_subs([['name', 'application name'], ['status', 'all info']]), [])
+
+    # the privacy guard on what leaves work/live/
+    check('an interface table is not shippable',
+          private({'k': 'get', 'p': 'system interface port1',
+                   'd': 'enable static 192.0.2.12 255.255.255.0 auto', 'x': []}), True)
+    check('0.0.0.0 counts too',
+          private({'k': 'get', 'p': 'x', 'd': 'static 0.0.0.0 0.0.0.0', 'x': []}), True)
+    check('a MAC counts',
+          private({'k': 'get', 'p': 'x', 'd': 'at 00:1a:2b:3c:4d:5e', 'x': []}), True)
+    check('a serial counts',
+          private({'k': 'get', 'p': 'x', 'd': 'FGT70GABC123456789', 'x': []}), True)
+    check('ordinary help text is kept',
+          private({'k': 'get', 'p': 'router info bgp neighbors', 'd': 'show BGP '
+                   'neighbors', 'x': [{'n': '<A.B.C.D>', 'd': 'neighbor IP'}]}), False)
+    check('a placeholder is not an address',
+          private({'k': 'execute', 'p': 'ping', 'd': 'ping a host',
+                   'x': [{'n': '<A.B.C.D>', 'd': 'target'}]}), False)
+
+    # a damaged record must not take the file down with it
+    import tempfile
+    fh = tempfile.NamedTemporaryFile('w', suffix='.jsonl', delete=False)
+    fh.write(json.dumps({'p': 'get system status', 'complete': True,
+                         'args': [], 'subs': []}) + '\n')
+    fh.write('ubs": []}\n')                      # the shape a racing writer left behind
+    fh.write(json.dumps({'p': 'get system ha', 'complete': True,
+                         'args': [], 'subs': []}) + '\n')
+    fh.close()
+    check('intact records survive a damaged one',
+          [r['p'] for r in records(fh.name)],
+          ['get system status', 'get system ha'])
+    os.unlink(fh.name)
+
+    if fails:
+        print('\nFAIL\n' + '\n'.join(fails))
+        return 1
+    print('\nselftest: all good')
+    return 0
+
+
 def main():
     args = sys.argv[1:]
+    if '--selftest' in args:
+        return selftest()
     if '--apply' in args:
         return apply_overlay()
     if not os.path.isdir(LIVE):

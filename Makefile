@@ -99,13 +99,15 @@ build:
 ##                 the device crawl against a scripted box that hangs up on cue (how we
 ##                 know a crawl resumes without a lab to try it in), and the
 ##                 hand-written-reference parser against real syntax lines from the
-##                 FortiSwitch, FortiManager and FortiAnalyzer documents.
+##                 FortiSwitch, FortiManager and FortiAnalyzer documents, and the device
+##                 merge against the three shapes a `?` listing can take.
 ##                 Runs at the end of build too; this is for after a hand edit.
 check:
 	@$(PY) tools/check_bundles.py
 	@$(PY) tools/parse_tree.py --selftest
 	@$(PY) tools/capture_device.py --selftest
 	@$(PY) tools/parse_hand.py --selftest
+	@$(PY) tools/merge_device.py --selftest
 
 ## all             sources -> fetch -> build. The whole pipeline from nothing.
 all: sources fetch build
