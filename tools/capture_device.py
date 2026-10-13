@@ -29,7 +29,7 @@ set <NAME>_KEY to a private key path, or leave both unset to use your ssh-agent.
 password in <NAME>_PASS is supported because labs are labs; it is passed to the device's
 own prompt over the pty and never appears in a file, a log or an argument list.
 """
-import os, pty, re, select, sys, time
+import fcntl, os, pty, re, select, sys, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENV = os.path.join(ROOT, '.env.devices')
@@ -101,6 +101,11 @@ def load_env(path=ENV):
 
 # ---------------------------------------------------------------- the session
 
+class Dropped(OSError):
+    """The device hung up. Distinct from a path that simply has no help to give:
+    one is retryable after reconnecting, the other is an answer."""
+
+
 class Session:
     """An ssh session on a pty.
 
@@ -112,6 +117,11 @@ class Session:
     def __init__(self, dev, verbose=False):
         self.dev, self.verbose, self.buf = dev, verbose, b''
         self.method = None      # the `?` spelling this device answered to
+        self.drops = 0          # how many times the pty has died under us
+        self._spawn()
+
+    def _argv(self):
+        dev = self.dev
         argv = ['ssh', '-tt', '-o', 'StrictHostKeyChecking=accept-new',
                 '-o', 'NumberOfPasswordPrompts=1',
                 # FortiOS ships older kex/cipher/key sets on some builds; a modern
@@ -123,10 +133,38 @@ class Session:
         if dev.get('key'):
             argv += ['-o', 'IdentitiesOnly=yes', '-i', os.path.expanduser(dev['key'])]
         argv.append(f"{dev['user']}@{dev['host']}")
+        return argv
+
+    def _spawn(self):
+        argv = self._argv()
         self.pid, self.fd = pty.fork()
         if self.pid == 0:
             os.execvp('ssh', argv)
             os._exit(1)
+
+    def alive(self):
+        """Is the ssh child still there? Reaps it if not, so a reconnect leaves no
+        zombie behind."""
+        try:
+            pid, _ = os.waitpid(self.pid, os.WNOHANG)
+        except OSError:
+            return False
+        return pid == 0
+
+    def reconnect(self):
+        """Re-establish the session after the device hung up.
+
+        A long crawl outlives the device's session limits -- fgt01 dropped us at around
+        450 asks with `OSError: [Errno 5]` on the write, and FortiManager and
+        FortiAnalyzer at about 550. The sticky `?` method survives, so a reconnected
+        session does not pay to rediscover it.
+        """
+        self.drops += 1
+        self.close()
+        time.sleep(2.0)
+        self.buf = b''
+        self._spawn()
+        self.read(idle=1.5, timeout=90, until=PROMPT)
 
     def read(self, idle=0.6, timeout=40.0, until=None):
         start = last = time.time()
@@ -179,14 +217,22 @@ class Session:
             tries = [t for t in tries if t[0] == self.method]
         for method, payload in tries:
             self.buf = b''
-            os.write(self.fd, payload.encode())
-            time.sleep(0.35)
-            out = clean(self.read(idle=0.7, timeout=20).decode('utf-8', 'replace'), payload)
-            os.write(self.fd, b'\x15')          # ctrl-U: clear the line, run nothing
-            self.read(idle=0.25, timeout=3)
+            try:
+                os.write(self.fd, payload.encode())
+                time.sleep(0.35)
+                out = clean(self.read(idle=0.7, timeout=20).decode('utf-8', 'replace'),
+                            payload)
+                os.write(self.fd, b'\x15')      # ctrl-U: clear the line, run nothing
+                self.read(idle=0.25, timeout=3)
+            except OSError as e:
+                raise Dropped(f'{self.dev["name"]}: {e}') from e
             if useful(out):
                 self.method = method
                 return method, out
+        # No help, or a hangup that showed up as silence rather than an error: the
+        # difference matters, so ask the child.
+        if not self.alive():
+            raise Dropped(f'{self.dev["name"]}: ssh exited')
         return None, ''
 
     def close(self):
@@ -289,24 +335,98 @@ def help_rows(text):
     return {'complete': complete, 'args': args, 'subs': subs, 'rows': rows}
 
 
-def crawl(s, root, out, max_nodes=40000, max_depth=10):
+def device_lock(name):
+    """Refuse a second crawl of one device, before we so much as dial it.
+
+    The per-file lock inside crawl() is the last line of defence, but by the time it
+    is reached we have already logged in and run `get system status` -- and two ssh
+    sessions asking one box thousands of questions is how the hangups started. This
+    one is cheap, keyed on the device rather than on a build directory we cannot know
+    until the box tells us, and released by the kernel when the process dies.
+    """
+    os.makedirs(LIVE, exist_ok=True)
+    fh = open(os.path.join(LIVE, f'.crawl-{name}.lock'), 'w')
+    try:
+        fcntl.flock(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        return None
+    return fh
+
+
+def crawl(s, root, out, max_nodes=40000, max_depth=10, resume=True):
     """Walk `?` down from a command prefix, breadth first.
 
     This is the only way to reach `get router info bgp neighbors` and its family: the
     routing daemon answers `?` even though `tree` does not expand it. Nothing is ever
     executed -- `?` is answered on the keystroke and the line is cleared with ctrl-U.
+
+    Resumable, because it has to be: the `get` tree on a FortiGate is some 2000 nodes
+    and the box hangs up long before that. Both files are appended and flushed per
+    record, so a hangup costs only the path in flight -- rerun the same command and it
+    carries on. The `.asked` sidecar is what makes resuming cheap: without it we would
+    re-ask every path that answered nothing, and under `get` that is a third of them.
     """
     import json
-    seen, queue, found, asked = set(), [root], [], 0
-    dest = os.path.join(out, 'crawl-' + re.sub(r'\W+', '_', root) + '.jsonl')
-    with open(dest, 'w') as fh:
+    slug = re.sub(r'\W+', '_', root)
+    dest = os.path.join(out, f'crawl-{slug}.jsonl')
+    tried = os.path.join(out, f'crawl-{slug}.asked')
+
+    # One writer per root, enforced rather than assumed. Two crawls of the same root
+    # hold independent write offsets into one file and silently overwrite each other's
+    # bytes -- not hypothetical: it cost a torn record and three duplicates before this
+    # lock existed. flock dies with the process, so a crash leaves nothing stale.
+    lock = open(os.path.join(out, f'crawl-{slug}.lock'), 'w')
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        raise SystemExit(
+            f'  another crawl of {root!r} is already writing '
+            f'{os.path.relpath(dest, ROOT)} -- two writers corrupt it. Wait for that '
+            f'one to finish (it resumes on its own) or kill it.')
+
+    seen, found, queue = set(), [], [root]
+    if resume and os.path.exists(dest):
+        for line in open(dest):
+            try:
+                found.append(json.loads(line))
+            except ValueError:
+                continue            # a record cut in half when the box hung up
+        # Prefer the sidecar: it lists paths we asked and got nothing from, which the
+        # records cannot tell us about. Without it, fall back to re-asking those.
+        if os.path.exists(tried):
+            seen = {l.rstrip('\n') for l in open(tried) if l.strip()}
+        else:
+            seen = {r['p'] for r in found}
+        queue = [f"{r['p']} {n}" for r in found for n, _ in r['subs']
+                 if f"{r['p']} {n}" not in seen]
+        if root not in seen:
+            queue.insert(0, root)
+        print(f'    resuming: {len(found)} already described, {len(seen)} asked, '
+              f'{len(queue)} still queued', flush=True)
+    described = {r['p'] for r in found}
+    asked = 0
+    with open(dest, 'a') as fh, open(tried, 'a') as tf:
         while queue and asked < max_nodes:
             path = queue.pop(0)
             if path in seen or len(path.split()) - len(root.split()) > max_depth:
                 continue
             seen.add(path)
-            method, body = s.ask(path)
+            try:
+                method, body = s.ask(path)
+            except Dropped as e:
+                print(f'    hung up after {asked} asks ({e}) -- reconnecting', flush=True)
+                try:
+                    s.reconnect()
+                    method, body = s.ask(path)
+                except (Dropped, OSError) as e2:
+                    # Two in a row is the device saying no, not a blip. Everything up to
+                    # here is already on disk; rerunning the same command resumes.
+                    print(f'    could not get back in ({e2}) -- stopping with '
+                          f'{len(found)} described; rerun to resume', flush=True)
+                    break
             asked += 1
+            tf.write(path + '\n')
+            tf.flush()
             if not method:
                 continue
             h = help_rows(body)
@@ -314,16 +434,151 @@ def crawl(s, root, out, max_nodes=40000, max_depth=10):
                 continue
             rec = {'p': path, 'complete': h['complete'],
                    'args': h['args'], 'subs': h['subs']}
+            if path in described:       # a duplicate from an older, unlocked history
+                continue
+            described.add(path)
             fh.write(json.dumps(rec) + '\n')
             fh.flush()
             found.append(rec)
             for name, _ in h['subs']:
                 queue.append(f'{path} {name}')
             if asked % 25 == 0:
-                print(f'    asked {asked}, described {len(found)}, queue {len(queue)}',
-                      flush=True)
-    print(f'    asked {asked}, described {len(found)} -> {os.path.relpath(dest, ROOT)}')
+                print(f'    asked {asked}, described {len(found)}, queue {len(queue)}'
+                      + (f', {s.drops} reconnect(s)' if s.drops else ''), flush=True)
+    print(f'    asked {asked}, described {len(found)} -> {os.path.relpath(dest, ROOT)}'
+          + (' (queue empty: complete)' if not queue else
+             f' ({len(queue)} left -- rerun to resume)'))
     return found
+
+
+# ---------------------------------------------------------------- the selftest
+
+class _FakeBox:
+    """A scripted `?` tree that hangs up on cue.
+
+    Whether a crawl can survive a hangup and resume is the one part of this script
+    worth testing, and the one part that used to be untestable without a lab. crawl()
+    only ever calls ask/reconnect/drops, so a stand-in is enough -- and a stand-in that
+    hangs up is the only way to exercise the path the real boxes took three times in a
+    row before this existed.
+    """
+
+    TREE = {
+        'get': [('system', 'system things'), ('router', 'router things')],
+        'get system': [('status', 'show status'), ('performance', 'show perf')],
+        'get system status': [],
+        'get system performance': [],
+        'get router': [('info', 'routing info')],
+        'get router info': [('bgp', 'BGP'), ('ospf', 'OSPF')],
+        'get router info bgp': [('neighbors', 'show BGP neighbors')],
+        'get router info bgp neighbors': [('<A.B.C.D>', 'neighbor address')],
+        'get router info ospf': [],
+    }
+    SILENT = {'get system performance'}      # asked, answers nothing: the sidecar's job
+
+    def __init__(self, drop_at=None):
+        self.method, self.drops, self.asks = 'space-q', 0, []
+        self.drop_at, self.dropped_once = drop_at, False
+
+    def ask(self, path):
+        if self.drop_at is not None and len(self.asks) == self.drop_at \
+                and not self.dropped_once:
+            self.dropped_once = True
+            raise Dropped('fake: hung up')
+        self.asks.append(path)
+        if path in self.SILENT or path not in self.TREE:
+            return None, ''
+        subs = self.TREE[path]
+        body = '\n'.join(f'{n}    {d}' for n, d in subs) or '<Enter>'
+        return 'space-q', body
+
+    def reconnect(self):
+        self.drops += 1
+
+
+def selftest():
+    """Prove the crawl resumes, without a device."""
+    import json, shutil, tempfile
+    fails = []
+
+    def check(name, got, want):
+        if got != want:
+            fails.append(f'  {name}: got {got!r}, want {want!r}')
+        else:
+            print(f'  ok   {name}: {got!r}')
+
+    d = tempfile.mkdtemp(prefix='crawl-selftest-')
+    try:
+        # a clean run describes the whole tree
+        full = crawl(_FakeBox(), 'get', d)
+        paths = {r['p'] for r in full}
+        check('clean run describes every answering node', len(full),
+              len(_FakeBox.TREE) - len(_FakeBox.SILENT))
+        check('reaches the node no document has', 'get router info bgp neighbors'
+              in paths, True)
+        check('captures the positional argument',
+              [r['args'] for r in full if r['p'] == 'get router info bgp neighbors'],
+              [[('<A.B.C.D>', 'neighbor address')]])
+
+        # a hangup mid-crawl reconnects and still finishes
+        shutil.rmtree(d); os.makedirs(d)
+        box = _FakeBox(drop_at=3)
+        after = crawl(box, 'get', d)
+        check('reconnects once after a hangup', box.drops, 1)
+        check('a hangup costs no records', len(after), len(full))
+
+        # A run cut short, then resumed, lands in the same place. Five asks, not
+        # four: breadth-first, the fifth is the path that answers nothing, and that
+        # is the one only the sidecar can remember.
+        shutil.rmtree(d); os.makedirs(d)
+        box1 = _FakeBox()
+        part = crawl(box1, 'get', d, max_nodes=5)
+        on_disk = sum(1 for _ in open(os.path.join(d, 'crawl-get.jsonl')))
+        check('a short run stops early', len(part) < len(full), True)
+        check('the short run reached the silent path',
+              'get system performance' in box1.asks, True)
+        box2 = _FakeBox()
+        rest = crawl(box2, 'get', d)
+        check('resume appends rather than truncating',
+              sum(1 for _ in open(os.path.join(d, 'crawl-get.jsonl'))) >= on_disk, True)
+        check('resume ends with the whole tree', len(rest), len(full))
+        check('resume re-asks nothing it already asked',
+              sorted(set(box1.asks) & set(box2.asks)), [])
+        check('resume does not re-ask the path that answered nothing',
+              'get system performance' in box2.asks, False)
+
+        # a second writer refuses rather than interleaving its bytes with ours
+        held = open(os.path.join(d, 'crawl-get.lock'), 'w')
+        fcntl.flock(held, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        try:
+            crawl(_FakeBox(), 'get', d)
+            check('a second crawler refuses to share the file', 'no refusal', 'SystemExit')
+        except SystemExit as e:
+            check('a second crawler refuses to share the file',
+                  'already writing' in str(e), True)
+        held.close()        # closing releases it, as a crashed process would
+
+        # a record torn in half by two writers must not stop a resume
+        with open(os.path.join(d, 'crawl-get.jsonl'), 'a') as fh:
+            fh.write('ubs": []}\n')
+        torn = crawl(_FakeBox(), 'get', d)
+        check('a torn record is skipped, not fatal', len(torn), len(full))
+
+        # the sidecar is what remembers the paths that answered nothing
+        asked = {l.strip() for l in open(os.path.join(d, 'crawl-get.asked'))}
+        check('the sidecar remembers a silent path', 'get system performance' in asked,
+              True)
+        check('every described path is in the sidecar',
+              {r['p'] for r in rest} - asked, set())
+    finally:
+        shutil.rmtree(d, ignore_errors=True)
+
+    if fails:
+        print('\nFAIL')
+        print('\n'.join(fails))
+        return 1
+    print('\nselftest: all good')
+    return 0
 
 
 # ---------------------------------------------------------------- the config walk
@@ -496,6 +751,8 @@ def write(d, name, text):
 
 def main():
     args = sys.argv[1:]
+    if '--selftest' in args:
+        return selftest()
     verbose = '--verbose' in args
     probe_all = '--probe-all' in args
     config_walk_on = '--config-walk' in args
@@ -520,6 +777,12 @@ def main():
         for dev in devices.values():
             try:
                 print(f"\n=== {dev['name']}  crawl {crawl_roots}")
+                held = device_lock(dev['name'])
+                if not held:
+                    print(f"  another crawl of {dev['name']} is already running -- "
+                          f"skipped. It resumes on its own; two sessions asking one "
+                          f"box thousands of questions is what makes it hang up.")
+                    continue
                 s = Session(dev, verbose)
                 s.read(idle=1.5, timeout=90, until=PROMPT)
                 status = s.run('get system status', idle=1.0, timeout=60)

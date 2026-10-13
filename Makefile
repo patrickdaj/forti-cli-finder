@@ -18,10 +18,11 @@ DOC     ?=
 DEV     ?=
 CONFIG  ?=
 BUNDLE  ?= auto        # `auto` matches the capture's own firmware to a bundle
+ROOT    ?=             # a command prefix for `make crawl`, e.g. get
 
 .DEFAULT_GOAL := help
 .PHONY: help all versions versions-check sources sources-check fetch build check \
-        capture tree probe serve diff clean distclean
+        capture crawl tree probe serve diff clean distclean
 
 ## ---------------------------------------------------------------- discovery
 
@@ -90,14 +91,18 @@ fetch:
 build:
 	@./build.sh
 
-## check           Bundle invariants, and the tree parser's selftest.           instant
+## check           Bundle invariants, and both parser selftests.                 instant
 ##                 One bundle per cli entry, ids and names well formed, no duplicate
 ##                 get/show paths, worked examples not lopsided across builds of one
 ##                 platform, and index.html's PRODUCTS list agreeing with sources.json.
+##                 Then the tree parser against its fixture, and the device crawl
+##                 against a scripted box that hangs up on cue -- that last one is how
+##                 we know a crawl resumes without a lab to try it in.
 ##                 Runs at the end of build too; this is for after a hand edit.
 check:
 	@$(PY) tools/check_bundles.py
 	@$(PY) tools/parse_tree.py --selftest
+	@$(PY) tools/capture_device.py --selftest
 
 ## all             sources -> fetch -> build. The whole pipeline from nothing.
 all: sources fetch build
@@ -123,6 +128,12 @@ all: sources fetch build
 ##                   make capture DEV=fgt1     # one
 ##                   make capture CONFIG=1     # also walk config tables (see below)
 ##
+##                 `make crawl` is the long one, and it is interruptible on purpose:
+##                 devices hang up well before a 2000-node walk finishes (fgt01 at
+##                 about 450 asks). It reconnects once per drop, appends every record
+##                 as it goes, and re-running the same command picks up where it
+##                 stopped rather than starting over. Ctrl-C costs one path.
+##
 ##                 CONFIG=1 adds field-level help, which needs config mode. It is safe
 ##                 by construction rather than by promise: every table is entered,
 ##                 probed with `set ?`, and left with `abort` -- never `end` -- so the
@@ -133,6 +144,22 @@ all: sources fetch build
 ##                 loudly and tells you how to restore.
 capture:
 	@$(PY) tools/capture_device.py $(DEV) $(if $(CONFIG),--config-walk)
+
+## crawl ROOT=...  Walk `?` down a command tree on every device.    20-90min, resumable
+##                 This is where `get router info bgp neighbors <A.B.C.D>` comes from:
+##                 the CLI Reference omits `get` entirely and the device's own `tree`
+##                 cannot expand the routing daemon's subtree, so asking `?` at every
+##                 node is the only way to reach it. Nothing is executed -- `?` is
+##                 answered on the keystroke and the line is cleared with ctrl-U.
+##                 Expect: a progress line every 25 asks, and to run it more than once.
+##                 A FortiGate `get` tree is ~2000 nodes and the box hangs up around
+##                 450; it reconnects once per drop and re-running resumes from the
+##                 records already on disk. "queue empty: complete" is the finish line.
+##                   make crawl ROOT=get
+##                   make crawl ROOT=get,diagnose DEV=fgt01
+crawl:
+	@test -n "$(ROOT)" || { echo "set ROOT=get (or get,diagnose)"; exit 2; }
+	@$(PY) tools/capture_device.py $(DEV) --crawl "$(ROOT)"
 
 ## tree FILE=...   Parse a device's `tree` capture; diff it against a bundle.    instant
 ##                 `tree` on a FortiGate prints its own command tree. It is the only
