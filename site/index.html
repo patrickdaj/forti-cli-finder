@@ -165,6 +165,9 @@ details.dsc[open] summary::before{content:"\25be"}
 .opre{margin:6px 0 4px;background:var(--i-block);border:1px solid var(--i-line);border-radius:6px;padding:10px 12px;font:12.5px/1.45 var(--mono);color:var(--i-fg);white-space:pre;overflow:auto;max-height:440px}
 .osrc,.srcline{color:var(--i-faint);font:11.5px var(--sans)}
 .srcline{margin-top:20px}
+.usage{color:var(--i-faint);font:11.5px var(--sans);margin-top:18px}
+.usage a{color:var(--i-dim);text-decoration:none;border-bottom:1px solid var(--i-line)}
+.usage a:hover{color:var(--i-fg);border-bottom-color:var(--i-dim)}
 .hints{flex:none;display:flex;flex-wrap:wrap;gap:4px 14px;padding:8px 20px;border-top:1px solid var(--i-line);color:var(--i-faint);font:11.5px var(--sans)}
 .empty-pane{color:var(--i-dim);max-width:60ch;font:13.5px/1.55 var(--sans)}
 .empty-pane p{margin:0 0 10px}
@@ -400,6 +403,29 @@ function ctl(s,p){
   const bad=v!==''&&r&&(isNaN(+v)||+v<r[0]||+v>r[1]);
   return `<input class="val${bad?' bad':''}" data-id="${esc(id)}" value="${esc(v)}" placeholder="${esc(ph)}" inputmode="${r?'numeric':'text'}" aria-label="${esc(p.k)}">`;
 }
+// "Who has actually used this?" -- the reference says what a command does, and for a
+// command you are about to run at 2am the useful thing is often someone else's
+// transcript of running it. We cannot ship those: scraping the forums would be a pile
+// of copyright and a maintenance burden, and the samples we DO ship are the ones the
+// documents print. A link costs nothing, ages well, and sends you somewhere real.
+//
+// These are search-engine queries rather than Fortinet's own search URLs on purpose:
+// a search engine's query format is stable and I could not verify Fortinet's (their
+// search page refuses an automated request, so "it 403s" says nothing either way).
+// The command is quoted so a four-word command does not match four separate words.
+function usageHtml(s){
+  const cmd='"'+s.k+' '+s.p+'"';
+  const q=t=>encodeURIComponent(t);
+  const links=[
+    ['discussion','https://duckduckgo.com/?q='+q('site:community.fortinet.com '+cmd)],
+    ['docs','https://duckduckgo.com/?q='+q('site:docs.fortinet.com '+cmd)],
+    ['anywhere','https://duckduckgo.com/?q='+q(cmd)],
+  ];
+  return `<div class="usage">see it used: ${links.map(([t,u])=>
+    `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">${t}</a>`
+  ).join(' \u00b7 ')}</div>`;
+}
+
 function treeRow(s,p,open){
   const id=pid(s,p);const on=(S.vals[id]!=null&&S.vals[id]!=='')||S.pins.has(id);
   const meta=[p.ty,p.sz,p.df?'default '+p.df:'',p.f?(p.f==='*'?'may not exist on some models':'values differ between models'):''].filter(Boolean).join(' \u00b7 ');
@@ -769,6 +795,7 @@ function paneHtml(s){
     ${s.ml?`<details class="blk dsc"><summary class="lbl">Models <span>available on ${s.ml.length}</span></summary><div class="desc">${s.ml.map(esc).join(' \u00b7 ')}</div></details>`:''}
     ${(s.n||[]).length?`<details class="blk dsc"><summary class="lbl">Notes</summary><div class="desc">${s.n.map(esc).join('<br>')}</div></details>`:''}
     ${s.s&&s.s.split('\n').length>1?`<details class="blk dsc"><summary class="lbl">Syntax in the guide <span>${s.s.split('\n').length} lines</span></summary><pre class="opre">${esc(s.s)}</pre></details>`:''}
+    ${usageHtml(s)}
     <div class="srcline">${s.osrc
       ? esc(s.osrc)+(s.odev?' \u00b7 read from the device, not a document':'')
       : esc(src)+', page '+s.pg} \u00b7 ${esc(P.short||'')}-${esc(P.ver||'')}</div>`;
