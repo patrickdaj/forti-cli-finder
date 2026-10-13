@@ -64,6 +64,11 @@ python3 tools/attach_config_examples.py
 # already produced is skipped here.
 python3 tools/derive_getshow.py
 
+# Facts learned from live devices: the get tree the reference omits, and arguments for
+# commands it prints bare. Additive and idempotent, and a no-op when the overlay is
+# absent -- the build must work for someone with no hardware. See docs/pipeline.md.
+python3 tools/merge_device.py --apply
+
 python3 tools/stamp_build.py
 python3 tools/check_bundles.py
 
