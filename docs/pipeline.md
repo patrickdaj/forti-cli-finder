@@ -388,16 +388,15 @@ Stated plainly so nobody rediscovers it:
 
   The inspector works without it: arguments are emitted positionally up to the last one
   you filled in, so skipping a trailing argument does the right thing regardless.
-- **Sub-table attribution in the hand-written references.** A field is assigned to a
-  nested table when the Variable table has a row literally named `config <name>`, and
-  FortiManager and FortiAnalyzer often do not print one — so a nested table's fields land
-  beside the root table's. That is why about 354 parameter rows still look duplicated:
-  `config system csf` documents `certificate <string>` twice, once for the root table
-  ("Certificate (default = Fortinet_Local)") and once inside `config trusted-list`
-  ("Certificate."), and both end up unattributed. Deduplicating by name would be wrong —
-  on FortiSwitch, 90 of 159 same-name pairs are genuinely different sub-tables, so the
-  cure would delete real fields. The fix is to read nesting from the SYNTAX block, which
-  shows it unambiguously by indentation, and correlate it with the table rows.
+- **Sub-table attribution, for the last 229 rows.** Nesting now comes from the syntax
+  block, which states it by indentation, rather than from a `config <name>` row that
+  FortiManager and FortiAnalyzer often do not print — so `config system csf` correctly
+  separates the root's `certificate <string>` ("Certificate (default =
+  Fortinet_Local)") from `config trusted-list`'s ("Certificate."). 229 same-table
+  same-name rows remain, down from 487, and they are the ones whose field never appears
+  in a `set`/`edit` line in the block, so the block cannot place them either. Note the
+  obvious cure is wrong: on FortiSwitch, 90 of 159 same-name pairs are genuinely
+  different sub-tables, so deduplicating by name would delete real fields.
 - **Sample output coverage.** Thin, and unevenly: FortiAnalyzer ships 9 commands with
   output, FortiManager 7.
 - **Anything about a device's actual configuration.** Nothing here reads one, and the

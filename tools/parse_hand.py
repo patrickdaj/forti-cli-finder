@@ -5,7 +5,7 @@ pdftotext -layout output into the same section format as parse_fos.py.
 Layout: unindented heading; indented prose; 'Syntax' then an indented command block (possibly several);
 'Variable  Description [Default]' table; optional 'Example' blocks.
 """
-import re, sys, json
+import collections, re, sys, json
 
 VERB = re.compile(r'^(config|execute|diagnose|get|show|set|unset|end|next|edit|exec|diag)\b')
 # "Variables" as well as "Variable": 25 tables across FortiManager and FortiAnalyzer use
@@ -256,6 +256,44 @@ def _union(a, b):
     return a + [q for q in b if q['key'] not in seen]
 
 
+def nesting(syn):
+    """field key -> the sub-table it sits in, once per occurrence, in syntax order.
+
+    A config block states its nesting by indentation:
+
+        config system csf
+           set certificate <string>          <- the root table's
+           config trusted-list
+               edit <name>
+                  set certificate <string>   <- a different field, same name
+
+    The Variable table is supposed to say the same thing with a row named `config
+    trusted-list`, and FortiManager and FortiAnalyzer frequently do not print one --
+    so both fields landed in the root with different descriptions and nothing to tell
+    them apart. The block always knows, so ask the block.
+
+    One list per field name, because the whole point is the names that repeat: the Nth
+    row with that name in the table is the Nth occurrence in the syntax.
+    """
+    out = collections.defaultdict(list)
+    stack = []                      # [(indent, sub-table name)]
+    for raw in syn:
+        if not raw.strip():
+            continue
+        ind = len(raw) - len(raw.lstrip())
+        w = raw.split()
+        while stack and ind <= stack[-1][0]:
+            stack.pop()
+        if w[0] == 'config' and len(w) > 1:
+            # the outermost config IS the command, so its fields have no sub-table
+            stack.append((ind, '' if not stack else ' '.join(w[1:])))
+        elif w[0] in ('set', 'unset', 'edit') and len(w) > 1:
+            # `edit <id>` names the table's key, and a root table and a sub-table often
+            # both have one -- so it needs attributing just as a field does
+            out[keyof(w[1])].append(stack[-1][1] if stack else '')
+    return out
+
+
 def keyof(name):
     """The name a parameter is indexed by, computed the same way everywhere.
 
@@ -271,12 +309,33 @@ def keyof(name):
 
 
 def params_from_args(args):
-    """Positional arguments -> parameter rows, in the order the syntax prints them."""
+    """Positional arguments -> parameter rows, in the order the syntax prints them.
+
+    `<parameter> .. <parameter>` is ONE argument you may repeat. Taken literally it
+    became three, the middle one called `..`, which is not a thing you can type.
+    """
+    # collapse a repeat marker and the duplicate it sits between
+    flat, i = [], 0
+    while i < len(args):
+        a = args[i]
+        if a.strip(' .\u2026') == '' and flat:
+            nxt = args[i + 1] if i + 1 < len(args) else None
+            if nxt == flat[-1]:
+                i += 2              # `<x> .. <x>` -> the one `<x>` already kept
+            else:
+                i += 1              # a stray marker: drop it, keep what follows
+            flat[-1] = (flat[-1], True)
+            continue
+        flat.append(a)
+        i += 1
     out = []
-    for a in args:
+    for a in flat:
+        a, rep = a if isinstance(a, tuple) else (a, False)
         key = keyof(a)
         row = {'table': '', 'name': a, 'desc': '', 'default': '', 'key': key,
                'type': '', 'size': '', 'options': [], 'pos': 1}
+        if rep:
+            row['elem'] = a        # build_bundles turns this into a list argument
         alts = alternatives(a)
         if alts:
             row['options'] = [{'v': v, 'desc': ''} for v in alts]
@@ -412,6 +471,40 @@ def _selftest():
     if joined != ['config system locallog [disk | memory | fortianalyzer | syslogd '
                   '| syslogd2 | syslogd3] filter', 'set controller {enable | disable}']:
         fails.append(f'  wrapped syntax not joined: {joined}')
+
+    # `<parameter> .. <parameter>` is one argument you may repeat, not three arguments
+    # the middle of which is called `..`. The schema already has a list argument, so
+    # say it that way.
+    rep = params_from_args(['<parameter>', '..', '<parameter>'])
+    if [q['name'] for q in rep] != ['<parameter>'] or not rep[0].get('elem'):
+        fails.append(f'  a repeated argument should collapse to one list: '
+                     f'{[(q["name"], q.get("elem")) for q in rep]}')
+
+    # A nested table's fields must not land beside the root's. The syntax block states
+    # the nesting by indentation; the FortiManager and FortiAnalyzer Variable tables
+    # often omit the `config <name>` row that would say it, which is why `config system
+    # csf` listed `certificate <string>` twice with different descriptions and no way
+    # to tell them apart.
+    csf = ['config system csf',
+           '   set accept-auth-by-cert {enable | disable}',
+           '   set certificate <string>',
+           '   config trusted-list',
+           '       edit <name>',
+           '          set action {accept | deny}',
+           '          set certificate <string>']
+    nest = nesting(csf)
+    if nest.get('certificate') != ['', 'trusted-list']:
+        fails.append(f'  nesting wrong for a field in both tables: '
+                     f'{nest.get("certificate")}')
+    if nest.get('accept-auth-by-cert') != ['']:
+        fails.append(f'  a root field should have no sub-table: '
+                     f'{nest.get("accept-auth-by-cert")}')
+    if nest.get('action') != ['trusted-list']:
+        fails.append(f'  a nested-only field: {nest.get("action")}')
+
+    if nesting(csf + ['   config sub', '       edit <id>']).get('id') != ['sub']:
+        fails.append('  an edit mkey is not attributed to its table: '
+                     + repr(nesting(csf + ['   config sub', '       edit <id>'])))
 
     # A table row and a syntax argument written identically must merge into ONE
     # parameter. `execute bootimage {primary | secondary}` has the choice in its syntax
@@ -642,6 +735,9 @@ for s in sections:
     # the parameters under it, not a parameter called "config". Turn it into their table.
     kept, table = [], ''
     for p in s['params']:
+        if p['name'].strip(' .\u2026') == '':
+            continue        # a literal `...` row: the table saying "and so on"
+
         m = re.match(r'^config\s+(\S.*)$', p['name'].strip())
         if m and len(m.group(1).split()) <= 4:
             table = m.group(1).strip().rstrip('.')
@@ -649,6 +745,17 @@ for s in sections:
         p['table'] = p.get('table') or table
         kept.append(p)
     s['params'] = kept
+    # The `config <name>` rows above gave us what the table says; the syntax block says
+    # it more reliably, so let it correct the attribution where it knows the field.
+    nest = nesting(s['syntax'])
+    seen_key = collections.Counter()
+    for p in s['params']:
+        occ = nest.get(keyof(p['name']))
+        if occ:
+            i = seen_key[keyof(p['name'])]
+            if i < len(occ):
+                p['table'] = occ[i]
+            seen_key[keyof(p['name'])] += 1
     for p in s['params']:
         p.pop('_wrap', None)
         p['key'] = keyof(p['name'])
