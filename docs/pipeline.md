@@ -332,10 +332,31 @@ Stated plainly so nobody rediscovers it:
 - **Arguments for 3113 non-config FortiOS commands** (3104 if you exclude `show`).
   The reference prints the bare command. A tree
   capture fixes part of this; `?` on a device fixes more.
-- **Required vs optional arguments.** Fortinet's own convention is that an argument is
-  required unless bracketed, and in 176 of 180 bracketed cases the optional ones are a
-  trailing run — but the generated FortiOS reference almost never uses the brackets. The
-  parsers keep the notation verbatim and nothing interprets it yet.
+- **Required vs optional arguments — and neither device source can tell us.** This was
+  measured rather than assumed, so here is the evidence, to save the next person the
+  trip:
+  - `?` does not answer it. Across 1,938 crawl records from a FortiGate, `<Enter>`
+    (the box saying "this command is complete as typed") **never once** co-occurred with
+    an argument or a sub-command: the four observed shapes are `<Enter>` alone (1,618),
+    sub-commands alone (199), arguments alone (112), and arguments with sub-commands (9).
+    `?` prints either "you may press Enter" or "here are your choices", never both, so
+    the absence of `<Enter>` beside an argument says nothing about whether that argument
+    is required. Inferring requiredness from it would have labelled 123 commands
+    "required" on no evidence.
+  - `tree` answers it for 55 commands and no more. It has an explicit marker —
+    `<Enter>|<passwd>`, "press Enter or give a passwd" — and it means optional. But its
+    ABSENCE does not mean required: `diagnose sniffer packet` lists six positional
+    arguments with no marker on any of them, and all but the first are plainly
+    omittable (`diagnose sniffer packet port1` runs).
+  - What is left is the documents' own notation, which is honest but three-valued:
+    `[x]` optional, `{a | b}` a mandatory choice, `<x>` a typed variable that claims
+    nothing either way — and the generated FortiOS reference almost never brackets
+    anything. The parsers keep that notation verbatim inside the argument NAME, so the
+    page already shows `[<cmd_cue>]` with its brackets; what is missing is not the
+    information but a machine-readable flag, and for `<x>` there is nothing to flag.
+
+  The inspector works without it: arguments are emitted positionally up to the last one
+  you filled in, so skipping a trailing argument does the right thing regardless.
 - **Sample output coverage.** Thin, and unevenly: FortiAnalyzer ships 9 commands with
   output, FortiManager 7.
 - **Anything about a device's actual configuration.** Nothing here reads one, and the
