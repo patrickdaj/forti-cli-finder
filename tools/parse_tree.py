@@ -218,6 +218,18 @@ def commands(nodes):
             mk = next((c for c in ch if c.get('mkey')), None)
             cmds.append({'k': 'config', 'p': ' '.join(n['path']), 'x': [],
                          'mkey': mk['name'] if mk else None})
+
+    # `config system interface ipv6` is a block you open INSIDE an edit, not a command
+    # you type at the prompt -- the bundle carries those as sub-tables on the parent's
+    # parameters. A config path is nested when any ancestor is itself a table or object,
+    # and counting them as missing commands overstated the gap by about 1100.
+    kind_at = {tuple(n['path']): n['kind'] for n in nodes}
+    for c in cmds:
+        if c['k'] != 'config':
+            continue
+        parts = c['p'].split()
+        c['nested'] = any(kind_at.get(tuple(parts[:i])) in ('table', 'object')
+                          for i in range(1, len(parts)))
     return cmds
 
 
@@ -238,8 +250,12 @@ def diff(cmds, bundle):
     b = json.load(open(path))
     have = {(s['k'], s['p']): s for s in b['secs']}
     print(f'\n=== {bundle}.json vs the device')
+    nested = [c for c in cmds if c.get('nested')]
+    if nested:
+        print(f'  ({len(nested)} config paths are blocks opened inside an edit, not '
+              f'top-level commands -- the bundle carries those as sub-tables)')
     for kind in ('config', 'diagnose', 'execute', 'get'):
-        mine = [c for c in cmds if c['k'] == kind]
+        mine = [c for c in cmds if c['k'] == kind and not c.get('nested')]
         if not mine:
             continue
         missing = [c for c in mine if (kind, c['p']) not in have]

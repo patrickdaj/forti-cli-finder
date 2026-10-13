@@ -532,8 +532,16 @@ def main():
                                          f"{ident['ver']}-{ident['build']}")
                 os.makedirs(out, exist_ok=True)
                 write(out, 'status.txt', status)
-                write(out, 'capture.txt',
-                      f"Version: {ident['model']} v{ident['ver']},build{ident['build']}")
+                # Never clobber capture.txt: a full capture puts the tree in there and a
+                # crawl has no tree to offer. Write a banner-only file ONLY if nothing is
+                # there yet, so a crawl can stand alone without destroying a tree.
+                cap = os.path.join(out, 'capture.txt')
+                if not os.path.exists(cap) or os.path.getsize(cap) < 200:
+                    tr = os.path.join(out, 'tree.txt')
+                    body = open(tr).read() if os.path.exists(tr) else ''
+                    write(out, 'capture.txt',
+                          f"Version: {ident['model']} v{ident['ver']},"
+                          f"build{ident['build']}\n" + body)
                 for root in crawl_roots:
                     print(f'  crawling {root!r}', flush=True)
                     crawl(s, root, out)
