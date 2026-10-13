@@ -56,6 +56,14 @@ def main():
         empty = [x for x in d['secs'] if not (x.get('p') or '').strip()]
         if empty:
             fail.append(f'{b}: {len(empty)} sections have no path')
+        # Same failure, one level up: the page indexes with s.x.forEach(...), so a
+        # section with no "x" at all throws inside the async load. The rejection is
+        # swallowed and the whole page sits on "loading reference data" -- which is how
+        # this was found the first time, so it is asserted rather than remembered.
+        nox = [(x.get('k'), x.get('p')) for x in d['secs'] if 'x' not in x]
+        if nox:
+            fail.append(f'{b}: {len(nox)} sections have no "x" list '
+                        f'(the page throws on these) -- first: {nox[0]}')
 
     # One derived `show`/`get` per path. The hand guides give several config subsections
     # one path, and a guard that missed that shipped five identical rows for one command.
