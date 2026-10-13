@@ -14,7 +14,7 @@
   color-scheme:dark;
   --t-bg:#0c0f0d; --t-bg2:#111512; --t-fg:#d6ddd6; --t-dim:#7f8a81; --t-faint:#4f5a52; --t-line:#1f2621;
   --t-prompt:#f0a35e; --t-sel:#1b241e; --t-selbar:#f0a35e; --t-match:#ffd27a;
-  --t-config:#7fd1b6; --t-diagnose:#d0a3e0; --t-execute:#f0a35e; --t-get:#95b8ea; --t-show:#95b8ea;
+  --t-config:#7fd1b6; --t-diagnose:#d0a3e0; --t-execute:#f0a35e; --t-get:#95b8ea; --t-show:#7fc8d9;
   --i-bg:#121714; --i-bg2:#171d19; --i-line:#232b25; --i-fg:#dfe5df; --i-dim:#8d988f; --i-faint:#5c675f;
   --i-cur:#1f2a22; --i-on:#f0a35e; --i-bad:#ff7b6b; --i-block:#0a0d0b;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
@@ -280,10 +280,14 @@ async function load(id){
 function toks(q){let t=q.toLowerCase().trim().split(/\s+/).filter(Boolean);if(t.length>1){const t2=t.filter(x=>!STOP.has(x));if(t2.length)t=t2}return t}
 function expand(t){const a=[t];(SYN[t]||[]).forEach(s=>a.push(s));return a}
 function pm(word,alts){for(const a of alts){if(word.startsWith(a))return a===word?2:1}return 0}
+// How MUCH of the word matched. pm() answers whether, which is all the ranking needs;
+// the highlight needs the length, or searching `dhcp` lights up the whole of
+// `dhcp6client-renew` as though the box had matched all of it.
+function pmLen(word,alts){for(const a of alts){if(word.startsWith(a))return a.length}return 0}
 function walk(s,alts){ // ordered subsequence prefix match of tokens along path words
-  let wi=0,ti=0,score=0,gaps=0,exact=0;const used=[];
-  while(ti<alts.length&&wi<s.words.length){const m=pm(s.words[wi],alts[ti]);if(m){score+=m;exact+=(m===2);used.push(wi);ti++;wi++}else{if(used.length)gaps++;wi++}}
-  return {consumed:ti,rest:alts.slice(ti),score,gaps,exact,used};
+  let wi=0,ti=0,score=0,gaps=0,exact=0;const used=[],lens=[];
+  while(ti<alts.length&&wi<s.words.length){const m=pm(s.words[wi],alts[ti]);if(m){score+=m;exact+=(m===2);used.push(wi);lens.push(pmLen(s.words[wi],alts[ti]));ti++;wi++}else{if(used.length)gaps++;wi++}}
+  return {consumed:ti,rest:alts.slice(ti),score,gaps,exact,used,lens};
 }
 function pfilter(s,rest){ // params matching remaining tokens: key prefix first, else help text
   if(!rest.length)return null;
@@ -464,8 +468,17 @@ function items(res){ // flat, selectable lines: each command, then its matching 
   return out;
 }
 function tpath(s,T){
-  const alts=T.map(expand);const w=walk(s,alts);const hit=new Set(w.used);
-  return (s.k+' '+s.p).split(' ').map((x,i)=>{const t=hit.has(i)?`<mark>${esc(x)}</mark>`:esc(x);return i===0?`<span class="v">${t}</span>`:t}).join(' ');
+  // The match marks what the query actually matched, not the word it landed in: a
+  // search for `dhcp` lights `dhcp` in `dhcp6client-renew` and leaves the rest alone.
+  // A synonym marks what you typed, not what it stood in for: `sh` against `show`
+  // marks `sh`, since that is the alternative that matched.
+  const alts=T.map(expand);const w=walk(s,alts);
+  const hit=new Map(w.used.map((wi,n)=>[wi,w.lens[n]]));
+  return (s.k+' '+s.p).split(' ').map((x,i)=>{
+    const n=hit.get(i);
+    const t=n>0?`<mark>${esc(x.slice(0,n))}</mark>${esc(x.slice(n))}`:esc(x);
+    return i===0?`<span class="v">${t}</span>`:t;
+  }).join(' ');
 }
 function liveHtml(){
   if(!S.q.trim())return '';
