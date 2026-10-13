@@ -256,12 +256,25 @@ def _union(a, b):
     return a + [q for q in b if q['key'] not in seen]
 
 
+def keyof(name):
+    """The name a parameter is indexed by, computed the same way everywhere.
+
+    A table row and a syntax argument are often the same thing written the same way --
+    `{primary | secondary}` -- and when the two compute different keys they both
+    survive the merge and the page lists the parameter twice.
+    """
+    n = (name or '').strip()
+    if n[:1] in '<{[(':
+        inner = re.sub(r'^[<{\[(]+|[>}\])]+$', '', n).strip()
+        return re.split(r'[\s|]', inner, maxsplit=1)[0] or n
+    return re.split(r'[\s(<{\[]', n, maxsplit=1)[0] or n
+
+
 def params_from_args(args):
     """Positional arguments -> parameter rows, in the order the syntax prints them."""
     out = []
     for a in args:
-        key = re.sub(r'^[<{\[(]+|[>}\])]+$', '', a).strip()
-        key = re.split(r'[\s|]', key, maxsplit=1)[0] or a
+        key = keyof(a)
         row = {'table': '', 'name': a, 'desc': '', 'default': '', 'key': key,
                'type': '', 'size': '', 'options': [], 'pos': 1}
         alts = alternatives(a)
@@ -328,8 +341,10 @@ def _selftest():
     # with its own row in the Variable table -- and we were shipping the first one and
     # hanging the other 72 rows off it as if they were its arguments.
     def row(key, name, desc):
-        return {'table': '', 'name': name, 'desc': desc, 'default': '', 'key': key,
-                'type': '', 'size': '', 'options': []}
+        # keyed the way the parser keys a real table row, so the test exercises the
+        # same path rather than a convenient fiction
+        return {'table': '', 'name': name, 'desc': desc, 'default': '',
+                'key': keyof(name), 'type': '', 'size': '', 'options': []}
     block = ['diagnose debug application alertmail <integer>',
              'diagnose debug application archd <integer>']
     rows = [row('alertmail', 'alertmail <integer>', 'Set the alert mail debug level'),
@@ -397,6 +412,16 @@ def _selftest():
     if joined != ['config system locallog [disk | memory | fortianalyzer | syslogd '
                   '| syslogd2 | syslogd3] filter', 'set controller {enable | disable}']:
         fails.append(f'  wrapped syntax not joined: {joined}')
+
+    # A table row and a syntax argument written identically must merge into ONE
+    # parameter. `execute bootimage {primary | secondary}` has the choice in its syntax
+    # AND as a row in its table; keying them differently listed it twice on the page.
+    one = merge_args(['{primary | secondary}'],
+                     [row('{primary | secondary}', '{primary | secondary}',
+                          'Select the partition to boot from.')])
+    if len(one) != 1 or one[0]['desc'] != 'Select the partition to boot from.':
+        fails.append(f'  identical row and argument not merged: '
+                     f'{[(q["name"], q["desc"]) for q in one]}')
 
     # One command, documented twice: an optional choice expands to the form with
     # nothing chosen, and sometimes the document also gives that form its own section.
@@ -531,10 +556,28 @@ while idx < N:
             cur['syntax'].append(l.rstrip())
     elif mode == 'example':
         cur['examples'][-1].append(l.rstrip())
+    elif mode == 'note':
+        # prose that followed a table: about the command, but not its description
+        if l.strip():
+            if cur['notes'] and not unclosed(cur['notes'][-1]) \
+                    and cur['notes'][-1][-1:] not in '.:':
+                cur['notes'][-1] += ' ' + l.strip()     # a sentence that wrapped
+            else:
+                cur['notes'].append(l.strip())
     elif mode == 'table':
         if l.strip() == '':
             idx += 1; continue
         pstart, dstart = cols[0][1], cols[1][1]
+        if len(l) - len(l.lstrip()) < pstart:
+            # Indented LESS than the table's own name column, so it cannot be a row:
+            # the table ended and prose resumed. Slicing it at the name column anyway
+            # is how `If you do not specify primary or secondary...` became a parameter
+            # called `f you do not specify primary or sec` -- junk, and missing its
+            # first letter. It is a note about the command, so keep it as one.
+            mode = 'note'
+            cur['notes'].append(l.strip())
+            idx += 1
+            continue
         first = l[pstart:dstart].strip() if len(l) > pstart else ''
         lead = len(l) - len(l.lstrip())
         vals = slice_cols(l, cols)
@@ -608,7 +651,7 @@ for s in sections:
     s['params'] = kept
     for p in s['params']:
         p.pop('_wrap', None)
-        p['key'] = re.split(r'[\s(<{\[]', p['name'], maxsplit=1)[0] or p['name']
+        p['key'] = keyof(p['name'])
         p['type'] = ''; p['size'] = ''; p['options'] = []
         # options embedded in the name: foo {a | b}
         mo = re.search(r'\{([^}]*)\}', p['name'])

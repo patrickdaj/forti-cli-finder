@@ -388,6 +388,16 @@ Stated plainly so nobody rediscovers it:
 
   The inspector works without it: arguments are emitted positionally up to the last one
   you filled in, so skipping a trailing argument does the right thing regardless.
+- **Sub-table attribution in the hand-written references.** A field is assigned to a
+  nested table when the Variable table has a row literally named `config <name>`, and
+  FortiManager and FortiAnalyzer often do not print one — so a nested table's fields land
+  beside the root table's. That is why about 354 parameter rows still look duplicated:
+  `config system csf` documents `certificate <string>` twice, once for the root table
+  ("Certificate (default = Fortinet_Local)") and once inside `config trusted-list`
+  ("Certificate."), and both end up unattributed. Deduplicating by name would be wrong —
+  on FortiSwitch, 90 of 159 same-name pairs are genuinely different sub-tables, so the
+  cure would delete real fields. The fix is to read nesting from the SYNTAX block, which
+  shows it unambiguously by indentation, and correlate it with the table rows.
 - **Sample output coverage.** Thin, and unevenly: FortiAnalyzer ships 9 commands with
   output, FortiManager 7.
 - **Anything about a device's actual configuration.** Nothing here reads one, and the
