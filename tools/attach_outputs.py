@@ -170,12 +170,18 @@ for e in CFG['output'] + CFG['hand']:
             # For a guide that spans products, an unmatched command is as likely to be a
             # third party's ('show run' on a Cisco switch) as ours -- keep only plausible
             # ones.
-            if p and not (len(plats) > 1 and (kind not in ('get', 'show')
-                                              or p.split()[0] not in tops[targets[0]])):
-                for b in miss:
-                    new[b].setdefault((kind, p), []).append(o)
-                    stats[key]['new:' + b] += 1
-                    took += 1
+            # Judged per bundle, not once for the first of them: a command 8.0 has
+            # and 7.6 does not is plausible for 8.0 and implausible for 7.6, and
+            # deciding both from one bundle's vocabulary was how 7.6 got to veto 8.0.
+            for b in miss:
+                if not p:
+                    break
+                if len(plats) > 1 and (kind not in ('get', 'show')
+                                       or p.split()[0] not in tops[b]):
+                    continue
+                new[b].setdefault((kind, p), []).append(o)
+                stats[key]['new:' + b] += 1
+                took += 1
         if not took:
             stats[key]['dropped'] += 1
 

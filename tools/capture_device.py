@@ -829,8 +829,20 @@ def main():
         print('\nnext:')
         for d in done:
             rel = os.path.relpath(os.path.join(d, 'capture.txt'), ROOT)
-            print(f'  make tree FILE={rel}')
-            print(f'  python3 tools/parse_tree.py {rel} --record')
+            tr = os.path.join(d, 'tree.txt')
+            # `tree` is FortiOS-only -- FortiSwitch answers "Unknown action 0" and
+            # FortiManager and FortiAnalyzer return a stub -- so only offer it where a
+            # real tree actually came back. A real one is about a megabyte.
+            if os.path.exists(tr) and os.path.getsize(tr) > 20000:
+                print(f'  make tree FILE={rel}')
+                print(f'  python3 tools/parse_tree.py {rel} --record')
+        # these two apply to every device, tree or no tree
+        print('  python3 tools/merge_device.py --report'
+              '   # what the captures would add, before writing anything')
+        print('  python3 tools/merge_device.py'
+              '            # write device-overlay.json')
+        print('  make build'
+              '                               # fold it into the bundles')
     return 0 if done else 1
 
 
