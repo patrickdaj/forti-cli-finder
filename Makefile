@@ -95,14 +95,17 @@ build:
 ##                 One bundle per cli entry, ids and names well formed, no duplicate
 ##                 get/show paths, worked examples not lopsided across builds of one
 ##                 platform, and index.html's PRODUCTS list agreeing with sources.json.
-##                 Then the tree parser against its fixture, and the device crawl
-##                 against a scripted box that hangs up on cue -- that last one is how
-##                 we know a crawl resumes without a lab to try it in.
+##                 Then three parser selftests: the tree parser against its fixture,
+##                 the device crawl against a scripted box that hangs up on cue (how we
+##                 know a crawl resumes without a lab to try it in), and the
+##                 hand-written-reference parser against real syntax lines from the
+##                 FortiSwitch, FortiManager and FortiAnalyzer documents.
 ##                 Runs at the end of build too; this is for after a hand edit.
 check:
 	@$(PY) tools/check_bundles.py
 	@$(PY) tools/parse_tree.py --selftest
 	@$(PY) tools/capture_device.py --selftest
+	@$(PY) tools/parse_hand.py --selftest
 
 ## all             sources -> fetch -> build. The whole pipeline from nothing.
 all: sources fetch build
