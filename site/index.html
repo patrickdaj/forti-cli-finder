@@ -30,17 +30,13 @@ kbd{font:11px var(--mono);color:var(--i-dim);border:1px solid var(--i-line);bord
 
 /* ---------- terminal ---------- */
 .term{background:var(--t-bg);color:var(--t-fg);font:13.5px/1.55 var(--mono);display:flex;flex-direction:column;min-width:0;min-height:0;height:100%}
-.tbar{display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--t-line);color:var(--t-dim);font:12px var(--mono);flex:none}
+.tbar{display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--t-line);color:var(--t-dim);font:13.5px/1.55 var(--mono);flex:none}
 .tbar b{color:var(--t-fg);font-weight:500}
 .tbar .dot{width:8px;height:8px;border-radius:50%;background:var(--t-prompt);box-shadow:0 0 8px var(--t-prompt)}
 .scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:10px 16px 6px;min-height:0;scrollbar-color:var(--t-faint) transparent}
-.hist{margin-bottom:10px}
+.reply{margin-bottom:10px}
 .hl{white-space:pre-wrap;overflow-wrap:anywhere}
 .hl .pr{color:var(--t-prompt)}
-.hl.res{color:var(--t-dim);cursor:pointer}
-.hl.res:hover{color:var(--t-fg)}
-.hl.res.hsel{color:var(--t-fg);background:var(--t-sel);box-shadow:-10px 0 0 var(--t-sel),2px 0 0 var(--t-selbar) inset}
-.hl.res .arrow{color:var(--t-faint)}
 .hl.sysl{color:var(--t-dim);white-space:pre-wrap}
 .banner{color:var(--t-dim);margin-bottom:12px}
 .banner b{color:var(--t-fg);font-weight:500}
@@ -97,7 +93,11 @@ kbd{font:11px var(--mono);color:var(--i-dim);border:1px solid var(--i-line);bord
 .phead{flex:none;padding:12px 20px 0;background:var(--i-bg)}
 .ihead .cmd{font:600 16px var(--mono);overflow-wrap:anywhere}
 .block{margin:10px 0 0;background:var(--i-block);border:1px solid var(--i-line);border-radius:6px;padding:10px 12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:start}
-.block pre{margin:0;font:13px/1.45 var(--mono);color:var(--i-fg);white-space:pre;overflow:auto;max-height:8.8em}
+.block pre{margin:0;font:13px/1.45 var(--mono);color:var(--i-fg);white-space:pre;overflow:auto;
+  /* Grows with the config instead of cutting it off at six lines. The cap is a share of
+     the window, not a line count, so a long block uses the screen it has and only scrolls
+     when it genuinely cannot fit. */
+  max-height:min(52vh,40em)}
 .bact{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 .cbtn{border:1px solid var(--i-on);background:color-mix(in srgb,var(--i-on) 16%,transparent);color:var(--i-on);font:500 12.5px var(--mono);border-radius:5px;padding:5px 10px;cursor:pointer;white-space:nowrap}
 .cbtn kbd{border-color:color-mix(in srgb,var(--i-on) 40%,transparent);color:var(--i-on)}
@@ -200,7 +200,7 @@ details.dsc[open] summary::before{content:"\25be"}
     <div class="line">
       <div id="ctxwrap"></div>
       <div class="ghost" id="ghost"></div>
-      <div class="prompt-row"><button class="ctx" id="ctx" type="button" aria-haspopup="dialog" title="Platform, firmware and command type">FGT-7.6.4 #</button><input id="q" type="text" placeholder="type a command, a prefix or a topic" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Command line"></div>
+      <div class="prompt-row"><button class="ctx" id="ctx" type="button" aria-haspopup="dialog" title="Platform, firmware and command type">FGT-7.6.7 #</button><input id="q" type="text" placeholder="type a command, a prefix or a topic" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Command line"></div>
     </div>
   </section>
   <section class="pane" id="pane" tabindex="0" aria-label="Inspector"><div class="phead" id="phead"></div><div class="pscroll" id="pscroll"></div><div class="hints" id="hints" hidden></div></section>
@@ -225,20 +225,30 @@ const SYN={mlag:['mclag'],'mc-lag':['mclag'],span:['mirror'],lag:['trunk'],ether
 const STOP=new Set(['when','the','a','an','to','of','on','in','is','for','and','with','from','by','it','my','how','do','i','does','what']);
 const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const S={prod:store.get('cf.prod',['fortios']),kind:(k=>k.length?k:KINDS.slice())(store.get('cf.kind',[])),prevProd:null,prevKind:null,
-  q:'',sel:0,res:{toks:[],hits:[],total:0},items:[],hist:store.get('cf.hist',[]),ctxOpen:false,sheet:false,pinned:false,
+  q:'',sel:0,res:{toks:[],hits:[],total:0},items:[],reply:null,ctxOpen:false,sheet:false,pinned:false,
   ver:store.get('cf.ver',{}),top:0,
   detail:null,vals:{},pins:new Set(),xp:new Set(),groups:new Set(),showAll:false};
-const DATA={},LOADING={};
+const DATA={},LOADING={},LOADERR={};
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // ---------- data ----------
 async function load(id){
-  if(DATA[id])return DATA[id]; if(LOADING[id])return LOADING[id];
-  LOADING[id]=(async()=>{
+  // Keyed by FILE, not by platform. What is being loaded is a BUILD -- FGT 7.6.7 and
+  // 8.0.1 are two files behind one platform id -- and keying the cache by platform made
+  // switching builds impossible: picking 8.0.1 starts a 6MB fetch and sets
+  // LOADING.fortios, picking 7.6.7 before it lands deletes DATA.fortios but is handed
+  // back the 8.0 promise, which then installs 8.0 data as the platform's bundle. From
+  // then on DATA.fortios short-circuits every load and 7.6.7 is unreachable until the
+  // page is reloaded. A failed fetch poisoned it the same way, because LOADING was only
+  // cleared on success.
+  const P=PRODUCTS.find(x=>x.id===id),want=P.file;
+  if(DATA[id]&&DATA[id].from===want)return DATA[id];
+  if(LOADING[want])return LOADING[want];
+  LOADING[want]=(async()=>{
     // Plain JSON: any static host worth using (GitHub Pages included) gzips it in
     // transit, which beats shipping a base64 copy the page has to decode itself.
     // BUILD is stamped by tools/stamp_build.py so new code always fetches its own data.
-    const f='data/'+PRODUCTS.find(x=>x.id===id).file+'.json?v='+BUILD;
+    const f='data/'+want+'.json?v='+BUILD;
     const r=await fetch(f);
     if(!r.ok)throw new Error(f+': HTTP '+r.status);
     const b=await r.json();
@@ -271,9 +281,17 @@ async function load(id){
         if(a&&(a.o||[]).length){s.po=a;break}
       }
     });
-    DATA[id]=b;delete LOADING[id];return b;
+    b.from=want;
+    // If the build changed while this was in flight, hand the bundle to whoever asked
+    // for it but do not install it over the one the user is now looking at.
+    if(P.file===want)DATA[id]=b;
+    return b;
   })();
-  return LOADING[id];
+  // cleared on BOTH paths: a rejected promise left in here is a platform that can never
+  // load again, and the catch here does not swallow it -- the caller still sees it
+  LOADING[want].then(()=>{delete LOADERR[id]},err=>{LOADERR[id]=err.message||String(err)})
+    .then(()=>{delete LOADING[want];renderTerm(true)});
+  return LOADING[want];
 }
 
 // ---------- search ----------
@@ -444,7 +462,7 @@ function copyText(t,btn,bar){
 }
 
 // ---------- rendering: terminal ----------
-const LIVE_N=14;     // rows on screen at once
+let LIVE_N=14;       // commands on screen at once -- measured below, not guessed
 const REACH=500;     // rows you can arrow to. Past this, "narrow the query" is true advice
 function items(res){ // flat, selectable lines: each command, then its matching parameters
   const hits=res.hits.slice(0,REACH);
@@ -483,6 +501,11 @@ function tpath(s,T){
 function liveHtml(){
   if(!S.q.trim())return '';
   const loading=S.prod.some(id=>!DATA[id]);
+  // A failed fetch used to leave "loading reference data..." on screen for good, which
+  // looks exactly like a slow network. Say which build failed and why.
+  const bad=S.prod.filter(id=>LOADERR[id]);
+  if(bad.length)return `<div class="live"><div class="none">% ${esc(bad.map(id=>{
+    const P=PRODUCTS.find(p=>p.id===id);return `${P.short}-${P.ver}: ${LOADERR[id]}`}).join(' \u00b7 '))}</div></div>`;
   if(!S.res.hits.length)return `<div class="live"><div class="none">${loading?'loading reference data\u2026':'% no command or help text matches \u201c'+esc(S.q.trim())+'\u201d'}</div></div>`;
   const multi=S.prod.length>1;
   const n0=S.top,n1=winEnd(n0);
@@ -506,12 +529,16 @@ function liveHtml(){
 // ---------- slash commands ----------
 const PALIAS={fgt:'fortios',fortigate:'fortios',fortios:'fortios',fos:'fortios',fsw:'fortiswitch',fortiswitch:'fortiswitch',switch:'fortiswitch',faz:'fortianalyzer',fortianalyzer:'fortianalyzer',fmg:'fortimanager',fortimanager:'fortimanager'};
 const KALIAS={config:'config',conf:'config',diagnose:'diagnose',diag:'diagnose',execute:'execute',exec:'execute',get:'get',show:'show'};
-const SLASH=[
-  ['/fgt','FortiGate (FortiOS 7.6.7) only'],['/fsw','FortiSwitch (FortiSwitchOS 7.6.7) only'],['/faz','FortiAnalyzer 7.6.7 only'],['/fmg','FortiManager 7.6.7 only'],
+// Built from PRODUCTS on every call rather than written out once: these lines used to
+// name 7.6.7 whatever build you were actually on, so `/help` quietly contradicted the
+// prompt -- and a const would freeze them at whichever build was selected at load.
+const slashList=()=>[
+  ...PRODUCTS.map(P=>['/'+P.short.toLowerCase(), `${P.name} ${P.ver} only`
+    + (P.vers.length>1?` (also ${P.vers.filter(x=>x.v!==P.ver).map(x=>x.v).join(', ')})`:'')]),
   ['/all','every platform'],
   ['/config','config commands only'],['/diag','diagnose commands only'],['/exec','execute commands only'],['/get','get commands only'],['/show','show commands only'],
   ['/any','every command type'],
-  ['/ver','firmware builds: list and pick one'],['/reset','back to FortiGate, every command type'],['/clear','clear the scrollback'],['/help','list these commands']];
+  ['/ver','firmware builds: list and pick one'],['/reset','back to FortiGate, every command type'],['/clear','clear the last reply'],['/help','list these commands']];
 function slashParse(q){ // returns {prod,kind,vers,act,err}
   const toks=q.replace(/^\//,'').toLowerCase().split(/[\s,+\/]+/).filter(Boolean);
   const r={prod:[],kind:[],vers:{},act:null,err:[]};let lastP=null;
@@ -541,8 +568,8 @@ function slashParse(q){ // returns {prod,kind,vers,act,err}
 }
 function slashRun(q){
   const r=slashParse(q);const lines=[];
-  if(r.act==='clear'||r.act==='cls'){S.hist=[];store.set('cf.hist',S.hist);return}
-  if(r.act==='help'||r.act==='?')SLASH.forEach(([c,d])=>lines.push(c.padEnd(9)+d)),lines.push('combine them: /fsw diag, /fgt fsw show, /fgt@7.6.7');
+  if(r.act==='clear'||r.act==='cls'){S.reply=null;return}
+  if(r.act==='help'||r.act==='?')slashList().forEach(([c,d])=>lines.push(c.padEnd(9)+d)),lines.push('combine them: /fsw diag, /fgt fsw show, /fgt@7.6.7');
   if((r.act==='ver'||r.act==='version'||r.act==='versions')&&!Object.keys(r.vers).length){
     // list builds for what is selected, not for everything
     const sel=PRODUCTS.filter(P=>S.prod.includes(P.id));
@@ -551,7 +578,7 @@ function slashRun(q){
     if(show.length===1)lines.push('set one with /ver <build>, e.g. /ver '+show[0].vers[0].v+'.');
     else lines.push('several platforms are selected; name one to set a build: /'+show[0].short.toLowerCase()+'@'+show[0].vers[0].v+'.');
   }
-  Object.entries(r.vers).forEach(([id,v])=>{if(S.ver[id]!==v){S.ver[id]=v;delete DATA[id]}});store.set('cf.ver',S.ver);
+  Object.entries(r.vers).forEach(([id,v])=>{S.ver[id]=v});store.set('cf.ver',S.ver);
   if(r.act==='reset'){S.prod=['fortios'];S.kind=KINDS.slice()}
   if(r.prod.length)S.prod=PRODUCTS.map(p=>p.id).filter(id=>r.prod.includes(id));
   if(r.kind.length)S.kind=KINDS.filter(k=>r.kind.includes(k));
@@ -559,14 +586,14 @@ function slashRun(q){
   Promise.all(S.prod.map(load)).then(()=>renderTerm());
   r.err.forEach(e=>lines.push('% '+e));
   if(r.prod.length||r.kind.length||r.act==='reset'||Object.keys(r.vers).length)lines.push('context: '+promptText());
-  S.hist.push({sys:1,q:q.trim(),pr:promptText(),lines});S.hist=S.hist.slice(-40);store.set('cf.hist',S.hist);
+  S.reply={q:q.trim(),pr:promptText(),lines};
 }
 function verRows(){const out=[];PRODUCTS.forEach(P=>P.vers.forEach(x=>out.push(['/'+P.short.toLowerCase()+'@'+x.v,P.name+' '+x.v+(x.v===P.ver?' \u00b7 current':'')+' \u00b7 '+x.src])));return out}
 function slashMenu(){
   if(/^\/ver(sions?|sion)?\b/i.test(S.q.trim())||/@/.test(S.q))return verRows().filter(([c])=>!/@\S/.test(S.q)||c.startsWith(S.q.trim().split(/\s+/).pop().toLowerCase()));
   const last=S.q.split(/[\s,+]+/).pop().replace(/^\//,'').toLowerCase();
-  const m=SLASH.filter(([c])=>c.slice(1).startsWith(last));
-  return m.length?m:SLASH;
+  const all=slashList();const m=all.filter(([c])=>c.slice(1).startsWith(last));
+  return m.length?m:all;
 }
 function slashHtml(){
   const m=slashMenu();if(S.sel>=m.length)S.sel=0;
@@ -588,11 +615,17 @@ function slashResolve(q,hl){
   if(last&&known(last))return q;
   return hl?slashComplete(hl[0]):q;
 }
-function histHtml(){
-  if(!S.hist.length)return `<div class="banner"><b>Forti CLI Finder</b> \u00b7 the <b>?</b> key for the Fortinet CLI guides.
+function termHead(){
+  // What used to be a scrollback. Keeping forty past results cost the listing half the
+  // screen and nobody went back to them; the one thing up here worth keeping is the
+  // reply to a slash command, because that is how /ver and /help answer at all.
+  // It also steps aside once you start typing, so the matches get the whole pane.
+  if(S.reply){const r=S.reply;
+    return `<div class="reply"><div class="hl"><span class="pr">${esc(r.pr)} #</span> ${esc(r.q)}</div>${(r.lines||[]).map(l=>`<div class="hl sysl">${esc(l)}</div>`).join('')}</div>`;}
+  if(S.q.trim())return '';
+  return `<div class="banner"><b>Forti CLI Finder</b> \u00b7 the <b>?</b> key for the Fortinet CLI guides.
 Type the way you would on the box. Prefixes expand, help text and sample output are searched too. Type <b>/</b> for commands: /fsw, /diag, /fgt fsw show, /ver.
 <div class="ex">${['conf sys ha over','diag sys session list','get sys ha status','diag switch mclag','conf switch trunk','exec ping-options'].map(x=>`<button data-q="${esc(x)}">${esc(x)}</button>`).join('')}</div></div>`;
-  return S.hist.map((h,n)=>h.sys?`<div class="hist"><div class="hl"><span class="pr">${esc(h.pr)} #</span> ${esc(h.q)}</div>${(h.lines||[]).map(l=>`<div class="hl sysl">${esc(l)}</div>`).join('')}</div>`:`<div class="hist"><div class="hl"><span class="pr">${esc(h.pr)} #</span> ${esc(h.q)}</div><div class="hl res${S.hsel===n?' hsel':''}" data-h="${n}"><span class="arrow">\u2192</span> ${esc(h.label)}</div></div>`).join('');
 }
 function promptText(){
   const ps=PRODUCTS.filter(p=>S.prod.includes(p.id));
@@ -615,18 +648,35 @@ function ctxHtml(){
   <h4>Firmware</h4><div class="grid">${PRODUCTS.map(P=>P.vers.map(x=>`<button class="opt" data-ver="${P.id}@${x.v}" aria-pressed="${x.v===P.ver}">${P.short} ${x.v}</button>`).join('')).join('')}</div>
   <p class="note">Tap a name for only that one; \u2713/+ adds or removes it. Same from the prompt: /fgt, /fsw diag, /fgt fsw show, /ver. /ver lists every build and picks one.</p></div>`;
 }
+// How many commands actually fit. It used to be a fixed 14, which wasted a tall window
+// and overflowed a short one; now that the scrollback is gone there is real room to give
+// back. Measured from a rendered row rather than computed from the font, because padding,
+// line-height and the user's own zoom all have a say.
+function measureLive(){
+  const sc=$('#scroll');if(!sc||!sc.clientHeight)return false;
+  const probe=sc.querySelector('.li');
+  if(probe){const h=probe.getBoundingClientRect().height;if(h>8)S.rowH=h}
+  const head=sc.querySelector('.banner,.reply');
+  const avail=sc.clientHeight-(head?head.getBoundingClientRect().height+10:0)-6;
+  const n=Math.max(6,Math.min(90,Math.floor(avail/(S.rowH||23))));
+  if(n===LIVE_N)return false;
+  LIVE_N=n;return true;
+}
 function renderTerm(keepScroll){
   const slash=S.q.startsWith('/');
   S.res=S.q.trim()&&!slash?search(S.q):{toks:[],hits:[],total:0};
   S.items=items(S.res);
   if(!slash&&S.sel>=S.items.length)S.sel=0;
   if(!slash)clampTop();
-  $('#hist').innerHTML=histHtml();
+  $('#hist').innerHTML=termHead();
   $('#live').innerHTML=slash?slashHtml():liveHtml();
   $('#ctx').textContent=promptText()+' #';
   $('#ghost').innerHTML=ghostHtml();
   $('#ctxwrap').innerHTML=ctxHtml();
   if(!keepScroll){const sc=$('#scroll');sc.scrollTop=sc.scrollHeight}
+  // One re-render at most: measuring needs rows on screen, and the new count changes how
+  // many there are. The guard stops that from becoming a loop.
+  if(!S.measuring&&measureLive()){S.measuring=true;clampTop();renderTerm(keepScroll);S.measuring=false}
   if(isWide())preview();
 }
 function winEnd(top){ // row after the last one shown when the window starts at `top`
@@ -646,33 +696,9 @@ function clampTop(){ // scroll the window just far enough to hold the selection
   // at the end of the list, pull back so the screen stays full rather than trailing off
   while(S.top>0&&winEnd(S.top-1)>=S.items.length)S.top--;
 }
-function scrollSel(){const el=document.querySelector('.li.sel')||document.querySelector('.hl.hsel');if(el)el.scrollIntoView({block:'nearest'})}
-// indexes of scrollback lines you can go back to (slash-command echoes are not results)
-function histSel(){return S.hist.map((h,n)=>h.sys?-1:n).filter(n=>n>=0)}
-function openHist(n){
-  const h=S.hist[n];if(!h)return;
-  S.hsel=null;setQ(h.q);
-  const i=S.items.findIndex(it=>it.h.s.k===h.k&&it.h.s.p===h.p&&(!h.pk||(it.p&&it.p.k===h.pk)));
-  if(i>=0)openItem(i,true);
-}
-function histStep(d){            // d: -1 further back, +1 forward
-  const sel=histSel();if(!sel.length)return false;
-  if(S.hsel==null){ if(d>0)return false; S.hsel=sel[sel.length-1]; }
-  else{
-    const at=sel.indexOf(S.hsel);
-    const nx=at+d;
-    if(nx<0)return true;                       // already at the oldest, stay put
-    if(nx>=sel.length){S.hsel=null;renderTerm(true);return true}   // back down into the listing
-    S.hsel=sel[nx];
-  }
-  // preview whatever the scrollback line points at
-  const h=S.hist[S.hsel];
-  const bundle=DATA[h.prod];
-  if(bundle){const s=bundle.secs.find(x=>x.k===h.k&&x.p===h.p);if(s){S.pinned=true;setDetail(s,null,false)}}
-  renderTerm(true);scrollSel();
-  return true;
-}
-
+function scrollSel(){const el=document.querySelector('.li.sel');if(el)el.scrollIntoView({block:'nearest'})}
+// The scrollback is gone, and with it going back up into it. Arrow-up now stops at the
+// top of the listing instead of walking into a history nobody used.
 // ---------- inspector (right pane): a keyboard-first view of one command ----------
 // Rows have their own cursor (S.cur). Keys while the inspector has focus:
 //   up/down or j/k move   left/right change an option   space include or drop   enter edit a value / open a group
@@ -921,8 +947,7 @@ function rowAct(r,how){ // how: toggle | left | right | edit
 function commit(it){
   if(!it)return;
   const s=it.h.s;const label=s.k+' '+s.p+(it.p?' \u203a '+it.p.k:'');
-  const last=S.hist[S.hist.length-1];
-  if(!last||last.q!==S.q.trim()||last.label!==label){S.hist.push({q:S.q.trim(),label,pr:promptText(),prod:s.prod,k:s.k,p:s.p,pk:it.p?it.p.k:''});S.hist=S.hist.slice(-40);store.set('cf.hist',S.hist)}
+  // opening a command used to append it to the scrollback; the listing is the record now
 }
 function openItem(n,user){
   const it=S.items[n];if(!it)return;
@@ -958,7 +983,7 @@ document.addEventListener('click',e=>{
   if(t.closest('#ctx')){S.ctxOpen=!S.ctxOpen;renderTerm(true);return}
   if(t.closest('[data-prod-all]')){allOf('prod');return}
   if(t.closest('[data-kind-all]')){allOf('kind');return}
-  const vb=t.closest('[data-ver]');if(vb){const [id,v]=vb.dataset.ver.split('@');S.ver[id]=v;store.set('cf.ver',S.ver);delete DATA[id];load(id).then(()=>renderTerm(true));renderTerm(true);return}
+  const vb=t.closest('[data-ver]');if(vb){const [id,v]=vb.dataset.ver.split('@');S.ver[id]=v;store.set('cf.ver',S.ver);load(id).then(()=>renderTerm(true),()=>renderTerm(true));renderTerm(true);return}
   const op=t.closest('[data-only-prod]');if(op){only('prod',op.dataset.onlyProd);return}
   const ok=t.closest('[data-only-kind]');if(ok){only('kind',ok.dataset.onlyKind);return}
   const pr=t.closest('[data-prod]');if(pr){toggle('prod',pr.dataset.prod);return}
@@ -971,7 +996,6 @@ document.addEventListener('click',e=>{
   const all=t.closest('[data-all]');if(all){S.showAll=all.dataset.all==='1';S.cur=0;renderPane();return}
   const sl=t.closest('[data-slash]');if(sl){slashRun(slashComplete(sl.dataset.slash));setQ('');return}
   const li=t.closest('[data-it]');if(li){openItem(+li.dataset.it,true);return}
-  const hh=t.closest('[data-h]');if(hh){const h=S.hist[+hh.dataset.h];setQ(h.q);const n=S.items.findIndex(it=>it.h.s.k===h.k&&it.h.s.p===h.p&&(!h.pk||(it.p&&it.p.k===h.pk)));if(n>=0)openItem(n,true);return}
   const ex=t.closest('[data-q]');if(ex){setQ(ex.dataset.q);return}
   const cl=t.closest('[data-clamp]');if(cl){cl.classList.toggle('open');return}
   // inspector rows: an option value sets it, the marker toggles, a value field edits, anywhere else moves the cursor
@@ -983,7 +1007,7 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('focusin',e=>{if(!e.target.closest('#pane'))$('#pane').classList.remove('focus')});
 document.addEventListener('input',e=>{
-  if(e.target.id==='q'){S.q=e.target.value;S.sel=0;S.top=0;S.hsel=null;S.slashMoved=false;S.pinned=false;renderTerm();return}
+  if(e.target.id==='q'){S.q=e.target.value;S.sel=0;S.top=0;S.slashMoved=false;S.pinned=false;renderTerm();return}
   if(e.target.id==='jin'){S.jump=e.target.value;renderPane();const n=S.rows.findIndex(r=>r.id===S.jumpBest);if(n>=0){S.cur=n;curIntoView()}return}
   if(e.target.id==='vin'&&S.detail){
     const v=e.target;S.vals[v.dataset.vid]=v.value;
@@ -1028,7 +1052,7 @@ document.addEventListener('keydown',e=>{
     return;
   }
   if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();if(!S.detail&&S.items[S.sel])setDetail(S.items[S.sel].h.s,S.items[S.sel].p,true);copyBlock();return}
-  if(e.ctrlKey&&(e.key==='l'||e.key==='L')){e.preventDefault();S.hist=[];store.set('cf.hist',S.hist);renderTerm();return}
+  if(e.ctrlKey&&(e.key==='l'||e.key==='L')){e.preventDefault();S.reply=null;renderTerm();return}
   if(e.target.closest&&e.target.closest('#pane')&&S.detail&&!e.target.closest('input,select,textarea,button,summary')){paneKeys(e);return}
   if(e.target.closest&&e.target.closest('#pane')&&e.key==='Escape'){$('#q').focus();return}
   if(e.key==='Escape'){if(S.ctxOpen){S.ctxOpen=false;renderTerm(true)}else if(S.sheet){S.sheet=false;renderPane()}else{setQ('')}return}
@@ -1053,19 +1077,18 @@ document.addEventListener('keydown',e=>{
     if(S.q.trim()!==comp){setQ(comp+' ');return}
     openItem(S.sel,true);focusPane();return}
   if(e.key==='ArrowDown'){e.preventDefault();
-    if(S.hsel!=null){histStep(1);return}
     if(S.items.length){S.sel=Math.min(S.items.length-1,S.sel+1);clampTop();renderTerm(true);scrollSel()}}
   else if(e.key==='ArrowUp'){e.preventDefault();
-    // past the top of the listing, keep going up into the scrollback
-    if(S.hsel!=null||!S.items.length||S.sel===0){if(histStep(-1))return}
     if(S.items.length){S.sel=Math.max(0,S.sel-1);clampTop();renderTerm(true);scrollSel()}}
   else if(e.key==='Enter'){e.preventDefault();
-    if(S.hsel!=null){openHist(S.hsel);if(isWide())focusPane();return}
+
     if(S.items.length){openItem(S.sel,true);if(isWide())focusPane()}}
 });
 let sx=null;document.addEventListener('touchstart',e=>{sx=e.touches[0].clientX<24?e.touches[0].clientX:null},{passive:true});
 document.addEventListener('touchend',e=>{if(sx!=null&&S.sheet&&e.changedTouches[0].clientX-sx>80){S.sheet=false;renderPane()}sx=null},{passive:true});
 matchMedia('(min-width:900px)').addEventListener('change',()=>{S.sheet=false;renderPane();renderTerm(true)});
+// a resized or rotated window fits a different number of rows
+addEventListener('resize',()=>{S.rowH=0;renderTerm(true)});
 
 (async function boot(){
   renderTerm();renderPane();

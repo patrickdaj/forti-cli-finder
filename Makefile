@@ -101,6 +101,12 @@ build:
 ##                 hand-written-reference parser against real syntax lines from the
 ##                 FortiSwitch, FortiManager and FortiAnalyzer documents, and the device
 ##                 merge against the three shapes a `?` listing can take.
+##                 Then the PAGE itself: site/index.html's own script is run against a
+##                 stub DOM and the real bundles, and what it renders is asserted. That
+##                 is the only check here that catches a page which parses perfectly and
+##                 still shows nothing -- a second function of the same name hoisting
+##                 over the first did exactly that. Needs node; without node it says so
+##                 and passes, since the pipeline itself never needs it.
 ##                 Runs at the end of build too; this is for after a hand edit.
 check:
 	@$(PY) tools/check_bundles.py
@@ -108,6 +114,7 @@ check:
 	@$(PY) tools/capture_device.py --selftest
 	@$(PY) tools/parse_hand.py --selftest
 	@$(PY) tools/merge_device.py --selftest
+	@$(PY) tools/check_page.py
 
 ## all             sources -> fetch -> build. The whole pipeline from nothing.
 all: sources fetch build
