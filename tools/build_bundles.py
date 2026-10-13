@@ -28,6 +28,7 @@ bundle_id = _cb.bundle_id
 for e in CFG['cli']:
     S = json.load(open(f"{WORK}/{e['key']}/tree.json"))
     secs = []
+    dropped = 0
     # the same 133-model list is repeated by dozens of sections; store each one once
     model_lists, model_idx = [], {}
     for s in S:
@@ -37,6 +38,13 @@ for e in CFG['cli']:
             continue
         syn = '\n'.join(l for l in s['syntax'] if not l.strip().startswith('Description:')).strip('\n')
         syn = re.sub(r'\n{2,}', '\n\n', syn)
+        if not (s['path'] or '').strip():
+            # A section with no path cannot be a command -- it is a heading the parser
+            # could not resolve. Drop it and count it: downstream steps index on the
+            # path's first word, so one of these crashed attach_outputs.py, and a high
+            # count is the signal that a document needs parser work.
+            dropped += 1
+            continue
         o = {'k': s['kind'], 'p': s['path'], 'd': s['desc'], 'pg': s['page'], 's': syn}
         if s.get('models'):
             sig = '\u0000'.join(s['models'])
@@ -83,5 +91,8 @@ for e in CFG['cli']:
     bid = bundle_id(e)
     open(f'{OUT}/{bid}.json', 'w').write(raw)
     gz = gzip.compress(raw.encode(), 9)
+    if dropped:
+        print(f"{bid:16s} {dropped:5d} sections had no path and were dropped -- "
+              f"parse_hand could not resolve them")
     print(f"{bid:16s} {len(secs):5d} secs {sum(len(s['x']) for s in secs):6d} params  "
           f"{len(raw)//1024:5d} KB raw {len(gz)//1024:4d} KB gz")

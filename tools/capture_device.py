@@ -35,11 +35,14 @@ ENV = os.path.join(ROOT, '.env.devices')
 LIVE = os.path.join(ROOT, 'work/live')
 
 # Reads only. `tree` prints the command tree; the rest identify the build.
+# `tree` exists on FortiOS only -- FortiSwitch answers "Unknown action 0" and
+# FortiManager/FortiAnalyzer return a one-line stub. The `?` crawl works on all of them,
+# which is why it, not the tree, is the general mechanism.
 SAFE = {
     'fgt': ['get system status', 'tree'],
-    'fsw': ['get system status', 'tree'],
-    'faz': ['get system status', 'tree'],
-    'fmg': ['get system status', 'tree'],
+    'fsw': ['get system status'],
+    'faz': ['get system status'],
+    'fmg': ['get system status'],
 }
 KIND_PRODUCT = {'fgt': 'fortios', 'fsw': 'fortiswitch',
                 'faz': 'fortianalyzer', 'fmg': 'fortimanager'}
@@ -47,7 +50,12 @@ KIND_PRODUCT = {'fgt': 'fortios', 'fsw': 'fortiswitch',
 PROMPT = re.compile(rb'(?:^|\r?\n)[\w.\-]+(?:\s+\([\w.\-]+\))?\s*[#$]\s*$')
 PAGER = re.compile(rb'--More--|\(END\)', re.I)
 PASSWD = re.compile(rb"password:\s*$", re.I)
-BANNER = re.compile(r'^Version:\s*(\S+?)\s+v(\d+\.\d+\.\d+)\s*,\s*build(\d+)', re.M)
+import importlib.util as _il
+_sp = _il.spec_from_file_location('parse_tree', os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'parse_tree.py'))
+_pt = _il.module_from_spec(_sp)
+_sp.loader.exec_module(_pt)
+identify = _pt.identify       # this writes what parse_tree.py reads; one definition only
 BAD = re.compile(r'command parse error|unknown action|Command fail|Unknown action', re.I)
 
 
@@ -102,6 +110,7 @@ class Session:
 
     def __init__(self, dev, verbose=False):
         self.dev, self.verbose, self.buf = dev, verbose, b''
+        self.method = None      # the `?` spelling this device answered to
         argv = ['ssh', '-tt', '-o', 'StrictHostKeyChecking=accept-new',
                 '-o', 'NumberOfPasswordPrompts=1',
                 # FortiOS ships older kex/cipher/key sets on some builds; a modern
@@ -164,7 +173,10 @@ class Session:
         survives an ssh pty is the one thing about this script that cannot be known
         without a device, so it tries both spellings and reports which answered.
         """
-        for method, payload in (('space-q', cmd + ' ?'), ('bare-q', cmd + '?')):
+        tries = (('space-q', cmd + ' ?'), ('bare-q', cmd + '?'))
+        if self.method:                 # it answered once; stop paying for the other
+            tries = [t for t in tries if t[0] == self.method]
+        for method, payload in tries:
             self.buf = b''
             os.write(self.fd, payload.encode())
             time.sleep(0.35)
@@ -172,6 +184,7 @@ class Session:
             os.write(self.fd, b'\x15')          # ctrl-U: clear the line, run nothing
             self.read(idle=0.25, timeout=3)
             if useful(out):
+                self.method = method
                 return method, out
         return None, ''
 
@@ -192,7 +205,9 @@ def clean(raw, cmd):
     lines = raw.split('\n')
     if lines and cmd.strip() and cmd.strip() in lines[0]:
         lines = lines[1:]
-    while lines and PROMPT.search(lines[-1].encode()):
+    # after a ctrl-U the device redraws "host # <the command>"; drop that tail
+    while lines and (PROMPT.search(lines[-1].encode())
+                     or re.match(r'^[\w.\-]+\s*(\([\w.\-]+\))?\s*[#$]\s', lines[-1])):
         lines = lines[:-1]
     return '\n'.join(lines).strip('\n')
 
@@ -237,6 +252,77 @@ def bare_commands(product, ver=None, limit=None):
             continue
         out.append(f"{sec['k']} {sec['p']}")
     return sorted(out)[:limit] if limit else sorted(out)
+
+
+# ---------------------------------------------------------------- the ? crawl
+
+# "  neighbors    show BGP neighbors"  /  "  <A.B.C.D>    neighbor IP"
+HELP_ROW = re.compile(r'^\s*(\S+)\s{2,}(\S.*?)\s*$')
+
+
+def help_rows(text):
+    """Parse `?` output into (name, description), plus what kind of answer it was.
+
+    FortiOS answers `?` three ways and they mean different things:
+      <Enter>            this path is already a complete command
+      <placeholder> ...  the NEXT positional argument, one at a time
+      word  word  word   sub-commands, which is the tree we cannot get from a PDF
+    """
+    rows, complete, args, subs = [], False, [], []
+    for line in text.split('\n'):
+        line = line.rstrip()
+        if not line.strip() or line.strip().startswith('###'):
+            continue
+        if line.strip() == '<Enter>':
+            complete = True
+            continue
+        m = HELP_ROW.match(line)
+        if not m:
+            continue
+        name, desc = m.group(1), m.group(2)
+        if name.startswith('<') or name == 'arg':
+            args.append((name, desc))
+        else:
+            subs.append((name, desc))
+        rows.append((name, desc))
+    return {'complete': complete, 'args': args, 'subs': subs, 'rows': rows}
+
+
+def crawl(s, root, out, max_nodes=4000, max_depth=8):
+    """Walk `?` down from a command prefix, breadth first.
+
+    This is the only way to reach `get router info bgp neighbors` and its family: the
+    routing daemon answers `?` even though `tree` does not expand it. Nothing is ever
+    executed -- `?` is answered on the keystroke and the line is cleared with ctrl-U.
+    """
+    import json
+    seen, queue, found, asked = set(), [root], [], 0
+    dest = os.path.join(out, 'crawl-' + re.sub(r'\W+', '_', root) + '.jsonl')
+    with open(dest, 'w') as fh:
+        while queue and asked < max_nodes:
+            path = queue.pop(0)
+            if path in seen or len(path.split()) - len(root.split()) > max_depth:
+                continue
+            seen.add(path)
+            method, body = s.ask(path)
+            asked += 1
+            if not method:
+                continue
+            h = help_rows(body)
+            if not (h['subs'] or h['args'] or h['complete']):
+                continue
+            rec = {'p': path, 'complete': h['complete'],
+                   'args': h['args'], 'subs': h['subs']}
+            fh.write(json.dumps(rec) + '\n')
+            fh.flush()
+            found.append(rec)
+            for name, _ in h['subs']:
+                queue.append(f'{path} {name}')
+            if asked % 25 == 0:
+                print(f'    asked {asked}, described {len(found)}, queue {len(queue)}',
+                      flush=True)
+    print(f'    asked {asked}, described {len(found)} -> {os.path.relpath(dest, ROOT)}')
+    return found
 
 
 # ---------------------------------------------------------------- the config walk
@@ -327,12 +413,16 @@ def capture(dev, probe_limit, verbose, do_config=False):
     s.read(idle=1.5, timeout=90, until=PROMPT)
 
     status = s.run('get system status', idle=1.0, timeout=60)
-    m = BANNER.search(status)
-    if not m:
+    ident = identify(status)
+    if not ident:
+        # keep it so an unrecognised banner is debuggable rather than just a refusal
+        os.makedirs(LIVE, exist_ok=True)
+        write(LIVE, f"unidentified-{dev['name']}.txt", status)
         s.close()
-        print('  no "Version:" banner -- is this a Fortinet CLI? Leaving it alone.')
+        print(f"  no version banner -- saved what it said to "
+              f"work/live/unidentified-{dev['name']}.txt")
         return None
-    model, ver, build = m.group(1), m.group(2), m.group(3)
+    model, ver, build = ident['model'], ident['ver'], ident['build']
     product = KIND_PRODUCT[dev['kind']]
     print(f'  {model} v{ver} build{build}')
 
@@ -340,7 +430,7 @@ def capture(dev, probe_limit, verbose, do_config=False):
     os.makedirs(out, exist_ok=True)
     write(out, 'status.txt', status)
 
-    parts = [f'Version: {model} v{ver},build{build}']
+    parts = [f'Version: {model} v{ver},build{build}']   # normalised for parse_tree
     for cmd in SAFE[dev['kind']][1:]:
         body = s.run(cmd, idle=1.5, timeout=300)
         write(out, re.sub(r'\W+', '_', cmd) + '.txt', body)

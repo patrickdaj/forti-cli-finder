@@ -44,6 +44,9 @@ def main():
             fail.append(f"{b}: bundle id is {d.get('id')!r}, expected {e['product']!r}")
         if not d.get('secs'):
             fail.append(f'{b}: no sections')
+        empty = [x for x in d['secs'] if not (x.get('p') or '').strip()]
+        if empty:
+            fail.append(f'{b}: {len(empty)} sections have no path')
 
     # One derived `show`/`get` per path. The hand guides give several config subsections
     # one path, and a guard that missed that shipped five identical rows for one command.

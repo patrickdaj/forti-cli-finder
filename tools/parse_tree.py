@@ -39,9 +39,15 @@ CONN = re.compile(r'(?:(?<=\s)|^)(\|-|\+-|--)')
 SUFFIX = re.compile(r'\s+\(([^()]*)\)\s*$')
 VERBS = {'diagnose__tree__': 'diagnose', 'execute__tree__': 'execute'}
 
-# "Version: FortiGate-VM64 v7.6.4,build2731,250410 (GA.F)" -- the first line of
-# `get system status`, and the only part of a capture we ever record.
+# The two shapes `get system status` comes in. FortiOS puts the model on the Version
+# line; FortiManager and FortiAnalyzer put the version alone and the model on its own
+# line. This is the only part of a capture we ever record.
+#   Version: FortiGate-VM64 v7.6.4,build2731,250410 (GA.F)
+#   Version                         : v7.6.7-build3737 260601 (GA.M)
+#   Platform Full Name              : FortiManager-VM64-KVM
 BANNER = re.compile(r'^Version:\s*(\S+?)\s+v(\d+\.\d+\.\d+)\s*,\s*build(\d+)', re.M)
+BANNER2 = re.compile(r'^Version\s*:\s*v(\d+\.\d+\.\d+)[-\s]build(\d+)', re.M)
+PLATFORM = re.compile(r'^Platform Full Name\s*:\s*(\S+)', re.M)
 MODELS = {'fortigate': 'fortios', 'fortiwifi': 'fortios', 'fortios': 'fortios',
           'fortiswitch': 'fortiswitch', 'fortianalyzer': 'fortianalyzer',
           'fortimanager': 'fortimanager'}
@@ -52,9 +58,15 @@ PRIVATE = re.compile(r'^(Serial-Number|Hostname)\s*:', re.M | re.I)
 def identify(text):
     """What box and build is this capture from? None if it carries no status banner."""
     m = BANNER.search(text)
-    if not m:
-        return None
-    model, ver, build = m.group(1), m.group(2), m.group(3)
+    if m:
+        model, ver, build = m.group(1), m.group(2), m.group(3)
+    else:
+        m = BANNER2.search(text)
+        if not m:
+            return None
+        ver, build = m.group(1), m.group(2)
+        p = PLATFORM.search(text)
+        model = p.group(1) if p else 'unknown'
     fam = model.split('-')[0].lower()
     return {'product': MODELS.get(fam), 'model': model, 'ver': ver, 'build': build}
 
