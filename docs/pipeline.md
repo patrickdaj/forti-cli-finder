@@ -313,8 +313,39 @@ the inline `--`, parentheses inside a field name, a line the terminal wrapped).
 - `index.html`'s generated `PRODUCTS` list agreeing with `sources.json`, including no
   stale entries.
 
-There is no test framework. `check_bundles.py` and `parse_tree.py --selftest` are the
-tests, and the bundles are the thing worth asserting about.
+There is no test framework. `check_bundles.py` and three `--selftest`s are the tests,
+and the bundles are the thing worth asserting about:
+
+- `parse_tree.py --selftest` — the tree parser against a committed fixture;
+- `capture_device.py --selftest` — the device crawl against a scripted box that hangs up
+  on cue, which is how we know a crawl resumes and reconnects without a lab to try it in;
+- `parse_hand.py --selftest` — the hand-written-reference parser against real syntax
+  lines from the FortiSwitch, FortiManager and FortiAnalyzer documents.
+
+`parse_hand.py` additionally refuses to finish if any command it produced is in neither
+its source document nor a documented choice. That is the one assertion that matters most
+here: a reference that invents commands is worse than a thin one.
+
+### The whole thing rebuilds byte for byte
+
+The strongest check is the cheapest, and it is the one that proves this document is not
+fiction. Clone the repo somewhere clean, put the PDFs where it expects them, and build:
+
+```
+git clone <this repo> /tmp/check && cd /tmp/check
+rm -rf sources && ln -s /path/to/your/sources sources   # or: make fetch
+make build
+```
+
+Every file under `site/data/` and `site/index.html` must come out byte-identical to the
+committed ones. Measured on 2026-10-12 at commit `a4c33c9`: all five bundles and
+`index.html` identical, and the build touched nothing else. That one command proves four
+things at once — every tool needed is committed, the build is deterministic, the
+committed data really is what the pipeline produces rather than something hand-edited
+since, and a new machine can reproduce it.
+
+The same invariant holds in place: after `make build`, `git diff --stat site/` is empty
+unless an input actually changed.
 
 Not checked, and worth your eyes: whether a parse is *correct*. The counts can be right
 while the content is wrong. `make diff` and `make tree` exist for that, and both want a
