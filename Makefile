@@ -23,7 +23,7 @@ LAB     ?=             # a lab checkout for `make import-lab`; default ~/Develop
 
 .DEFAULT_GOAL := help
 .PHONY: help all versions versions-check sources sources-check fetch build check \
-        capture crawl tree probe serve diff clean distclean import-lab
+        capture crawl tree probe serve diff clean distclean import-lab schema-diff
 
 ## ---------------------------------------------------------------- discovery
 
@@ -116,6 +116,7 @@ check:
 	@$(PY) tools/parse_hand.py --selftest
 	@$(PY) tools/merge_device.py --selftest
 	@$(PY) tools/import_lab.py --selftest
+	@$(PY) tools/diff_schema.py --selftest
 	@$(PY) tools/check_page.py
 
 ## import-lab     Distil the lab's logged device reads into lab-overlay.json.     ~2s, offline
@@ -138,6 +139,22 @@ check:
 ##                 `python3 tools/import_lab.py --report` prints the counts without writing.
 import-lab:
 	@$(PY) tools/import_lab.py $(if $(LAB),--lab "$(LAB)")
+
+## schema-diff    FortiManager's syntax schema against the bundles; report only.   ~3s, offline
+##                 Reads fmg-syntax-<train>-device.json from the sibling fortinet-brain
+##                 checkout (BRAIN=, default ~/Development/fortinet-brain) and the shipped
+##                 bundles, and writes nothing to site/ and touches no bundle or parser.
+##                 Joins config tables on path (nested sub-tables on their leaf name) and
+##                 counts tables and parameters in both / schema-only / bundle-only, then
+##                 the disagreements on type, default and option list, each tagged
+##                 schema-excluded, type-vocab (counted as agreement) or likely-parser.
+##                 Writes work/schema-diff-<train>.json (gitignored) for later tasks.
+##                 Expect: per train, numbers first, then the patterns and 20 examples
+##                 with their PDF page. docs/schema-diff.md is the written-up result.
+##                   make schema-diff
+##                   make schema-diff BRAIN=/path/to/fortinet-brain
+schema-diff:
+	@for t in 7.6 8.0; do $(PY) tools/diff_schema.py --train $$t $(if $(BRAIN),--brain "$(BRAIN)") --json $(WORK)/schema-diff-$$t.json || exit 1; done
 
 ## all             sources -> fetch -> build. The whole pipeline from nothing.
 all: sources fetch build

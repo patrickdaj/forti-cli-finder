@@ -26,3 +26,6 @@ work/live/
 # python bytecode from the tools importing each other
 __pycache__/
 *.pyc
+
+# schema-diff disagreement lists (make schema-diff)
+work/schema-diff-*.json
