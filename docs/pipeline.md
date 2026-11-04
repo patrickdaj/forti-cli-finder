@@ -313,7 +313,7 @@ the inline `--`, parentheses inside a field name, a line the terminal wrapped).
 - `index.html`'s generated `PRODUCTS` list agreeing with `sources.json`, including no
   stale entries.
 
-There is no test framework. `check_bundles.py` and three `--selftest`s are the tests,
+There is no test framework. `check_bundles.py` and six `--selftest`s are the tests,
 and the bundles are the thing worth asserting about:
 
 - `parse_tree.py --selftest` — the tree parser against a committed fixture;
@@ -321,6 +321,15 @@ and the bundles are the thing worth asserting about:
   on cue, which is how we know a crawl resumes and reconnects without a lab to try it in;
 - `parse_hand.py --selftest` — the hand-written-reference parser against real syntax
   lines from the FortiSwitch, FortiManager and FortiAnalyzer documents.
+- `merge_device.py --selftest` — the device merge against the three shapes a `?` listing
+  can take;
+- `import_lab.py --selftest` — the lab-log importer's anonymiser and its refusal to write,
+  on inline fixtures, so it needs no lab;
+- `diff_schema.py --selftest` — the FortiManager schema comparison, needing neither the
+  brain nor a bundle.
+
+`check_page.py` then runs the page's own script against a stub DOM; it is a check, not a
+`--selftest`.
 
 `parse_hand.py` additionally refuses to finish if any command it produced is in neither
 its source document nor a documented choice. That is the one assertion that matters most
