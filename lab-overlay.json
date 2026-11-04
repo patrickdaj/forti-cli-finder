@@ -1,0 +1,1098 @@
+{
+ "_comment": [
+  "Sample output from the owner's lab, for the build to attach to commands.",
+  "Written by tools/import_lab.py from the lab's own logged, masked device reads.",
+  "Regenerate rather than hand-edit.",
+  "Anonymised before it gets here: prompts and hostnames made generic (FGT, FMG, FAZ,",
+  "FSW), serials cut to their last four characters, company names and the",
+  "abbreviations in device names replaced, secrets masked, public IPv4 addresses",
+  "swapped for RFC 5737 ones, MAC suffixes blanked. The tool refuses to write if a",
+  "secret, serial or company name survives its own final scan."
+ ],
+ "builds": [
+  "FortiAnalyzer-VM64-KVM v7.6.7 build3737",
+  "FortiAnalyzer-VM64-KVM v8.0.2 build0198",
+  "FortiGate-VM64-KVM v7.6.7 build3704",
+  "FortiGate-VM64-KVM v8.0.2 build0251",
+  "FortiManager-VM64-KVM v7.6.7 build3737",
+  "FortiManager-VM64-KVM v8.0.2 build0198"
+ ],
+ "samples": {
+  "fortianalyzer": [
+   {
+    "k": "get",
+    "p": "system global",
+    "c": "get system global",
+    "t": "admin-host          : (null)\nadmin-lockout-duration: 60\nadmin-lockout-method: ip\nadmin-lockout-threshold: 3\nadmin-ssh-grace-time: 120\nadom-mode           : normal\nadom-select         : enable\nadom-status         : enable\nai-mode             : enable\napache-mode         : event\napache-wsgi-processes: 10\napi-ip-binding      : enable\nauth-dev-restapi-allowlist: disable\nbackup-compression  : normal\nbackup-to-subfolders: disable\ncli-auth            : disable\nclone-name-option   : default\nclt-cert-req        : disable\nconsole-output      : standard\ncontentpack-fgt-install: disable\ncountry-flag        : enable\ncreate-revision     : enable\ndaylightsavetime    : enable\ndebug-tool          : disable\ndefault-logview-auto-completion: enable\ndefault-search-mode : filter-based\ndetect-unregistered-log-device: enable\ndevice-view-mode    : tree\ndh-params           : 2048\ndisable-module      : none\nenc-algorithm       : high\nevent-correlation-cache-size: 4\nfabric-storage-pool-quota: 50286\nfabric-storage-pool-size: 20\nfcp-cfg-service     : disable\nfgfm-ca-cert        :\nfgfm-cert-exclusive : disable\nfgfm-local-cert     : (null)\nfgfm-ssl-protocol   : follow-global-ssl-protocol\nfortiservice-port   : 8013\nglobal-ssl-protocol : tlsv1.2\ngui-curl-timeout    : 30\ngui-feature-visibility-mode: per-adom\ngui-install-preview-concurrency: 20\ngui-max-objects-per-row: 5\ngui-polling-interval: 5\nha-member-auto-grouping: enable\nhostname            : FAZ\nhttpd-ssl-protocol  : tlsv1.3 tlsv1.2\njsonapi-log         : disable\nlanguage            : english\nlatitude            : (null)\nldap-cache-timeout  : 86400\nldapconntimeout     : 60000\nlog-checksum        : none\nlog-checksum-upload : disable\nlog-forward-cache-size: 15\nlog-forward-plugin-workers: 10\nlog-mode            : analyzer\nlongitude           : (null)\n...",
+    "cap": "lab session 2026-11-02",
+    "build": "FortiAnalyzer-VM64-KVM v7.6.7 build3737",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "system status",
+    "c": "get system status",
+    "t": "Platform Type                   : FAZVM64-KVM\nPlatform Full Name              : FortiAnalyzer-VM64-KVM\nVersion                         : v7.6.7-build3737 260601 (GA.M)\nSerial Number                   : FZVMxxxx3201\nBIOS version                    : 04000002\nHostname                        : FAZ\nMax Number of Admin Domains     : 30\nAdmin Domain Configuration      : Enabled\nFIPS Mode                       : Disabled\nHA Mode                         : Standalone\nBranch Point                    : 3737\nRelease Version Information     : GA.M\nCurrent Time                    : Mon Nov 02 11:38:59 PST 2026\nDaylight Time Saving            : Yes\nTime Zone                       : (GMT-8:00) Pacific Time (US & Canada).\nx86-64 Applications             : Yes\nDisk Usage                      : Free 466.74GB, Total 491.08GB\nFile System                     : Ext4\nLicense Status                  : Valid\nImage Signature                 : Image is GA Certified",
+    "cap": "lab session 2026-11-02",
+    "build": "FortiAnalyzer-VM64-KVM v7.6.7 build3737",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "system status",
+    "c": "get system status",
+    "t": "Platform Type                   : FAZVM64-KVM\nPlatform Full Name              : FortiAnalyzer-VM64-KVM\nVersion                         : v8.0.2-build0198 261006 (GA.F)\nSerial Number                   : FZVMxxxx3352\nBIOS version                    : 04000002\nHostname                        : FAZ\nMax Number of Admin Domains     : 30\nAdmin Domain Configuration      : Enabled\nFIPS Mode                       : Disabled\nHA Mode                         : Standalone\nBranch Point                    : 0198\nRelease Version Information     : GA.F\nCurrent Time                    : Mon Nov 02 11:45:10 PST 2026\nDaylight Time Saving            : Yes\nTime Zone                       : (GMT-8:00) Pacific Time (US & Canada).\nx86-64 Applications             : Yes\nDisk Usage                      : Free 466.98GB, Total 491.08GB\nFile System                     : Ext4\nLicense Status                  : Valid\nImage Signature                 : Image is GA Certified",
+    "cap": "lab session 2026-11-02",
+    "build": "FortiAnalyzer-VM64-KVM v8.0.2 build0198",
+    "train": "8.0",
+    "date": "2026-11-02"
+   }
+  ],
+  "fortimanager": [
+   {
+    "k": "get",
+    "p": "system global",
+    "c": "get system global",
+    "t": "admin-host          : (null)\nadmin-lockout-duration: 60\nadmin-lockout-method: ip\nadmin-lockout-threshold: 3\nadmin-ssh-grace-time: 120\nadom-mode           : normal\nadom-rev-auto-delete: by-days\nadom-rev-max-backup-revisions: 5\nadom-rev-max-days   : 90\nadom-select         : enable\nadom-status         : enable\nai-mode             : enable\napache-mode         : event\napache-wsgi-processes: 10\napi-ip-binding      : enable\nauth-dev-restapi-allowlist: disable\ncli-auth            : disable\nclone-name-option   : default\nclt-cert-req        : disable\nconsole-output      : standard\ncontentpack-fgt-install: disable\ncountry-flag        : enable\ncreate-revision     : enable\ndaylightsavetime    : enable\ndebug-tool          : disable\ndetect-unregistered-log-device: enable\ndevice-view-mode    : tree\ndh-params           : 2048\ndisable-module      : none\nenc-algorithm       : high\nfabric-storage-pool-quota: 50286\nfabric-storage-pool-size: 20\nfaz-status          : disable\nfcp-cfg-service     : disable\nfgfm-allow-products : (null)\nfgfm-allow-vm       : enable\nfgfm-ca-cert        :\nfgfm-cert-exclusive : disable\nfgfm-deny-unknown   : disable\nfgfm-local-cert     : (null)\nfgfm-ssl-protocol   : follow-global-ssl-protocol\nfortiservice-port   : 8013\nglobal-ssl-protocol : tlsv1.2\ngui-curl-timeout    : 30\ngui-feature-visibility-mode: per-adom\ngui-install-preview-concurrency: 20\ngui-max-objects-per-row: 5\ngui-polling-interval: 5\nha-member-auto-grouping: enable\nhitcount-response-timeout: 60\nhostname            : FMG\nhttpd-ssl-protocol  : tlsv1.3 tlsv1.2\nimport-ignore-addr-cmt: disable\njsonapi-log         : disable\nlanguage            : english\nlatitude            : (null)\nldap-cache-timeout  : 86400\nldapconntimeout     : 60000\nlog-checksum        : none\nlog-checksum-upload : disable\n...",
+    "cap": "regress-advpn2-bgp-loopback-exercise-cleanup",
+    "build": "FortiManager-VM64-KVM v7.6.7 build3737",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "system status",
+    "c": "get system status",
+    "t": "Platform Type                   : FMG-VM64-KVM\nPlatform Full Name              : FortiManager-VM64-KVM\nVersion                         : v7.6.7-build3737 260601 (GA.M)\nSerial Number                   : FMVMxxxx2717\nBIOS version                    : 04000002\nHostname                        : FMG\nMax Number of Admin Domains     : 30\nMax Number of Device Groups     : 25\nAdmin Domain Configuration      : Enabled\nFIPS Mode                       : Disabled\nHA Mode                         : Stand Alone\nBranch Point                    : 3737\nRelease Version Information     : GA.M\nCurrent Time                    : Tue Nov 03 09:20:33 PST 2026\nDaylight Time Saving            : Yes\nTime Zone                       : (GMT-8:00) Pacific Time (US & Canada).\nx86-64 Applications             : Yes\nDisk Usage                      : Free 470.01GB, Total 491.08GB\nFile System                     : Ext4\nLicense Status                  : Valid\nImage Signature                 : Image is GA Certified",
+    "cap": "pqc-hub-spoke-76",
+    "build": "FortiManager-VM64-KVM v7.6.7 build3737",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "system global",
+    "c": "get system global",
+    "t": "admin-host          : (null)\nadmin-lockout-duration: 60\nadmin-lockout-method: ip\nadmin-lockout-threshold: 3\nadmin-ssh-grace-time: 120\nadom-mode           : normal\nadom-rev-auto-delete: by-days\nadom-rev-max-backup-revisions: 5\nadom-rev-max-days   : 90\nadom-select         : enable\nadom-status         : enable\nai-mode             : enable\napache-keepalive-timeout: 15\napache-mode         : event\napache-wsgi-processes: 10\napi-ip-binding      : enable\nauth-dev-restapi-allowlist: disable\nbkup-mode-shared-objs: enable\ncli-auth            : disable\nclone-name-option   : default\nclt-cert-req        : disable\nconsole-output      : standard\ncontentpack-fgt-install: disable\ncountry-flag        : enable\ncreate-revision     : enable\ndaylightsavetime    : enable\ndebug-tool          : disable\ndetect-unregistered-log-device: enable\ndevice-view-mode    : tree\ndh-params           : 2048\ndisable-module      : none\nenc-algorithm       : high\nfabric-storage-pool-quota: 50286\nfabric-storage-pool-size: 20\nfaz-status          : disable\nfcp-cfg-service     : disable\nfgfm-allow-products : (null)\nfgfm-allow-vm       : enable\nfgfm-ca-cert        :\nfgfm-cert-exclusive : disable\nfgfm-deny-unknown   : disable\nfgfm-local-cert     : (null)\nfgfm-ssl-protocol   : follow-global-ssl-protocol\nfortiservice-port   : 8013\nglobal-ssl-protocol : tlsv1.2\ngui-curl-timeout    : 30\ngui-feature-visibility-mode: per-adom\ngui-install-preview-concurrency: 20\ngui-max-objects-per-row: 5\ngui-object-protect  : disable\ngui-object-search   : disable\ngui-polling-interval: 5\nha-member-auto-grouping: enable\nhitcount-response-timeout: 60\nhostname            : FMG\nhttp-extended-log   : disable\nhttpd-ssl-protocol  : tlsv1.3 tlsv1.2\nimport-ignore-addr-cmt: disable\njsonapi-log         : disable\nlanguage            : english\n...",
+    "cap": "lab session 2026-11-02",
+    "build": "FortiManager-VM64-KVM v8.0.2 build0198",
+    "train": "8.0",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "system status",
+    "c": "get system status",
+    "t": "Platform Type                   : FMG-VM64-KVM\nPlatform Full Name              : FortiManager-VM64-KVM\nVersion                         : v8.0.2-build0198 261006 (GA.F)\nSerial Number                   : FMVMxxxx2853\nBIOS version                    : 04000002\nHostname                        : FMG\nMax Number of Admin Domains     : 30\nMax Number of Device Groups     : 25\nAdmin Domain Configuration      : Enabled\nFIPS Mode                       : Disabled\nHA Mode                         : Stand Alone\nBranch Point                    : 0198\nRelease Version Information     : GA.F\nCurrent Time                    : Mon Nov 02 11:45:12 PST 2026\nDaylight Time Saving            : Yes\nTime Zone                       : (GMT-8:00) Pacific Time (US & Canada).\nx86-64 Applications             : Yes\nDisk Usage                      : Free 469.62GB, Total 491.08GB\nFile System                     : Ext4\nLicense Status                  : Valid\nImage Signature                 : Image is GA Certified",
+    "cap": "lab session 2026-11-02",
+    "build": "FortiManager-VM64-KVM v8.0.2 build0198",
+    "train": "8.0",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "show",
+    "p": "system admin user lab-ro",
+    "c": "show system admin user lab-ro",
+    "t": "config system admin user\n    edit \"lab-ro\"\n        set password <masked>\n        set old-password <masked>\n        set trusthost1 10.10.20.1 255.255.255.255\n        set profileid \"lab-ro\"\n        set adom-access all\n            set policy-package \"all_policy_packages\"\n            set policy-block \"all_policy_blocks\"\n        set ssh-public-key1 \"ssh-ed25519 <masked>\"\n            config meta-data\n                edit \"Contact Email\"\n                next\n                edit \"Contact Phone\"\n                next\n            end\n    next\nend",
+    "cap": "lab session 2026-11-02",
+    "build": "FortiManager-VM64-KVM v8.0.2 build0198",
+    "train": "8.0",
+    "date": "2026-11-02"
+   }
+  ],
+  "fortios": [
+   {
+    "k": "diagnose",
+    "p": "fdsm central-mgmt-status",
+    "c": "diagnose fdsm central-mgmt-status",
+    "t": "Connection status: Up\nRegistration status: Registered\nSerial: FMVMxxxx2717",
+    "cap": "pqc-hub-spoke-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "hardware deviceinfo nic port2",
+    "c": "diagnose hardware deviceinfo nic port2",
+    "t": "Name:\t\t port2\nDriver:\t\t virtio_net\nVersion:\t 1.0.0\nBus:\t\t 0000:00:13.0\nHWaddr:\t\t bc:24:11:xx:xx:xx\nPermanent Hwaddr:bc:24:11:xx:xx:xx\nState:\t\t up\nLink:\t\t up\nMtu:\t\t 1500\nSupported:\nAdvertised:\nSpeed:\t\t 10000full\nAuto:\t\t disabled\nRX Ring:\t\t 1024\nTX Ring:\t\t 256\nRx packets:\t\t 49\nRx bytes:\t\t 10694\nRx compressed:\t\t 0\nRx dropped:\t\t 0\nRx errors:\t\t 0\n  Rx Length err:\t 0\n  Rx Buf overflow:\t 0\n  Rx Crc err:\t\t 0\n  Rx Frame err:\t\t 0\n  Rx Fifo overrun:\t 0\n  Rx Missed packets:\t 0\nTx packets:\t\t 9\nTx bytes:\t\t 1430\nTx compressed:\t\t 0\nTx dropped:\t\t 0\nTx errors:\t\t 0\n  Tx Aborted err:\t 0\n  Tx Carrier err:\t 0\n  Tx Fifo overrun:\t 0\n  Tx Heartbeat err:\t 0\n  Tx Window err:\t 0\nMulticasts:\t\t 0\nCollisions:\t\t 0",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "diagnose",
+    "p": "ip arp list",
+    "c": "diagnose ip arp list",
+    "t": "index=3 ifname=port1 10.10.20.12 bc:24:11:xx:xx:xx state=00000004 use=9927 confirm=9424 update=6896 ref=0\nindex=13 ifname=fortilink 224.0.0.22 01:00:5e:xx:xx:xx state=00000040 use=169552 confirm=175643 update=169643 ref=0\nindex=7 ifname=port5 203.0.113.33 bc:24:11:xx:xx:xx state=00000008 use=44 confirm=3128 update=432 ref=1\nindex=19 ifname=H1_T22 0.0.0.0  state=00000040 use=159780 confirm=165780 update=159780 ref=0\nindex=18 ifname=H1_T11 0.0.0.0  state=00000040 use=160030 confirm=5189 update=160030 ref=0\nindex=6 ifname=port4 198.51.100.33 bc:24:11:xx:xx:xx state=00000002 use=44 confirm=664 update=664 ref=1\nindex=3 ifname=port1 10.10.20.1 00:09:0f:xx:xx:xx state=00000002 use=0 confirm=1 update=168669 ref=1\nversion count: 0",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "diagnose",
+    "p": "ips ssl status",
+    "c": "diagnose ips ssl status",
+    "t": "WARNING: File System Check Recommended! An unsafe reboot may have caused an inconsistency in the disk drive.\nIt is strongly recommended that you check the file system consistency before proceeding.\nPlease run 'execute disk list' and then 'execute disk scan <ref#>'.\nNote: The device will reboot and scan the disk during startup. This may take up to an hour.\ndiagnose debug reset\ndiagnose debug enable\ndiagnose ips ssl status\nexit\nFGT $ diagnose debug reset\n\n\nFGT $ diagnose debug enable\n\n\nFGT $ diagnose ips ssl status\n\n------------------ SSL configuration --------------------\nBypass:                    false\nSession resumption:        true\n-------------------- SSL statistics ---------------------\nSSL transactions: C/T/E/S/P\n\n  SSL v3:  0/0/0/0\n  TLS 1.0: 0/0/0/0\n  TLS 1.1: 0/0/0/0\n  TLS 1.2: 0/0/0/0\n  TLS 1.3: 5/9/0/0\n---------------------------------------------------------\nCipher suites:\n\n  TLS_AES_256_GCM_SHA384              : 7\n  TLS_AES_128_GCM_SHA256              : 4\n---------------------------------------------------------\nNegotiated protocols:\n\n  HTTP/1:  0\n  HTTP/2:  0\n---------------------------------------------------------\nKey Exchange:\n\n  Full handshake:              5\n  Abbreviated handshake:       0\n  Sessions resumed by ticket:  0\n  Sessions resumed by sid:     0\n  Sessions resumed by PSK:     0\n  Handshk msgs across records: 0\n  Plain records refragmented:  0\n  Cipher records refragmented: 0\n  Compressed certificates:     0\n  Certificate cache entries:   3\n  Certificate cache size:      3703\n  Certificate cache saving:    4585\n  Certificate cache hits:      6\n  Certificate cache miss:      3\n  Certificate cache reset:     0\n  Big certificates (> 16K):    0\n  Verification cache entries:  3\n  Verification cache size:     0\n  Verification cache hits:     6\n  Verification cache miss:     3\n...",
+    "cap": "pqc-hub-spoke-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "netlink brctl name host sw-ot1",
+    "c": "diagnose netlink brctl name host sw-ot1",
+    "t": "show bridge control interface sw-ot1 host.\nfdb: hash size=32768, used=4, num=4, depth=1, gc_time=4, ageing_time=300, simple=switch, version_count=0\nBridge sw-ot1 host table\nport no\tdevice\tdevname\tmac addr\t\tttl\tattributes\n  1\t4\tport2\tbc:24:11:xx:xx:xx\t3\t Hit(3)\n  2\t20\tvx-ot1\tda:a6:be:xx:xx:xx\t0\tLocal Static\n  2\t20\tvx-ot1\tbc:24:11:xx:xx:xx\t3\t Hit(3)\n  1\t4\tport2\tbc:24:11:xx:xx:xx\t0\tLocal Static",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "netlink brctl name host sw-ot2",
+    "c": "diagnose netlink brctl name host sw-ot2",
+    "t": "show bridge control interface sw-ot2 host.\nfdb: hash size=32768, used=4, num=4, depth=1, gc_time=4, ageing_time=300, simple=switch, version_count=0\nBridge sw-ot2 host table\nport no\tdevice\tdevname\tmac addr\t\tttl\tattributes\n  2\t21\tvx-ot2\tbc:24:11:xx:xx:xx\t0\t Hit(0)\n  1\t5\tport3\tbc:24:11:xx:xx:xx\t0\tLocal Static\n  1\t5\tport3\tbc:24:11:xx:xx:xx\t0\t Hit(0)\n  2\t21\tvx-ot2\t22:ae:bb:xx:xx:xx\t0\tLocal Static",
+    "cap": "regress-vxlan-ipsec-l2-76-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "netlink interface list T-A",
+    "c": "diagnose netlink interface list T-A",
+    "t": "if=T-A family=00 type=768 index=18 mtu=1402 link=0 master=0\nref=15 state=start present fw_flags=400 flags=up p2p run noarp multicast\nQdisc=noqueue\nstat: rxp=133 txp=134 rxb=50094 txb=50200 rxe=0 txe=2 rxd=0 txd=0 mc=0 collision=0 @ time=1793754678\nre: rxl=0 rxo=0 rxc=0 rxf=0 rxfi=0 rxm=0\nte: txa=0 txc=0 txfi=0 txh=0 txw=0\nmisc rxc=0 txc=0\ninput_type=0 state=3 arp_entry=0 refcnt=15",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "netlink interface list VTEP",
+    "c": "diagnose netlink interface list VTEP",
+    "t": "if=VTEP family=00 type=65535 index=17 mtu=1550 link=0 master=0\nref=13 state=start present fw_flags=400 flags=up broadcast loopback run noarp multicast\nQdisc=noqueue\nstat: rxp=0 txp=2 rxb=0 txb=152 rxe=0 txe=0 rxd=0 txd=0 mc=0 collision=0 @ time=1793754737\nre: rxl=0 rxo=0 rxc=0 rxf=0 rxfi=0 rxm=0\nte: txa=0 txc=0 txfi=0 txh=0 txw=0\nmisc rxc=0 txc=0\ninput_type=0 state=3 arp_entry=0 refcnt=13",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "netlink interface list vx-ot1",
+    "c": "diagnose netlink interface list vx-ot1",
+    "t": "if=vx-ot1 family=00 type=1 index=20 mtu=1500 link=0 master=0\nref=8 state=start present fw_flags=0 flags=up broadcast run multicast\nQdisc=noqueue hw_addr=da:a6:be:xx:xx:xx broadcast_addr=ff:ff:ff:xx:xx:xx\nstat: rxp=446 txp=481 rxb=135340 txb=145050 rxe=0 txe=0 rxd=0 txd=0 mc=0 collision=0 @ time=1793760653\nre: rxl=0 rxo=0 rxc=0 rxf=0 rxfi=0 rxm=0\nte: txa=0 txc=0 txfi=0 txh=0 txw=0\nmisc rxc=0 txc=0\ninput_type=3 state=3 arp_entry=0 refcnt=8",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "netlink interface list vx-ot2",
+    "c": "diagnose netlink interface list vx-ot2",
+    "t": "if=vx-ot2 family=00 type=1 index=21 mtu=1500 link=0 master=0\nref=8 state=start present fw_flags=0 flags=up broadcast run multicast\nQdisc=noqueue hw_addr=22:ae:bb:xx:xx:xx broadcast_addr=ff:ff:ff:xx:xx:xx\nstat: rxp=10 txp=13 rxb=656 txb=1198 rxe=0 txe=0 rxd=0 txd=0 mc=0 collision=0 @ time=1793760421\nre: rxl=0 rxo=0 rxc=0 rxf=0 rxfi=0 rxm=0\nte: txa=0 txc=0 txfi=0 txh=0 txw=0\nmisc rxc=0 txc=0\ninput_type=3 state=3 arp_entry=0 refcnt=8",
+    "cap": "regress-vxlan-ipsec-l2-76-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "sniffer packet any 'host 198.51.100.50' 4 6 l",
+    "c": "diagnose sniffer packet any 'host 198.51.100.50' 4 6 l",
+    "t": "2026-11-03 17:23:33.847838 port5 out 198.51.100.58.10819 -> 198.51.100.50.443: syn 4082880875\n2026-11-03 17:23:48.061828 port5 out 198.51.100.58.11867 -> 198.51.100.50.443: syn 239091872\n2026-11-03 17:23:49.127831 port5 out 198.51.100.58.11867 -> 198.51.100.50.443: syn 239091872\n2026-11-03 17:23:51.207832 port5 out 198.51.100.58.11867 -> 198.51.100.50.443: syn 239091872\n2026-11-03 17:23:55.287843 port5 out 198.51.100.58.11867 -> 198.51.100.50.443: syn 239091872\n2026-11-03 17:24:03.927831 port5 out 198.51.100.58.11867 -> 198.51.100.50.443: syn 239091872",
+    "cap": "bench-advpn2-auto-transport",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "sniffer packet any 'host 198.51.100.58 and tcp' 4 4 l",
+    "c": "diagnose sniffer packet any 'host 198.51.100.58 and tcp' 4 4 l",
+    "t": "2026-11-03 17:24:18.115343 port4 in 198.51.100.58.3557 -> 198.51.100.50.443: syn 2937841058\n2026-11-03 17:24:19.149968 port4 in 198.51.100.58.3557 -> 198.51.100.50.443: syn 2937841058\n2026-11-03 17:24:21.229988 port4 in 198.51.100.58.3557 -> 198.51.100.50.443: syn 2937841058\n2026-11-03 17:24:25.309642 port4 in 198.51.100.58.3557 -> 198.51.100.50.443: syn 2937841058",
+    "cap": "bench-advpn2-auto-transport",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sdwan advpn-session",
+    "c": "diagnose sys sdwan advpn-session",
+    "t": "Session head(FGT-0-overlay:1)\n(1) Service ID(1), last access(374310), remote health check info(2)\nSelected path: local(H1_T11, port4) gw: 198.51.100.58  remote IP: 198.51.100.66(10.200.99.15) remote gw-name: H1_T11, status: up\nRemote information:\n1: latency: 0.483833 jitter: 0.257267 pktloss: 0.000000 mos: 4.403900 sla: 0x1 cost: 0 remote gw: H1_T11 transport_group: 1 bandwidth up: 9999999 down: 9999999 bidirection: 19999998\nipv4: 198.51.100.66(10.200.99.15) ipv6 ::(::)\n peer shaping: 0\n2: latency: 0.299867 jitter: 0.136033 pktloss: 0.000000 mos: 4.404111 sla: 0x1 cost: 0 remote gw: H1_T22 transport_group: 1 bandwidth up: 9999999 down: 9999999 bidirection: 19999998\nipv4: 203.0.113.66(10.200.99.15) ipv6 ::(180:adfb::1071:56a7:fd7f:0)\n peer shaping: 0",
+    "cap": "regress-advpn2-bgp-loopback-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sdwan health-check",
+    "c": "diagnose sys sdwan health-check",
+    "t": "Health Check(HUB):\nSeq(1 H1_T11): state(alive), packet-loss(0.000%), latency(0.604), jitter(0.315), mos(4.404), custom_profile(0.000), bandwidth-up(9999999), bandwidth-dw(9999999), bandwidth-bi(19999998), sla_map=0x1\nSeq(1 H1_T11_1): state(alive), packet-loss(0.000%), latency(0.620), jitter(0.282), mos(4.404), custom_profile(0.000), bandwidth-up(9999997), bandwidth-dw(9999997), bandwidth-bi(19999994), sla_map=0x1\nSeq(2 H1_T22): state(alive), packet-loss(0.000%), latency(0.505), jitter(0.351), mos(4.404), custom_profile(0.000), bandwidth-up(9999999), bandwidth-dw(9999999), bandwidth-bi(19999998), sla_map=0x1",
+    "cap": "regress-advpn2-bgp-loopback-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sdwan member",
+    "c": "diagnose sys sdwan member",
+    "t": "Member(1): type: 0, transport-group: 1, interface: H1_T11, flags=0xd may_child, gateway: 198.51.100.50, peer: 10.200.99.1, exch: 10.200.99.12, local: 198.51.100.58, source 10.200.99.12, priority: 1 1024, weight: 0\nMember(2): type: 0, transport-group: 1, interface: H1_T22, flags=0xd may_child, gateway: 203.0.113.50, peer: 10.200.99.1, exch: 10.200.99.12, local: 203.0.113.58, source 10.200.99.12, priority: 1 1024, weight: 0\n\tchild interface: H1_T22_0(22)",
+    "cap": "regress-pqc-hub-spoke-76-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sdwan service4",
+    "c": "diagnose sys sdwan service4",
+    "t": "Service(1): Address Mode(IPV4) flags=0x4200 use-shortcut-sla use-shortcut\n Tie break: cfg\n Shortcut priority: 1\n  Gen(450), TOS(0x0/0x0), Protocol(0): src(1->65535):dst(1->65535), Mode(sla), sla-compare-order\n  Member sub interface(3):\n    2: seq_num(2), interface(H1_T22):\n       1: H1_T22_0(235)\n  Members(3):\n    1: Seq_num(2 H1_T22_0 overlay), alive, sla(0x1), gid(0), cfg_order(0), local cost(0), selected\n    2: Seq_num(2 H1_T22 overlay), alive, sla(0x1), gid(0), cfg_order(0), local cost(0), selected\n    3: Seq_num(1 H1_T11 overlay), alive, sla(0x1), gid(0), cfg_order(1), local cost(0), selected\n  Src address(1):\n\t10.10.63.0-10.10.63.255\n  Dst address(1):\n\t10.10.62.0-10.10.62.255",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "sys sdwan service4 1",
+    "c": "diagnose sys sdwan service4 1",
+    "t": "Service(1): Address Mode(IPV4) flags=0x4200 use-shortcut-sla use-shortcut\n Tie break: cfg\n Shortcut priority: 1\n  Gen(14), TOS(0x0/0x0), Protocol(0): src(1->65535):dst(1->65535), Mode(sla), sla-compare-order\n  Member sub interface(3):\n    1: seq_num(2), interface(H1_T22):\n       1: H1_T22_0(22)\n  Members(3):\n    1: Seq_num(2 H1_T22 overlay), alive, sla(0x1), gid(0), cfg_order(0), local cost(0), selected\n    2: Seq_num(1 H1_T11 overlay), alive, sla(0x1), gid(0), cfg_order(1), local cost(0), selected\n    3: Seq_num(2 H1_T22_0 overlay), dead, sla(0x0), gid(0), cfg_order(0), local cost(0)\n  Src address(1):\n\t10.10.62.0-10.10.62.255\n  Dst address(1):\n\t10.10.63.0-10.10.63.255",
+    "cap": "scratch-advpn2-proof",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "diagnose",
+    "p": "sys session list",
+    "c": "diagnose sys session list",
+    "t": "session info: proto=17 proto_state=01 duration=1221 expire=156 timeout=0 refresh_dir=both flags=00000000 socktype=0 sockport=0 av_idx=0 use=3\norigin-shaper=\nreply-shaper=\nper_ip_shaper=\nclass_id=0 ha_id=0 policy_dir=0 tunnel=/ helper=dns-udp vlan_cos=0/255\nstate=log local nds\nstatistic(bytes/packets/allow_err): org=2754/42/1 reply=13668/42/1 tuples=2\ntx speed(Bps/kbps): 2/0 rx speed(Bps/kbps): 11/0\norgin->sink: org out->post, reply pre->in dev=9->3/3->9 gwy=0.0.0.0/0.0.0.0\nhook=out dir=org act=noop 10.10.20.176:3391->10.10.20.1:53(0.0.0.0:0)\nhook=in dir=reply act=noop 10.10.20.1:53->10.10.20.176:3391(0.0.0.0:0)\nmisc=0 policy_id=0 pol_uuid_idx=0 auth_info=0 chk_client_info=0 vd=0\nserial=00001157 tos=ff/ff app_list=0 app=0 url_cat=0\nrpdb_link_id=00000000 ngfwid=n/a\nnpu_state=00000000\nno_ofld_reason:  local\nhrx info: valid=0/0, qid=0/0, npuid=0/0, sublink=0/0\n\nsession info: proto=6 proto_state=01 duration=0 expire=3600 timeout=3600 refresh_dir=both flags=00000000 socktype=0 sockport=0 av_idx=0 use=3\norigin-shaper=\nreply-shaper=\nper_ip_shaper=\nclass_id=0 ha_id=0 policy_dir=0 tunnel=/ vlan_cos=0/0\nstate=local may_dirty\nstatistic(bytes/packets/allow_err): org=3802/25/1 reply=4615/18/1 tuples=2\ntx speed(Bps/kbps): 0/0 rx speed(Bps/kbps): 0/0\norgin->sink: org pre->in, reply out->post dev=3->9/9->3 gwy=0.0.0.0/0.0.0.0\nhook=pre dir=org act=noop 10.10.20.1:50934->10.10.20.176:22(0.0.0.0:0)\nhook=post dir=reply act=noop 10.10.20.176:22->10.10.20.1:50934(0.0.0.0:0)\npos/(before,after) 0/(0,0), 0/(0,0)\nmisc=0 policy_id=4294967295 pol_uuid_idx=0 auth_info=0 chk_client_info=0 vd=0\nserial=000011cd tos=ff/ff app_list=0 app=0 url_cat=0\nrpdb_link_id=00000000 ngfwid=n/a\nnpu_state=00000000\nno_ofld_reason:  local\nhrx info: valid=0/0, qid=0/0, npuid=0/0, sublink=0/0\n\nsession info: proto=17 proto_state=01 duration=1194 expire=155 timeout=0 refresh_dir=both flags=00000000 socktype=0 sockport=0 av_idx=0 use=3\norigin-shaper=\nreply-shaper=\nper_ip_shaper=\nclass_id=0 ha_id=0 policy_dir=0 tunnel=/ helper=dns-udp vlan_cos=0/255\nstate=log local nds\nstatistic(bytes/packets/allow_err): org=1985/30/1 reply=10294/30/1 tuples=2\ntx speed(Bps/kbps): 1/0 rx speed(Bps/kbps): 8/0\norgin->sink: org out->post, reply pre->in dev=9->3/3->9 gwy=0.0.0.0/0.0.0.0\nhook=out dir=org act=noop 10.10.20.176:3391->192.0.2.173:53(0.0.0.0:0)\nhook=in dir=reply act=noop 192.0.2.173:53->10.10.20.176:3391(0.0.0.0:0)\nmisc=0 policy_id=0 pol_uuid_idx=0 auth_info=0 chk_client_info=0 vd=0\nserial=0000115b tos=ff/ff app_list=0 app=0 url_cat=0\nrpdb_link_id=00000000 ngfwid=n/a\nnpu_state=00000000\nno_ofld_reason:  local\nhrx info: valid=0/0, qid=0/0, npuid=0/0, sublink=0/0\n\nsession info: proto=17 proto_state=01 duration=1200 expire=129 timeout=0 refresh_dir=both flags=00000000 socktype=0 sockport=0 av_idx=0 use=3\norigin-shaper=\nreply-shaper=\nper_ip_shaper=\nclass_id=0 ha_id=0 policy_dir=0 tunnel=/ helper=dns-udp vlan_cos=0/255\n...",
+    "cap": "lab session 2026-11-01",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-01"
+   },
+   {
+    "k": "diagnose",
+    "p": "sys vxlan device list",
+    "c": "diagnose sys vxlan device list",
+    "t": "vf=root name=vx-ot2 rip=10.200.11.1 sip=10.200.10.1 port=4789 vni=10002 flags=0x01\nvf=root name=vx-ot1 rip=10.200.11.1 sip=10.200.10.1 port=4789 vni=10001 flags=0x01\n\ntotal device num: 2",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "sys vxlan fdb list vx-ot1",
+    "c": "diagnose sys vxlan fdb list vx-ot1",
+    "t": "mac=00:00:00:xx:xx:xx state=0x0082 remote_ip=10.200.11.1 port=4789 vni=10001 ifindex=0\nmac=bc:24:11:xx:xx:xx state=0x0002 remote_ip=10.200.11.1 port=4789 vni=10001 ifindex=0\n\ntotal fdb num: 2",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "sys vxlan fdb list vx-ot2",
+    "c": "diagnose sys vxlan fdb list vx-ot2",
+    "t": "mac=00:00:00:xx:xx:xx state=0x0082 remote_ip=10.200.10.1 port=4789 vni=10002 ifindex=0\nmac=bc:24:11:xx:xx:xx state=0x0002 remote_ip=10.200.10.1 port=4789 vni=10002 ifindex=0\n\ntotal fdb num: 2",
+    "cap": "regress-vxlan-ipsec-l2-76-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike gateway list",
+    "c": "diagnose vpn ike gateway list",
+    "t": "name: H1_T11\nversion: 2\ninterface: port4 6\naddr: 198.51.100.66:500 -> 198.51.100.50:500\next addr: 198.51.100.66 500\ntun_id: 198.51.100.50/::198.51.100.50\nremote_location: 0.0.0.0\nnetwork-id: 0\ntransport: UDP\nvirtual-interface-addr: remote: 10.200.99.1\ncreated: 397s ago\npeer-id: 198.51.100.50\npeer-id-auth: no\nauto-discovery: 2 receiver\npending-queue: 0\nPPK: no\nIKE SA: created 1/1  established 1/1  time 10/10/10 ms\nIPsec SA: created 1/1  established 1/1  time 10/10/10 ms\n\n  id/spi: 159 d6d32f3e190d207f/f6c59b7499e8e697\n  direction: initiator\n  status: established 397-397s ago = 10ms\n  proposal: aes256-sha256\n  child: no\n  SK_ei: <masked>\n  SK_er: <masked>\n  SK_ai: <masked>\n  SK_ar: <masked>\n  PPK: no\n  message-id sent/recv: 30/13\n  QKD: no\n  PQC-KEM (IKE): no\n  PQC-KEM (all IPsec): no\n  lifetime/rekey: 86400/85702\n  DPD sent/recv: 00000000/00000000\n  peer-id: 198.51.100.50\n\nname: H1_T22\nversion: 2\ninterface: port5 7\naddr: 203.0.113.66:500 -> 203.0.113.50:500\next addr: 203.0.113.66 500\ntun_id: 203.0.113.50/::203.0.113.50\nremote_location: 0.0.0.0\nnetwork-id: 0\ntransport: UDP\nvirtual-interface-addr: remote: 10.200.99.1\ncreated: 397s ago\npeer-id: 203.0.113.50\npeer-id-auth: no\nauto-discovery: 2 receiver\npending-queue: 0\nPPK: no\nIKE SA: created 1/1  established 1/1  time 10/10/10 ms\nIPsec SA: created 1/1  established 1/1  time 10/10/10 ms\n\n  id/spi: 160 9ab3caf2329a5e54/d182953be9b91b38\n  direction: initiator\n  status: established 397-397s ago = 10ms\n  proposal: aes256-sha256\n...",
+    "cap": "regress-advpn2-bgp-loopback-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike gateway list name H1_T11",
+    "c": "diagnose vpn ike gateway list name H1_T11",
+    "t": "name: H1_T11\nversion: 2\ninterface: port4 6\naddr: 198.51.100.58:1161 -> 198.51.100.50:443\next addr: 198.51.100.58 1161\ntun_id: 198.51.100.50/::198.51.100.50\nremote_location: 0.0.0.0\nnetwork-id: 0\ntransport: TCP\nvirtual-interface-addr: remote: 10.200.99.1\ncreated: 84s ago\npeer-id: 198.51.100.50\npeer-id-auth: no\nnat: me\nauto-discovery: 2 receiver\npending-queue: 0\nPPK: no\nIKE SA: created 1/1  established 1/1  time 18000/18000/18000 ms\nIPsec SA: created 1/1  established 1/1  time 18000/18000/18000 ms\n\n  id/spi: 168 1fa63b04a27430c5/c95a0f890777c859\n  direction: initiator\n  status: established 84-66s ago = 18000ms\n  proposal: aes256-sha256\n  child: no\n  SK_ei: <masked>\n  SK_er: <masked>\n  SK_ai: <masked>\n  SK_ar: <masked>\n  PPK: no\n  message-id sent/recv: 2/0\n  QKD: no\n  PQC-KEM (IKE): no\n  PQC-KEM (all IPsec): no\n  lifetime/rekey: 86400/86033\n  DPD sent/recv: 00000000/00000000\n  peer-id: 198.51.100.50",
+    "cap": "regress-advpn2-bgp-loopback-auto",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike gateway list name H1_T11_0",
+    "c": "diagnose vpn ike gateway list name H1_T11_0",
+    "t": "name: H1_T11_0\nversion: 2\ninterface: port4 6\naddr: 198.51.100.66:500 -> 198.51.100.58:500\next addr: 198.51.100.66 500\ntun_id: 10.0.0.4/::10.0.0.16\nremote_location: 0.0.0.0\nnetwork-id: 0\ntransport: UDP\nvirtual-interface-addr: remote: 10.200.99.12\ncreated: 3752s ago\npeer-id: 198.51.100.58\npeer-id-auth: no\nauto-discovery: 2 receiver\npending-queue: 0\nPPK: no\nIKE SA: created 1/1  established 1/1  time 0/0/0 ms\nIPsec SA: created 1/1  established 1/1  time 0/0/0 ms\n\n  id/spi: 78 13677823fd80a08f/f22b2e5aa6674613\n  direction: responder\n  status: established 3752-3752s ago = 0ms\n  proposal: aes256-sha256\n  child: no\n  SK_ei: <masked>\n  SK_er: <masked>\n  SK_ai: <masked>\n  SK_ar: <masked>\n  PPK: no\n  message-id sent/recv: 0/2\n  QKD: no\n  PQC-KEM (IKE): no\n  PQC-KEM (all IPsec): no\n  lifetime/rekey: 86400/82377\n  DPD sent/recv: 00000000/00000000\n  peer-id: 198.51.100.58",
+    "cap": "advpn2-bgp-loopback-proof",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike gateway list name H1_T11_1",
+    "c": "diagnose vpn ike gateway list name H1_T11_1",
+    "t": "name: H1_T11_1\nversion: 2\ninterface: port4 6\naddr: 198.51.100.66:4500 -> 198.51.100.58:11383\next addr: 198.51.100.66 500\ntun_id: 198.51.100.58/::198.51.100.58\nremote_location: 0.0.0.0\nnetwork-id: 0\ntransport: UDP\ncreated: 25s ago\npending-queue: 0\nPPK: no\nIKE SA: created 1/1\nIPsec SA: created 1/1\n\n  id/spi: 60 c465ec99387d6bda/32229f689b1f5b01\n  direction: responder\n  status: connecting, state 3, started 25s ago",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike gateway list name H1_T22_0",
+    "c": "diagnose vpn ike gateway list name H1_T22_0",
+    "t": "name: H1_T22_0\nversion: 2\ninterface: port5 7\naddr: 203.0.113.58:500 -> 198.51.100.66:500\next addr: 203.0.113.58 500\ntun_id: 198.51.100.66/::198.51.100.66\nremote_location: 0.0.0.0\nnetwork-id: 0\ntransport: UDP\nvirtual-interface-addr: remote: 10.200.99.15\ncreated: 3s ago\npeer-id: 198.51.100.66\npeer-id-auth: no\nauto-discovery: 2 receiver\npending-queue: 0\nPPK: no\nIKE SA: created 1/1  established 1/1  time 30/30/30 ms\nIPsec SA: created 1/1  established 1/1  time 30/30/30 ms\n\n  id/spi: 7 cefaef9b71dd0d01/0fd607ae134aa8a0\n  direction: initiator\n  status: established 3-3s ago = 30ms\n  proposal: aes256-sha256\n  child: no\n  SK_ei: <masked>\n  SK_er: <masked>\n  SK_ai: <masked>\n  SK_ar: <masked>\n  PPK: no\n  message-id sent/recv: 2/0\n  QKD: no\n  PQC-KEM (IKE): no\n  PQC-KEM (all IPsec): no\n  lifetime/rekey: 86400/86096\n  DPD sent/recv: 00000000/00000000\n  peer-id: 198.51.100.66",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike gateway list name PQC",
+    "c": "diagnose vpn ike gateway list name PQC",
+    "t": "name: PQC\nversion: 2\ninterface: port4 6\naddr: 198.51.100.82:500 -> 198.51.100.74:500\ntun_id: 198.51.100.74/::198.51.100.74\nremote_location: 0.0.0.0\nnetwork-id: 0\ntransport: UDP\ncreated: 5s ago\npeer-id: 198.51.100.74\npeer-id-auth: no\npending-queue: 0\nPPK: yes\nIKE SA: created 1/1  established 1/1  time 0/0/0 ms\nIPsec SA: created 1/2  established 1/1  time 0/0/0 ms\n\n  id/spi: 16 f32caec5680c22f1/28aff7326c62c599\n  direction: initiator\n  status: established 5-5s ago = 0ms\n  proposal: aes256gcm\n  child: no\n  SK_ei: <masked>\n  SK_er: <masked>\n  SK_ai:\n  SK_ar:\n  PPK: yes\n  message-id sent/recv: 3/2\n  QKD: no\n  PQC-KEM (IKE): yes\n  PQC-KEM (all IPsec): yes\n  lifetime/rekey: 86400/86094\n  DPD sent/recv: 00000000/00000000\n  peer-id: 198.51.100.74",
+    "cap": "pqc-hub-spoke-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn ike gateway list name T-B",
+    "c": "diagnose vpn ike gateway list name T-B",
+    "t": "name: T-B\nversion: 2\ninterface: port5 7\naddr: 203.0.113.74:7107 -> 203.0.113.82:443\ntun_id: 203.0.113.82/::203.0.113.82\nremote_location: 0.0.0.0\nnetwork-id: 0\ntransport: TCP\ncreated: 218s ago\npeer-id: 203.0.113.82\npeer-id-auth: no\npending-queue: 0\nPPK: no\nIKE SA: created 1/2  established 1/2  time 10/9005/18000 ms\nIPsec SA: created 1/2  established 1/2  time 0/9000/18000 ms\n\n  id/spi: 7 cb431eca612a1388/beb381cde821faac\n  direction: initiator\n  status: established 218-200s ago = 18000ms\n  proposal: aes256gcm\n  child: no\n  SK_ei: <masked>\n  SK_er: <masked>\n  SK_ai:\n  SK_ar:\n  PPK: no\n  message-id sent/recv: 32/100\n  QKD: no\n  PQC-KEM (IKE): no\n  PQC-KEM (all IPsec): no\n  lifetime/rekey: 86400/85899\n  DPD sent/recv: 00000164/00000164\n  peer-id: 203.0.113.82",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn tunnel list",
+    "c": "diagnose vpn tunnel list",
+    "t": "list all ipsec tunnel in vd 0\n------------------------------------------------------\nname=H1_T11 ver=2 serial=1 198.51.100.34:0->198.51.100.10:0 nexthop=198.51.100.33 tun_id=198.51.100.10 tun_id6=::198.51.100.10 status=up dst_mtu=1500 weight=1\nbound_if=6 real_if=6 lgwy=static/1 tun=intf mode=auto/1 encap=none/568 options[0238]=npu create_dev frag-rfc  role=primary accept_traffic=1 overlay_id=0\n\nproxyid_num=1 child_num=0 refcnt=4 ilast=0 olast=0 ad=r/2\nstat: rxp=365 txp=366 rxb=15221 txb=15057\ndpd: mode=on-idle on=1 status=ok idle=5000ms retry=3 count=0 seqno=1\nnatt: mode=none draft=0 interval=0 remote_port=0\nfec: egress=0 ingress=0\nproxyid=H1_T11 proto=0 sa=1 ref=4 serial=1 auto-negotiate adr\n  src: 0:0.0.0.0-255.255.255.255:0\n  dst: 0:0.0.0.0-255.255.255.255:0\n  SA:  ref=3 options=3a203 type=00 soft=0 mtu=1438 expire=42722/0B replaywin=2048\n       seqno=16f esn=0 replaywin_lastseq=0000016e qat=0 rekey=0 hash_search_len=1\n  life: type=01 bytes=0/0 timeout=42898/43200\n  dec: spi=6d338f6d esp=aes key=32 <masked>\n       ah=sha256 key=32 <masked>\n  enc: spi=93b7f0e3 esp=aes key=32 <masked>\n       ah=sha256 key=32 <masked>\n  dec:pkts/bytes=365/15221, enc:pkts/bytes=366/15057\n  npu_flag=00 npu_rgwy=0.0.0.0:0 npu_lgwy=0.0.0.0:0 npu_selid=0\n  dec_npuid=0 enc_npuid=0 dec_engid=-1 enc_engid=-1 dec_saidx=-1 enc_saidx=-1\n------------------------------------------------------\nname=H1_T22_1 ver=2 serial=4 203.0.113.34:0->198.51.100.42:0 nexthop=203.0.113.33 tun_id=198.51.100.42 tun_id6=::198.51.100.42 status=up dst_mtu=1500 weight=1\nbound_if=7 real_if=7 lgwy=static/1 tun=intf mode=dial_inst/3 encap=none/696 options[02b8]=npu create_dev rgwy-chg frag-rfc  role=primary accept_traffic=1 overlay_id=0\n\nparent=H1_T22 index=1\nproxyid_num=1 child_num=0 refcnt=5 ilast=0 olast=0 ad=r/2\nstat: rxp=240 txp=240 rxb=11608 txb=11608\ndpd: mode=on-idle on=1 status=ok idle=5000ms retry=3 count=0 seqno=1\nnatt: mode=none draft=0 interval=0 remote_port=0\nfec: egress=0 ingress=0\nproxyid=H1_T22 proto=0 sa=1 ref=6 serial=1 auto-negotiate adr\n  src: 0:0.0.0.0-255.255.255.255:0\n  dst: 0:0.0.0.0-255.255.255.255:0\n  SA:  ref=3 options=3a203 type=00 soft=0 mtu=1438 expire=43137/0B replaywin=2048\n       seqno=f1 esn=0 replaywin_lastseq=000000f1 qat=0 rekey=0 hash_search_len=1\n  life: type=01 bytes=0/0 timeout=43190/43200\n  dec: spi=6d338f70 esp=aes key=32 <masked>\n       ah=sha256 key=32 <masked>\n  enc: spi=3303ad27 esp=aes key=32 <masked>\n       ah=sha256 key=32 <masked>\n  dec:pkts/bytes=240/11608, enc:pkts/bytes=240/11608\n  npu_flag=00 npu_rgwy=0.0.0.0:0 npu_lgwy=0.0.0.0:0 npu_selid=0\n  dec_npuid=0 enc_npuid=0 dec_engid=-1 enc_engid=-1 dec_saidx=-1 enc_saidx=-1\n------------------------------------------------------\nname=H1_T22 ver=2 serial=2 203.0.113.34:0->203.0.113.10:0 nexthop=203.0.113.33 tun_id=203.0.113.10 tun_id6=::203.0.113.10 status=up dst_mtu=1500 weight=1\nbound_if=7 real_if=7 lgwy=static/1 tun=intf mode=auto/1 encap=none/568 options[0238]=npu create_dev frag-rfc  role=primary accept_traffic=1 overlay_id=0\n\nproxyid_num=1 child_num=1 refcnt=5 ilast=0 olast=0 ad=r/2\nstat: rxp=349 txp=350 rxb=14669 txb=14505\ndpd: mode=on-idle on=1 status=ok idle=5000ms retry=3 count=0 seqno=1\nnatt: mode=none draft=0 interval=0 remote_port=0\nfec: egress=0 ingress=0\nproxyid=H1_T22 proto=0 sa=1 ref=4 serial=1 auto-negotiate adr\n  src: 0:0.0.0.0-255.255.255.255:0\n  dst: 0:0.0.0.0-255.255.255.255:0\n  SA:  ref=3 options=3a203 type=00 soft=0 mtu=1438 expire=42734/0B replaywin=2048\n       seqno=15f esn=0 replaywin_lastseq=0000015e qat=0 rekey=0 hash_search_len=1\n...",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn tunnel list name H1_T11_0",
+    "c": "diagnose vpn tunnel list name H1_T11_0",
+    "t": "list ipsec tunnel by names in vd 0\n------------------------------------------------------\nname=H1_T11_0 ver=2 serial=1c 198.51.100.58:0->198.51.100.66:0 nexthop=198.51.100.57 tun_id=10.200.99.15 tun_id6=::10.0.0.13 status=up dst_mtu=1500 weight=1\nbound_if=6 real_if=6 lgwy=static/1 tun=intf mode=dial_inst/3 encap=none/696 options[02b8]=npu create_dev rgwy-chg frag-rfc  role=primary accept_traffic=1 overlay_id=0\n\nparent=H1_T11 index=0\nproxyid_num=1 child_num=0 refcnt=6 ilast=0 olast=0 ad=r/2\nstat: rxp=2763 txp=2763 rxb=198828 txb=198528\ndpd: mode=on-demand on=1 status=ok idle=2000ms retry=2 count=0 seqno=0\nnatt: mode=none draft=0 interval=0 remote_port=0\nfec: egress=0 ingress=0\nproxyid=H1_T11 proto=0 sa=1 ref=7 serial=2 auto-negotiate adr\n  src: 0:0.0.0.0-255.255.255.255:0\n  dst: 0:0.0.0.0-255.255.255.255:0\n  SA:  ref=3 options=3a203 type=00 soft=0 mtu=1438 expire=42982/0B replaywin=2048\n       seqno=acc esn=0 replaywin_lastseq=00000acc qat=0 rekey=0 hash_search_len=1\n  life: type=01 bytes=0/0 timeout=43191/43200\n  dec: spi=72358752 esp=aes key=32 <masked>\n       ah=sha256 key=32 <masked>\n  enc: spi=7fb1baf8 esp=aes key=32 <masked>\n       ah=sha256 key=32 <masked>\n  dec:pkts/bytes=2763/198828, enc:pkts/bytes=2763/198528\n  npu_flag=00 npu_rgwy=0.0.0.0:0 npu_lgwy=0.0.0.0:0 npu_selid=0\n  dec_npuid=0 enc_npuid=0 dec_engid=-1 enc_engid=-1 dec_saidx=-1 enc_saidx=-1",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn tunnel list name H1_T11_1",
+    "c": "diagnose vpn tunnel list name H1_T11_1",
+    "t": "list ipsec tunnel by names in vd 0\n------------------------------------------------------\nname=H1_T11_1 ver=2 serial=33 198.51.100.58:0->198.51.100.66:0 nexthop=198.51.100.57 tun_id=10.0.0.38 tun_id6=::10.0.0.8 status=up dst_mtu=1500 weight=1\nbound_if=6 real_if=6 lgwy=static/1 tun=intf mode=dial_inst/3 encap=none/696 options[02b8]=npu create_dev rgwy-chg frag-rfc  role=primary accept_traffic=1 overlay_id=0\n\nparent=H1_T11 index=1\nproxyid_num=1 child_num=0 refcnt=6 ilast=0 olast=0 ad=r/2\nstat: rxp=543 txp=542 rxb=25888 txb=25504\ndpd: mode=on-demand on=1 status=ok idle=2000ms retry=2 count=0 seqno=0\nnatt: mode=none draft=0 interval=0 remote_port=0\nfec: egress=0 ingress=0\nproxyid=H1_T11 proto=0 sa=1 ref=7 serial=2 auto-negotiate adr\n  src: 0:0.0.0.0-255.255.255.255:0\n  dst: 0:0.0.0.0-255.255.255.255:0\n  SA:  ref=3 options=3a203 type=00 soft=0 mtu=1438 expire=43060/0B replaywin=2048\n       seqno=21f esn=0 replaywin_lastseq=00000220 qat=0 rekey=0 hash_search_len=1\n  life: type=01 bytes=0/0 timeout=43185/43200\n  dec: spi=4dd04a4b esp=aes key=32 <masked>\n       ah=sha256 key=32 <masked>\n  enc: spi=d2dfc486 esp=aes key=32 <masked>\n       ah=sha256 key=32 <masked>\n  dec:pkts/bytes=543/25888, enc:pkts/bytes=542/25504\n  npu_flag=00 npu_rgwy=0.0.0.0:0 npu_lgwy=0.0.0.0:0 npu_selid=0\n  dec_npuid=0 enc_npuid=0 dec_engid=-1 enc_engid=-1 dec_saidx=-1 enc_saidx=-1",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn tunnel list name H1_T22_0",
+    "c": "diagnose vpn tunnel list name H1_T22_0",
+    "t": "list ipsec tunnel by names in vd 0\n------------------------------------------------------\nname=H1_T22_0 ver=2 serial=5 203.0.113.58:0->198.51.100.66:0 nexthop=203.0.113.57 tun_id=198.51.100.66 tun_id6=::198.51.100.66 status=up dst_mtu=1500 weight=1\nbound_if=7 real_if=7 lgwy=static/1 tun=intf mode=dial_inst/3 encap=none/696 options[02b8]=npu create_dev rgwy-chg frag-rfc  role=primary accept_traffic=1 overlay_id=0\n\nparent=H1_T22 index=0\nproxyid_num=1 child_num=0 refcnt=6 ilast=0 olast=0 ad=r/2\nstat: rxp=224 txp=220 rxb=16000 txb=15664\ndpd: mode=on-demand on=1 status=ok idle=2000ms retry=2 count=0 seqno=0\nnatt: mode=none draft=0 interval=0 remote_port=0\nfec: egress=0 ingress=0\nproxyid=H1_T22 proto=0 sa=1 ref=6 serial=1 auto-negotiate adr\n  src: 0:0.0.0.0-255.255.255.255:0\n  dst: 0:0.0.0.0-255.255.255.255:0\n  SA:  ref=3 options=3a203 type=00 soft=0 mtu=1438 expire=43169/0B replaywin=2048\n       seqno=dd esn=0 replaywin_lastseq=000000e1 qat=0 rekey=0 hash_search_len=1\n  life: type=01 bytes=0/0 timeout=43186/43200\n  dec: spi=7235873b esp=aes key=32 <masked>\n       ah=sha256 key=32 <masked>\n  enc: spi=7fb1bae1 esp=aes key=32 <masked>\n       ah=sha256 key=32 <masked>\n  dec:pkts/bytes=224/16000, enc:pkts/bytes=220/15664\n  npu_flag=00 npu_rgwy=0.0.0.0:0 npu_lgwy=0.0.0.0:0 npu_selid=0\n  dec_npuid=0 enc_npuid=0 dec_engid=-1 enc_engid=-1 dec_saidx=-1 enc_saidx=-1",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "vpn tunnel list name PQC",
+    "c": "diagnose vpn tunnel list name PQC",
+    "t": "list ipsec tunnel by names in vd 0\n------------------------------------------------------\nname=PQC ver=2 serial=1 198.51.100.82:0->198.51.100.74:0 nexthop=198.51.100.81 tun_id=198.51.100.74 tun_id6=::198.51.100.74 status=up dst_mtu=1500 weight=1\nbound_if=6 real_if=6 lgwy=static/1 tun=intf mode=auto/1 encap=none/552 options[0228]=npu frag-rfc  run_state=0 role=primary accept_traffic=1 overlay_id=0\n\nproxyid_num=1 child_num=0 refcnt=5 ilast=9 olast=9 ad=/0\nstat: rxp=20 txp=20 rxb=1680 txb=1680\ndpd: mode=on-idle on=1 status=ok idle=20000ms retry=3 count=0 seqno=138\nnatt: mode=none draft=0 interval=0 remote_port=0\nfec: egress=0 ingress=0\nproxyid=PQC proto=0 sa=1 ref=2 serial=3 auto-negotiate\n  src: 0:0.0.0.0-255.255.255.255:0\n  dst: 0:0.0.0.0-255.255.255.255:0\n  SA:  ref=3 options=38203 type=00 soft=0 mtu=1446 expire=40512/0B replaywin=2048\n       seqno=1 esn=0 replaywin_lastseq=00000000 qat=0 rekey=0 hash_search_len=1\n  life: type=01 bytes=0/0 timeout=42928/43200\n  dec: spi=c012978c esp=aes-gcm key=36 <masked>\n       ah=null key=0\n  enc: spi=a963cce0 esp=aes-gcm key=36 <masked>\n       ah=null key=0\n  dec:pkts/bytes=0/0, enc:pkts/bytes=0/0\n  npu_flag=00 npu_rgwy=0.0.0.0:0 npu_lgwy=0.0.0.0:0 npu_selid=0\n  dec_npuid=0 enc_npuid=0 dec_engid=-1 enc_engid=-1 dec_saidx=-1 enc_saidx=-1",
+    "cap": "pqc-hub-spoke-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "router info bgp summary",
+    "c": "get router info bgp summary",
+    "t": "VRF 0 BGP router identifier 10.200.99.1, local AS number 65000\nBGP table version is 26\n1 BGP AS-PATH entries\n0 BGP community entries\nNext peer check timer due in 45 seconds\n\nNeighbor     V         AS MsgRcvd MsgSent   TblVer  InQ OutQ Up/Down  State/PfxRcd\n10.200.99.12 4      65000      75      90       26    0    0 01:01:41        1\n10.200.99.15 4      65000      75      98       26    0    0 01:01:38        1\n\nTotal number of neighbors 2",
+    "cap": "regress-advpn2-bgp-loopback-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "router info routing-table all",
+    "c": "get router info routing-table all",
+    "t": "Codes: K - kernel, C - connected, S - static, R - RIP, B - BGP\n       O - OSPF, IA - OSPF inter area\n       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2\n       E1 - OSPF external type 1, E2 - OSPF external type 2\n       i - IS-IS, L1 - IS-IS level-1, L2 - IS-IS level-2, ia - IS-IS inter area\n       V - BGP VPNv4\n       * - candidate default\n\nRouting table for VRF=0\nS*      0.0.0.0/0 [5/0] via 10.10.20.1, port1, [1/0]\nC       10.10.20.0/24 is directly connected, port1\nC       10.10.61.0/24 is directly connected, port2\nB       10.10.62.0/24 [200/0] via 10.200.99.12 (recursive via H1_T22 tunnel 10.0.0.3), 00:00:57\n                                               (recursive via H1_T11 tunnel 10.200.99.12), 00:00:57, [1/0]\nB       10.10.63.0/24 [200/0] via 10.200.99.15 (recursive via H1_T11 tunnel 10.0.0.4), 00:00:52\n                                               (recursive via H1_T22 tunnel 10.200.99.15), 00:00:52, [1/0]\nS       10.200.99.0/24 [10/0] is a summary, Null, [1/0]\nC       10.200.99.1/32 is directly connected, BGP-Lo\nS       10.200.99.12/32 [15/0] via H1_T22 tunnel 10.0.0.3, [1/0]\n                        [15/0] via H1_T11 tunnel 10.200.99.12, [1/0]\nS       10.200.99.15/32 [15/0] via H1_T11 tunnel 10.0.0.4, [1/0]\n                        [15/0] via H1_T22 tunnel 10.200.99.15, [1/0]\nC       10.200.99.253/32 is directly connected, HUB1-Lo\nS       198.51.100.0/24 [10/0] via 198.51.100.49, port4, [1/0]\n                        [10/0] via 203.0.113.49, port5, [1/0]\nC       198.51.100.48/29 is directly connected, port4\nS       203.0.113.0/24 [10/0] via 198.51.100.49, port4, [1/0]\n                       [10/0] via 203.0.113.49, port5, [1/0]\nC       203.0.113.48/29 is directly connected, port5",
+    "cap": "scratch-advpn2-proof",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "router info routing-table bgp",
+    "c": "get router info routing-table bgp",
+    "t": "Routing table for VRF=0\nB       10.10.61.0/24 [200/0] via 10.200.99.1 (recursive via H1_T11 tunnel 198.51.100.50), 00:09:00\n                                              (recursive via H1_T22 tunnel 203.0.113.50), 00:09:00, [1/0]\nB       10.10.62.0/24 [200/0] via 10.200.99.12 (recursive via H1_T11 tunnel 198.51.100.50), 00:08:06\n                                               (recursive via H1_T22 tunnel 203.0.113.50), 00:08:06, [1/0]\nB       10.200.99.0/24 [200/0] via 10.200.99.1 (recursive via H1_T11 tunnel 198.51.100.50), 00:08:56\n                                               (recursive via H1_T22 tunnel 203.0.113.50), 00:08:56, [1/0]",
+    "cap": "regress-advpn2-bgp-loopback-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "router info routing-table details 10.10.62.0",
+    "c": "get router info routing-table details 10.10.62.0",
+    "t": "Routing table for VRF=0\nRouting entry for 10.10.62.0/24\n  Known via \"bgp\", distance 200, metric 0, best\n  Last update 00:04:10 ago\n  * vrf 0 10.200.99.12 priority 1 (recursive via H1_T22_0 tunnel 10.200.99.12)",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "router info routing-table details 10.10.63.0",
+    "c": "get router info routing-table details 10.10.63.0",
+    "t": "Routing table for VRF=0\nRouting entry for 10.10.63.0/24\n  Known via \"bgp\", distance 200, metric 0, best\n  Last update 00:03:22 ago\n  * vrf 0 10.200.99.15 priority 1 (recursive via H1_T22_0 tunnel 203.0.113.66)",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "router info routing-table details 10.10.63.201",
+    "c": "get router info routing-table details 10.10.63.201",
+    "t": "Routing table for VRF=0\nRouting entry for 10.10.63.0/24\n  Known via \"bgp\", distance 200, metric 0, best\n  Last update 00:04:14 ago\n  * vrf 0 10.200.99.15 priority 1 (recursive via H1_T11_1 tunnel 198.51.100.66)",
+    "cap": "regress-advpn2-bgp-loopback-auto-cleanup",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "router info routing-table details 10.200.11.1",
+    "c": "get router info routing-table details 10.200.11.1",
+    "t": "Routing table for VRF=0\nRouting entry for 10.200.11.1/32\n  Known via \"static\", distance 20, metric 0\n    via T-B tunnel 203.0.113.82 vrf 0, tun_id\n\nRouting entry for 10.200.11.1/32\n  Known via \"static\", distance 10, metric 0, best\n  * via T-A tunnel 198.51.100.82 vrf 0, tun_id",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "router info routing-table static",
+    "c": "get router info routing-table static",
+    "t": "Routing table for VRF=0\nS*      0.0.0.0/0 [5/0] via 10.10.20.1, port1, [1/0]\nS       10.200.99.0/24 [10/0] is a summary, Null, [1/0]\nS       10.200.99.12/32 [15/0] via H1_T11 tunnel 10.0.0.99, [1/0]\n                        [15/0] via H1_T22 tunnel 10.200.99.12, [1/0]\nS       10.200.99.15/32 [15/0] via H1_T11 tunnel 10.0.0.98, [1/0]\n                        [15/0] via H1_T22 tunnel 10.200.99.15, [1/0]\nS       198.51.100.0/24 [10/0] via 198.51.100.49, port4, [1/0]\n                        [10/0] via 203.0.113.49, port5, [1/0]\nS       203.0.113.0/24 [10/0] via 198.51.100.49, port4, [1/0]\n                       [10/0] via 203.0.113.49, port5, [1/0]",
+    "cap": "regress-advpn2-bgp-loopback-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "system admin",
+    "c": "get system admin",
+    "t": "== [ lab-ro ]\nname: lab-ro",
+    "cap": "lab session 2026-11-02",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "system console",
+    "c": "get system console",
+    "t": "output              : more\nlogin               : enable",
+    "cap": "lab session 2026-11-02",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "system dns",
+    "c": "get system dns",
+    "t": "primary             : 192.0.2.173\nsecondary           : 198.51.100.119\nprotocol            : dot\nssl-certificate     : Fortinet_Factory\nserver-hostname     : \"globalsdns.fortinet.net\"\ndomain              :\nip6-primary         : ::\nip6-secondary       : ::\ntimeout             : 5\nretry               : 2\ndns-cache-limit     : 5000\ndns-cache-ttl       : 1800\ncache-notfound-responses: disable\nsource-ip           : 0.0.0.0\nsource-ip-interface :\nroot-servers        :\ninterface-select-method: auto\nvrf-select          : 0\nserver-select-method: least-rtt\nalt-primary         : 0.0.0.0\nalt-secondary       : 0.0.0.0\nlog                 : disable\nfqdn-cache-ttl      : 0\nfqdn-max-refresh    : 3600\nfqdn-min-refresh    : 60\nhostname-ttl        : 86400\nhostname-limit      : 5000",
+    "cap": "pqc-hub-spoke-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "system global",
+    "c": "get system global",
+    "t": "admin-concurrent    : enable\nadmin-console-timeout: 0\nadmin-forticloud-sso-login: disable\nadmin-host          :\nadmin-http-json-request-limit: 33554432\nadmin-http-login-request-size-limit: 4096\nadmin-http-rate-limit-exempt-auth: disable\nadmin-http-rate-limit-max-requests: 100\nadmin-http-request-body-timeout: 1800000\nadmin-http-request-header-timeout: 10000\nadmin-http-unauthenticated-request-body-timeout: 1000\nadmin-https-pki-required: disable\nadmin-https-ssl-banned-ciphers:\nadmin-https-ssl-ciphersuites: TLS-AES-128-GCM-SHA256 TLS-AES-256-GCM-SHA384 TLS-CHACHA20-POLY1305-SHA256\nadmin-https-ssl-versions: tlsv1-2\nadmin-lockout-duration: 60\nadmin-lockout-threshold: 3\nadmin-login-max     : 100\nadmin-port          : 80\nadmin-restrict-local: disable\nadmin-scp           : disable\nadmin-server-cert   : Fortinet_GUI_Server\nadmin-sport         : 443\n--More--\n\nadmin-ssh-grace-time: 120\nadmin-ssh-password  : enable\nadmin-ssh-port      : 22\nadmin-ssh-v1        : disable\nadmin-telnet        : enable\nadmin-telnet-port   : 23\nadmintimeout        : 5\nalias               : FortiGate-VM64-KVM\nallow-traffic-redirect: disable\nanti-replay         : strict\napplication-bandwidth-tracking: disable\narp-max-entry       : 131072\nauth-cert           : self-sign\nauth-http-port      : 1000\nauth-https-port     : 1003\nauth-ike-saml-port  : 1001\nauth-keepalive      : disable\nauth-session-auto-backup: disable\nauth-session-limit  : block-new\nauto-auth-extension-device: enable\nautorun-log-fsck    : disable\nav-affinity         : 0\nav-failopen         : pass\nav-failopen-session : disable\n--More--\n\nbatch-cmdb          : enable\nbfd-affinity        : 1\nblock-session-timer : 30\nbr-fdb-max-entry    : 8192\ncert-chain-max      : 8\ncfg-save            : automatic\ncheck-protocol-header: loose\ncheck-reset-range   : disable\ncli-audit-log       : disable\n...",
+    "cap": "lab session 2026-11-01",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-01"
+   },
+   {
+    "k": "get",
+    "p": "system interface physical",
+    "c": "get system interface physical",
+    "t": "== [onboard]\n\t==[port1]\n\t\tmode: dhcp\n\t\tip: 10.10.20.183 255.255.255.0\n\t\tipv6: ::/0\n\t\tstatus: up\n\t\tspeed: 10000Mbps (Duplex: full)\n\t\tFEC: none\n\t\tFEC_cap: none\n\t==[port2]\n\t\tmode: static\n\t\tip: 0.0.0.0 0.0.0.0\n\t\tipv6: ::/0\n\t\tstatus: up\n\t\tspeed: 10000Mbps (Duplex: full)\n\t\tFEC: none\n\t\tFEC_cap: none\n\t==[port3]\n\t\tmode: static\n\t\tip: 0.0.0.0 0.0.0.0\n\t\tipv6: ::/0\n\t\tstatus: up\n\t\tspeed: 10000Mbps (Duplex: full)\n\t\tFEC: none\n--More--\n\n\t\tFEC_cap: none\n\t==[port4]\n\t\tmode: static\n\t\tip: 0.0.0.0 0.0.0.0\n\t\tipv6: ::/0\n\t\tstatus: up\n\t\tspeed: 10000Mbps (Duplex: full)\n\t\tFEC: none\n\t\tFEC_cap: none\n\t==[port5]\n\t\tmode: static\n\t\tip: 0.0.0.0 0.0.0.0\n\t\tipv6: ::/0\n\t\tstatus: up\n\t\tspeed: 10000Mbps (Duplex: full)\n\t\tFEC: none\n\t\tFEC_cap: none",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "system interface physical port4",
+    "c": "get system interface physical port4",
+    "t": "== [onboard]\n\t==[port4]\n\t\tmode: static\n\t\tip: 198.51.100.66 255.255.255.248\n\t\tipv6: ::/0\n\t\tstatus: up\n\t\tspeed: 10000Mbps (Duplex: full)\n\t\tFEC: none\n\t\tFEC_cap: none",
+    "cap": "regress-advpn2-bgp-loopback-exercise",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "system interface physical port5",
+    "c": "get system interface physical port5",
+    "t": "== [onboard]\n\t==[port5]\n\t\tmode: static\n\t\tip: 203.0.113.66 255.255.255.248\n\t\tipv6: ::/0\n\t\tstatus: up\n\t\tspeed: 10000Mbps (Duplex: full)\n\t\tFEC: none\n\t\tFEC_cap: none",
+    "cap": "scratch-advpn2-proof",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "system performance status",
+    "c": "get system performance status",
+    "t": "CPU states: 2% user 1% system 0% nice 97% idle 0% iowait 0% irq 0% softirq\nCPU0 states: 2% user 1% system 0% nice 97% idle 0% iowait 0% irq 0% softirq\nMemory: 3975780k total, 1580716k used (39.8%), 1952360k free (49.1%), 442704k freeable (11.1%)\nAverage network usage: 3 / 4 kbps in 1 minute, 180 / 17 kbps in 10 minutes, 121 / 12 kbps in 30 minutes\nMaximal network usage: 19 / 21 kbps in 1 minute, 11090 / 282 kbps in 10 minutes, 11090 / 282 kbps in 30 minutes\nAverage sessions: 12 sessions in 1 minute, 12 sessions in 10 minutes, 9 sessions in 30 minutes\nMaximal sessions: 16 sessions in 1 minute, 30 sessions in 10 minutes, 30 sessions in 30 minutes\nAverage session setup rate: 0 sessions per second in last 1 minute, 0 sessions per second in last 10 minutes, 0 sessions per second in last 30 minutes\nMaximal session setup rate: 2 sessions per second in last 1 minute, 7 sessions per second in last 10 minutes, 7 sessions per second in last 30 minutes\nAverage NPU sessions: 0 sessions in last 1 minute, 0 sessions in last 10 minutes, 0 sessions in last 30 minutes\nMaximal NPU sessions: 0 sessions in last 1 minute, 0 sessions in last 10 minutes, 0 sessions in last 30 minutes\nVirus caught: 0 total in 1 minute\nIPS attacks blocked: 0 total in 1 minute\nUptime: 0 days,  0 hours,  3 minutes",
+    "cap": "regress-advpn2-bgp-loopback-exercise",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "system settings",
+    "c": "get system settings",
+    "t": "lan-extension-controller-addr:\nlan-extension-controller-port: 5246\nopmode              : nat\nngfw-mode           : profile-based\nhttp-external-dest  : fortiweb\nfirewall-session-dirty: check-all\nbfd                 : disable\nutf8-spam-tagging   : enable\nwccp-cache-engine   : disable\nvpn-stats-log       : ipsec pptp l2tp ssl\nvpn-stats-period    : 600\nfw-session-hairpin  : disable\nprp-trailer-action  : disable\nsnat-hairpin-traffic: enable\ndhcp-proxy          : disable\ndhcp-proxy-vrf-select: 0\ncentral-nat         : disable\ngui-default-policy-columns:\nlldp-reception      : global\nlldp-transmission   : global\nlink-down-access    : enable\nnat46-generate-ipv6-fragment-header: disable\nnat46-force-ipv4-packet-forwarding: disable\nnat64-force-ipv6-packet-forwarding: enable\ndetect-unknown-esp  : enable\nintree-ses-best-route: disable\nauxiliary-session   : disable\nasymroute           : disable\nasymroute-icmp      : disable\ntcp-session-without-syn: disable\nses-denied-traffic  : disable\nses-denied-multicast-traffic: disable\nstrict-src-check    : disable\nsrc-check-reply     : disable\nallow-linkdown-path : disable\nasymroute6          : disable\nasymroute6-icmp     : disable\nsctp-session-without-init: disable\nsip-expectation     : disable\nsip-nat-trace       : enable\nh323-direct-model   : disable\nstatus              : enable\nsip-tcp-port        : 5060\nsip-udp-port        : 5060\nsip-ssl-port        : 5061\nsccp-port           : 2000\nmulticast-forward   : enable\nmulticast-ttl-notchange: disable\nallow-subnet-overlap: disable\ndeny-tcp-with-icmp  : disable\necmp-max-paths      : 255\ndiscovered-device-timeout: 28\nemail-portal-check-dns: enable\ndefault-voip-alg-mode: proxy-based\ngui-icap            : disable\ngui-implicit-policy : enable\ngui-dns-database    : disable\ngui-load-balance    : disable\ngui-multicast-policy: disable\ngui-dos-policy      : enable\n...",
+    "cap": "bench-advpn2-per-overlay",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "system status",
+    "c": "get system status",
+    "t": "Version: FortiGate-VM64-KVM v7.6.7,build3704,260601 (GA.M)\nFirst GA patch build date: 240724\nCurrent Security Level: High\nFirmware Signature: certified\nVirus-DB: 1.00000(2018-04-09 18:07)\nExtended DB: 1.00000(2018-04-09 18:07)\nExtreme DB: 1.00000(2018-04-09 18:07)\nAV AI/ML Model: 0.00000(2001-01-01 00:00)\nIPS-DB: 6.00741(2015-12-01 02:30)\nIPS-ETDB: 6.00741(2015-12-01 02:30)\nIPS-MLDB: 0.00000(2001-01-01 00:00)\nAPP-DB: 6.00741(2015-12-01 02:30)\nAIAP-DB: 0.00000(2001-01-01 00:00)\nProxy-IPS-DB: 6.00741(2015-12-01 02:30)\nProxy-IPS-ETDB: 6.00741(2015-12-01 02:30)\nProxy-APP-DB: 6.00741(2015-12-01 02:30)\nProxy-AIAP-DB: 0.00000(2001-01-01 00:00)\nFMWP-DB: 0.00000(2001-01-01 00:00)\nIPS Malicious URL Database: 1.00001(2015-01-01 01:01)\nIoT-Detect: 0.00000(2022-08-17 17:31)\nOT-Detect-DB: 0.00000(2001-01-01 00:00)\nOT-Patch-DB: 0.00000(2001-01-01 00:00)\nOT-Threat-DB: 6.00741(2015-12-01 02:30)\nIPS-Engine: 7.01187(2026-04-29 16:59)\nTimezone DB Version: 1.016\nTimezone DB IANA Version: 2026f\nSerial-Number: FGVMxxxx7263\nLicense Status: Valid\nLicense Expiration Date: 2027-09-29\nVM Resources: 1 CPU/1 allowed, 1995 MB RAM\nLog hard disk: Available\nHostname: FGT\nPrivate Encryption: Disable\nOperation Mode: NAT\nCurrent virtual domain: root\nMax number of virtual domains: 4\nVirtual domains status: 1 in NAT mode, 0 in TP mode\nVirtual domain configuration: disable\nFIPS-CC mode: disable\nCurrent HA mode: standalone\nBranch point: 3704\nRelease Version Information: GA\nFortiOS x86-64: Yes\nSystem time: Tue Nov  3 18:56:42 2026\nLast reboot reason: shutdown",
+    "cap": "regress-advpn2-bgp-loopback-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "get",
+    "p": "vpn ipsec tunnel summary",
+    "c": "get vpn ipsec tunnel summary",
+    "t": "'H1_T11_0' 198.51.100.58:0  selectors(total,up): 1/1  rx(pkt,err): 807/0  tx(pkt,err): 807/0\n'H1_T11_1' 198.51.100.66:0  selectors(total,up): 1/1  rx(pkt,err): 809/0  tx(pkt,err): 809/0\n'H1_T22_0' 203.0.113.66:0  selectors(total,up): 1/1  rx(pkt,err): 794/0  tx(pkt,err): 801/0\n'H1_T22_1' 203.0.113.58:0  selectors(total,up): 1/1  rx(pkt,err): 799/0  tx(pkt,err): 792/0",
+    "cap": "regress-advpn2-bgp-loopback-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "alertemail setting",
+    "c": "show alertemail setting",
+    "t": "config alertemail setting\nend",
+    "cap": "lab session 2026-11-04",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "firewall policy 1",
+    "c": "show firewall policy 1",
+    "t": "config firewall policy\n    edit 1\n        set name \"vxlan-in\"\n        set uuid a9ca4d60-d7f9-51f1-edd5-ac94cfdb3dc3\n        set srcintf \"T-A\" \"T-B\"\n        set dstintf \"VTEP\"\n        set action accept\n        set srcaddr \"all\"\n        set dstaddr \"all\"\n        set schedule \"always\"\n        set service \"VXLAN\" \"PING\"\n    next\nend",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "firewall policy 3",
+    "c": "show firewall policy 3",
+    "t": "config firewall policy\n    edit 3\n        set name \"lan-to-internet\"\n        set uuid cce59016-d7d6-51f1-e173-e36872472333\n        set srcintf \"port2\"\n        set dstintf \"port4\"\n        set action accept\n        set srcaddr \"all\"\n        set dstaddr \"all\"\n        set schedule \"always\"\n        set service \"ALL\"\n        set utm-status enable\n        set inspection-mode proxy\n        set ssl-ssh-profile \"pqc-deep\"\n        set av-profile \"default\"\n        set ips-sensor \"default\"\n        set logtraffic all\n        set nat enable\n    next\nend",
+    "cap": "pqc-hub-spoke-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "firewall ssl-ssh-profile pqc-deep",
+    "c": "show firewall ssl-ssh-profile pqc-deep",
+    "t": "config firewall ssl-ssh-profile\n    edit \"pqc-deep\"\n        config https\n            set ports 443 6006\n            set status deep-inspection\n            set quic inspect\n        end\n        config ftps\n            set ports 990\n            set status deep-inspection\n        end\n        config imaps\n            set ports 993\n            set status deep-inspection\n        end\n        config pop3s\n            set ports 995\n            set status deep-inspection\n        end\n        config smtps\n            set ports 465\n            set status deep-inspection\n        end\n        config ssh\n            set ports 22\n            set status disable\n        end\n        config dot\n            set status disable\n            set quic inspect\n        end\n        config ssl-exempt\n            edit 1\n                set fortiguard-category 31\n            next\n            edit 2\n                set fortiguard-category 33\n            next\n            edit 3\n                set fortiguard-category 87\n            next\n        end\n    next\nend",
+    "cap": "pqc-hub-spoke-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "full-configuration system settings",
+    "c": "show full-configuration system settings",
+    "t": "config system settings\n    set lan-extension-controller-addr ''\n    set lan-extension-controller-port 5246\n    set opmode nat\n    set ngfw-mode profile-based\n    set http-external-dest fortiweb\n    set firewall-session-dirty check-all\n    set bfd disable\n    set utf8-spam-tagging enable\n    set wccp-cache-engine disable\n    set vpn-stats-log ipsec pptp l2tp ssl\n    set vpn-stats-period 600\n    set v4-ecmp-mode source-ip-based\n    set fw-session-hairpin disable\n    set prp-trailer-action disable\n    set snat-hairpin-traffic enable\n    set dhcp-proxy disable\n    set dhcp-proxy-vrf-select 0\n    set central-nat disable\n    set lldp-reception global\n    set lldp-transmission global\n    set link-down-access enable\n    set nat46-generate-ipv6-fragment-header disable\n    set nat46-force-ipv4-packet-forwarding disable\n    set nat64-force-ipv6-packet-forwarding enable\n    set detect-unknown-esp enable\n    set intree-ses-best-route disable\n    set auxiliary-session disable\n    set asymroute disable\n    set asymroute-icmp disable\n    set tcp-session-without-syn disable\n    set ses-denied-traffic disable\n    set ses-denied-multicast-traffic disable\n    set strict-src-check disable\n    set src-check-reply disable\n    set allow-linkdown-path disable\n    set asymroute6 disable\n    set asymroute6-icmp disable\n    set sctp-session-without-init disable\n    set sip-expectation disable\n    set sip-nat-trace enable\n    set h323-direct-model disable\n    set status enable\n    set sip-tcp-port 5060\n    set sip-udp-port 5060\n    set sip-ssl-port 5061\n    set sccp-port 2000\n    set multicast-forward enable\n    set multicast-ttl-notchange disable\n    set allow-subnet-overlap disable\n    set deny-tcp-with-icmp disable\n    set ecmp-max-paths 255\n    set discovered-device-timeout 28\n    set email-portal-check-dns enable\n    set default-voip-alg-mode proxy-based\n    set gui-icap disable\n    set gui-implicit-policy enable\n    set gui-dns-database disable\n    set gui-load-balance disable\n    set gui-multicast-policy disable\n...",
+    "cap": "regress-advpn2-bgp-loopback-auto",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "full-configuration system ssh-config",
+    "c": "show full-configuration system ssh-config",
+    "t": "config system ssh-config\n    set ssh-enc-algo aes256-ctr aes256-gcm@openssh.com\n    set ssh-hsk-algo ecdsa-sha2-nistp521 ecdsa-sha2-nistp384 ecdsa-sha2-nistp256 rsa-sha2-256 rsa-sha2-512 ssh-ed25519\n    set ssh-kex-algo diffie-hellman-group14-sha256 diffie-hellman-group16-sha512 diffie-hellman-group18-sha512 diffie-hellman-group-exchange-sha256 curve25519-sha256@libssh.org ecdh-sha2-nistp256 ecdh-sha2-nistp384 ecdh-sha2-nistp521\n    set ssh-mac-algo hmac-sha2-256 hmac-sha2-256-etm@openssh.com hmac-sha2-512 hmac-sha2-512-etm@openssh.com\nend",
+    "cap": "pqc-hub-spoke-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "full-configuration vpn ipsec phase1-interface",
+    "c": "show full-configuration vpn ipsec phase1-interface",
+    "t": "config vpn ipsec phase1-interface\n    edit \"H1_T11\"\n        set type static\n        set interface \"port4\"\n        set ip-version 4\n        set ike-version 2\n        set local-gw 0.0.0.0\n        set keylife 86400\n        set authmethod psk\n        unset authmethod-remote\n        set peertype any\n        set monitor-min 0\n        set net-device enable\n        set passive-mode disable\n        set exchange-ip-addr4 10.200.99.15\n        set exchange-ip-addr6 ::\n        set packet-redistribution disable\n        set peer-egress-shaping disable\n        set mode-cfg disable\n        set proposal aes256-sha256\n        set add-route enable\n        set localid ''\n        set localid-type auto\n        set auto-negotiate enable\n        set negotiate-timeout 30\n        set fragmentation enable\n        set ip-fragmentation post-encapsulation\n        set dpd on-demand\n        set comments ''\n        set npu-offload enable\n        set dhgrp 20 21\n        set suite-b disable\n        set eap disable\n        set ppk disable\n        set wizard-type custom\n        set reauth disable\n        set idle-timeout disable\n        set ha-sync-esp-seqno enable\n        set fgsp-sync disable\n        set inbound-dscp-copy disable\n        set auto-discovery-sender disable\n        set auto-discovery-receiver enable\n        set auto-discovery-forwarder disable\n        set auto-discovery-shortcuts independent\n        set auto-discovery-crossover allow\n        set encapsulation none\n        set nattraversal enable\n        set esn disable\n        set fragmentation-mtu 1200\n        set childless-ike disable\n        set rekey enable\n        set fec-egress disable\n        set fec-ingress disable\n        set network-overlay disable\n        set dev-id-notification disable\n        set link-cost 0\n        set kms ''\n        set exchange-fgt-device-id disable\n        set ems-sn-check disable\n        set qkd disable\n...",
+    "cap": "regress-advpn2-bgp-loopback-checks",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "full-configuration vpn ipsec phase1-interface H1_T11",
+    "c": "show full-configuration vpn ipsec phase1-interface H1_T11",
+    "t": "config vpn ipsec phase1-interface\n    edit \"H1_T11\"\n        set type static\n        set interface \"port4\"\n        set ip-version 4\n        set ike-version 2\n        set local-gw 0.0.0.0\n        set keylife 86400\n        set authmethod psk\n        unset authmethod-remote\n        set peertype any\n        set monitor-min 0\n        set net-device enable\n        set passive-mode disable\n        set exchange-interface-ip disable\n        set aggregate-member disable\n        set packet-redistribution disable\n        set peer-egress-shaping disable\n        set mode-cfg disable\n        set proposal aes256-sha256\n        set localid ''\n        set localid-type auto\n        set auto-negotiate enable\n        set negotiate-timeout 30\n        set fragmentation enable\n        set ip-fragmentation post-encapsulation\n        set dpd on-demand\n        set comments ''\n        set npu-offload enable\n        set dhgrp 20 21\n        set suite-b disable\n        set eap disable\n        set ppk disable\n        set wizard-type custom\n        set reauth disable\n        set idle-timeout disable\n        set ha-sync-esp-seqno enable\n        set fgsp-sync disable\n        set inbound-dscp-copy disable\n        set auto-discovery-sender disable\n        set auto-discovery-receiver disable\n        set auto-discovery-forwarder disable\n        set encapsulation none\n        set nattraversal enable\n        set esn disable\n        set fragmentation-mtu 1200\n        set childless-ike disable\n        set rekey enable\n        set fec-egress disable\n        set fec-ingress disable\n        set network-overlay disable\n        set dev-id-notification disable\n        set link-cost 0\n        set kms ''\n        set exchange-fgt-device-id disable\n        set ems-sn-check disable\n        set qkd disable\n        set transport udp\n        set remote-gw 198.51.100.50\n        set add-gw-route disable\n...",
+    "cap": "bench-advpn2-auto-transport",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "full-configuration vpn ipsec phase1-interface H1_T22",
+    "c": "show full-configuration vpn ipsec phase1-interface H1_T22",
+    "t": "config vpn ipsec phase1-interface\n    edit \"H1_T22\"\n        set type static\n        set interface \"port5\"\n        set ip-version 4\n        set ike-version 2\n        set local-gw 0.0.0.0\n        set keylife 86400\n        set authmethod psk\n        unset authmethod-remote\n        set peertype any\n        set monitor-min 0\n        set net-device enable\n        set passive-mode disable\n        set exchange-ip-addr4 10.200.99.12\n        set exchange-ip-addr6 ::\n        set packet-redistribution disable\n        set peer-egress-shaping disable\n        set mode-cfg disable\n        set proposal aes256-sha256\n        set add-route enable\n        set localid ''\n        set localid-type auto\n        set auto-negotiate enable\n        set negotiate-timeout 30\n        set fragmentation enable\n        set ip-fragmentation post-encapsulation\n        set dpd on-demand\n        set comments ''\n        set npu-offload enable\n        set dhgrp 20 21\n        set suite-b disable\n        set eap disable\n        set ppk disable\n        set wizard-type custom\n        set reauth disable\n        set idle-timeout disable\n        set ha-sync-esp-seqno enable\n        set fgsp-sync disable\n        set inbound-dscp-copy disable\n        set auto-discovery-sender disable\n        set auto-discovery-receiver enable\n        set auto-discovery-forwarder disable\n        set auto-discovery-shortcuts independent\n        set auto-discovery-crossover allow\n        set encapsulation none\n        set nattraversal enable\n        set esn disable\n        set fragmentation-mtu 1200\n        set childless-ike disable\n        set rekey enable\n        set fec-egress disable\n        set fec-ingress disable\n        set network-overlay disable\n        set dev-id-notification disable\n        set link-cost 0\n        set kms ''\n        set exchange-fgt-device-id disable\n        set ems-sn-check disable\n        set qkd disable\n...",
+    "cap": "bench-advpn2-auto-transport",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "router bgp",
+    "c": "show router bgp",
+    "t": "config router bgp\n    config redistribute \"connected\"\n    end\n    config redistribute \"rip\"\n    end\n    config redistribute \"ospf\"\n    end\n    config redistribute \"static\"\n    end\n    config redistribute \"isis\"\n    end\n    config redistribute6 \"connected\"\n    end\n    config redistribute6 \"rip\"\n    end\n    config redistribute6 \"ospf\"\n    end\n    config redistribute6 \"static\"\n    end\n    config redistribute6 \"isis\"\n    end\nend",
+    "cap": "lab session 2026-11-04",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "router static",
+    "c": "show router static",
+    "t": "config router static\n    edit 1\n        set dst 198.51.100.0 255.255.255.0\n        set gateway 198.51.100.73\n        set device \"port4\"\n    next\n    edit 2\n        set dst 203.0.113.0 255.255.255.0\n        set gateway 203.0.113.73\n        set device \"port5\"\n    next\n    edit 10\n        set dst 10.200.11.1 255.255.255.255\n        set device \"T-A\"\n    next\n    edit 11\n        set dst 10.200.11.1 255.255.255.255\n        set distance 20\n        set device \"T-B\"\n    next\nend",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "system automation-action",
+    "c": "show system automation-action",
+    "t": "config system automation-action\n    edit \"Access Layer Quarantine\"\n        set description \"Quarantine the MAC address on access layer devices (FortiSwitch and FortiAP).\"\n        set action-type quarantine\n    next\n    edit \"FortiClient Quarantine\"\n        set description \"Use FortiClient EMS to quarantine the endpoint device.\"\n        set action-type quarantine-forticlient\n    next\n    edit \"FortiNAC Quarantine\"\n        set description \"Use FortiNAC to quarantine the endpoint device.\"\n        set action-type quarantine-fortinac\n    next\n    edit \"IP Ban\"\n        set description \"Ban the IP address specified in the automation trigger event.\"\n        set action-type ban-ip\n    next\n    edit \"FortiExplorer Notification\"\n        set description \"Automation action configuration for sending a notification to any FortiExplorer mobile application.\"\n        set action-type fortiexplorer-notification\n    next\n    edit \"Email Notification\"\n        set description \"Send a custom email to the specified recipient(s).\"\n        set action-type email\n        set forticare-email enable\n        set email-subject \"%%log.logdesc%%\"\n    next\n    edit \"Reboot FortiGate\"\n        set description \"Reboot this FortiGate unit.\"\n        set action-type system-actions\n        set system-action reboot\n        set minimum-interval 300\n    next\n    edit \"Shutdown FortiGate\"\n        set description \"Shut down this FortiGate unit.\"\n        set action-type system-actions\n        set system-action shutdown\n    next\n    edit \"Backup Config Disk\"\n        set description \"Backup the configuration on disk.\"\n        set action-type system-actions\n        set system-action backup-config\n    next\n    edit \"Auto Upgrade Complete Email Notification\"\n        set description \"Send auto upgrade complete email notification to the FortiCare email address registered on this device.\"\n        set action-type email\n        set forticare-email enable\n        set email-subject \"Firmware Update Notification : %%log.devname%%\"\n        set message \"<p>An automated firmware upgrade has completed successfully. The device <strong> %%log.devname%%</strong>(Serial Number: <strong>%%log.devid%%</strong>) was updated to firmware version <strong>%%log.version%%</strong> on <strong>%%log.date%% %%log.time%%</strong>.</p><p>This is an informational notification that was automatically generated by your Fortinet FortiGate device. If you would like to stop receiving these notifications, please follow the steps below:</p><ol><li>Log in to the FortiGate Administrative GUI</li><li>Navigate to <strong>Security Fabric</strong> &rarr; <strong>Automation</strong> &rarr; <strong>Stitch</strong></li><li>Under the <strong>FortiOS Event Log</strong> section, select <strong>%%stitch.name%%</strong></li><li>Click <strong>Set Status</strong>, and choose <strong>Disabled</strong></li></ol>\"\n        set replacement-message enable\n    next\n    edit \"Auto Upgrade Scheduled Email Notification\"\n        set description \"Send scheduled auto upgrade email notification to the FortiCare email address registered on this device.\"\n        set action-type email\n        set forticare-email enable\n        set email-subject \"Firmware Update Scheduled Notification : %%log.devname%%\"\n        set message \"<p>Date: <strong>%%log.date%%</strong> Time: <strong>%%log.time%%</strong><br>An automated firmware update has been scheduled on device: <strong>%%log.devname%%</strong>(Serial Number: <strong>%%log.devid%%</strong>).<br>%%log.msg%%</p><p>This is an informational notification that was automatically generated by your Fortinet FortiGate device. If you would like to stop receiving these notifications, please follow the steps below:</p><ol><li>Log in to the FortiGate Administrative GUI</li><li>Navigate to <strong>Security Fabric</strong> &rarr; <strong>Automation</strong> &rarr; <strong>Stitch</strong></li><li>Under the <strong>FortiOS Event Log</strong> section, select <strong>%%stitch.name%%</strong></li><li>Click <strong>Set Status</strong>, and choose <strong>Disabled</strong></li></ol>\"\n        set replacement-message enable\n    next\n    edit \"Auto Upgrade Cancelled Email Notification\"\n...",
+    "cap": "lab session 2026-11-04",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "system automation-stitch",
+    "c": "show system automation-stitch",
+    "t": "config system automation-stitch\n    edit \"Network Down\"\n        set description \"Send an email when a network goes down.\"\n        set status disable\n        set trigger \"Network Down\"\n        config actions\n            edit 1\n                set action \"Email Notification\"\n            next\n        end\n    next\n    edit \"HA Failover\"\n        set description \"Send an email when a HA failover is detected.\"\n        set status disable\n        set trigger \"HA Failover\"\n        config actions\n            edit 1\n                set action \"Email Notification\"\n            next\n        end\n    next\n    edit \"Reboot\"\n        set description \"Send an email when a FortiGate is rebooted.\"\n        set status disable\n        set trigger \"Reboot\"\n        config actions\n            edit 1\n                set action \"Email Notification\"\n            next\n        end\n    next\n    edit \"FortiAnalyzer Connection Down\"\n        set description \"Send a email notification when the connection to FortiAnalyzer is lost.\"\n        set status disable\n        set trigger \"FortiAnalyzer Connection Down\"\n        config actions\n            edit 1\n                set action \"Email Notification\"\n            next\n        end\n    next\n    edit \"License Expired Notification\"\n        set description \"Send a email notification when a license is near expiration.\"\n        set status disable\n        set trigger \"License Expiry\"\n        config actions\n            edit 1\n                set action \"Email Notification\"\n            next\n        end\n    next\n    edit \"Compromised Host Quarantine\"\n        set description \"Quarantine a compromised host on FortiAPs, FortiSwitches, and FortiClient EMS.\"\n        set status disable\n        set trigger \"Compromised Host\"\n        config actions\n            edit 1\n                set action \"Access Layer Quarantine\"\n            next\n            edit 2\n...",
+    "cap": "lab session 2026-11-04",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "system central-management",
+    "c": "show system central-management",
+    "t": "config system central-management\n    set type fortimanager\n    set serial-number \"FMVMxxxx2717\"\n    set fmg \"10.10.20.12\"\nend",
+    "cap": "pqc-hub-spoke-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "system email-server",
+    "c": "show system email-server",
+    "t": "config system email-server\n    set server \"fortinet-notifications.com\"\n    set port 465\n    set security smtps\nend",
+    "cap": "lab session 2026-11-04",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "system interface VTEP",
+    "c": "show system interface VTEP",
+    "t": "config system interface\n    edit \"VTEP\"\n        set vdom \"root\"\n        set ip 10.200.10.1 255.255.255.255\n        set allowaccess ping\n        set type loopback\n        set snmp-index 11\n        set mtu-override enable\n        set mtu 1550\n    next\nend",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "system interface vx-ot1",
+    "c": "show system interface vx-ot1",
+    "t": "config system interface\n    edit \"vx-ot1\"\n        set vdom \"root\"\n        set type vxlan\n        set snmp-index 14\n        set interface \"VTEP\"\n        set mtu-override enable\n        set mtu 1450\n    next\nend",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "system sdwan",
+    "c": "show system sdwan",
+    "t": "config system sdwan\n    set status enable\n    config zone\n        edit \"virtual-wan-link\"\n        next\n        edit \"overlay\"\n            set advpn-select enable\n            set advpn-health-check \"HUB\"\n        next\n    end\n    config members\n        edit 1\n            set interface \"H1_T11\"\n            set zone \"overlay\"\n            set source 10.200.99.15\n            set transport-group 1\n        next\n        edit 2\n            set interface \"H1_T22\"\n            set zone \"overlay\"\n            set source 10.200.99.15\n            set transport-group 1\n        next\n    end\n    config health-check\n        edit \"Default_DNS\"\n            set system-dns enable\n            set interval 1000\n            set probe-timeout 1000\n            set recoverytime 10\n            config sla\n                edit 1\n                    set link-cost-factor latency jitter packet-loss\n                    set latency-threshold 250\n                    set jitter-threshold 50\n                    set packetloss-threshold 5\n                next\n            end\n        next\n        edit \"Default_Office_365\"\n            set server \"www.office.com\"\n            set protocol https\n            set interval 120000\n            set probe-timeout 120000\n            set recoverytime 10\n            config sla\n                edit 1\n                    set link-cost-factor latency jitter packet-loss\n                    set latency-threshold 250\n                    set jitter-threshold 50\n                    set packetloss-threshold 5\n                next\n            end\n        next\n        edit \"Default_Gmail\"\n            set server \"gmail.com\"\n            set interval 1000\n            set probe-timeout 1000\n            set recoverytime 10\n            config sla\n...",
+    "cap": "advpn2-bgp-loopback-proof",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "system switch-interface sw-ot1",
+    "c": "show system switch-interface sw-ot1",
+    "t": "config system switch-interface\n    edit \"sw-ot1\"\n        set vdom \"root\"\n        set member \"port2\" \"vx-ot1\"\n    next\nend",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "system vxlan",
+    "c": "show system vxlan",
+    "t": "config system vxlan\nend",
+    "cap": "lab session 2026-11-04",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "vpn ipsec phase1-interface",
+    "c": "show vpn ipsec phase1-interface",
+    "t": "config vpn ipsec phase1-interface\nend",
+    "cap": "lab session 2026-11-04",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "vpn ipsec phase1-interface H1_T11",
+    "c": "show vpn ipsec phase1-interface H1_T11",
+    "t": "config vpn ipsec phase1-interface\n    edit \"H1_T11\"\n        set type dynamic\n        set interface \"port4\"\n        set ike-version 2\n        set peertype any\n        set net-device disable\n        set exchange-ip-addr4 10.200.99.1\n        set proposal aes256-sha256\n        set add-route disable\n        set dpd on-idle\n        set dhgrp 20 21\n        set auto-discovery-sender enable\n        set transport udp\n        set psksecret <masked>\n        set dpd-retrycount 2\n        set dpd-retryinterval 2\n    next\nend",
+    "cap": "advpn2-bgp-loopback-proof",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "vpn ipsec phase1-interface PQC",
+    "c": "show vpn ipsec phase1-interface PQC",
+    "t": "config vpn ipsec phase1-interface\n    edit \"PQC\"\n        set interface \"port4\"\n        set ike-version 2\n        set peertype any\n        set net-device disable\n        set proposal aes256gcm-prfsha384 aes256-sha384\n        set dpd on-idle\n        set dhgrp 20\n        set addke1 ml-kem-768\n        set ppk require\n        set ppk-secret <masked>\n        set ppk-identity \"pqc-lab\"\n        set childless-ike enable\n        set transport auto\n        set remote-gw 198.51.100.74\n        set psksecret <masked>\n    next\nend",
+    "cap": "pqc-hub-spoke-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "vpn ipsec phase1-interface T-A",
+    "c": "show vpn ipsec phase1-interface T-A",
+    "t": "config vpn ipsec phase1-interface\n    edit \"T-A\"\n        set interface \"port4\"\n        set ike-version 2\n        set peertype any\n        set net-device disable\n        set proposal aes256gcm-prfsha384\n        set dpd on-idle\n        set dhgrp 20\n        set transport udp\n        set remote-gw 198.51.100.82\n        set psksecret <masked>\n        set dpd-retryinterval 2\n    next\nend",
+    "cap": "vxlan-ipsec-l2-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "show",
+    "p": "vpn ipsec phase2-interface PQC",
+    "c": "show vpn ipsec phase2-interface PQC",
+    "t": "config vpn ipsec phase2-interface\n    edit \"PQC\"\n        set phase1name \"PQC\"\n        set proposal aes256gcm\n        set dhgrp 20\n        set addke1 ml-kem-768\n        set auto-negotiate enable\n    next\nend",
+    "cap": "pqc-hub-spoke-76",
+    "build": "FortiGate-VM64-KVM v7.6.7 build3704",
+    "train": "7.6",
+    "date": "2026-11-03"
+   },
+   {
+    "k": "diagnose",
+    "p": "autoupdate versions",
+    "c": "diagnose autoupdate versions",
+    "t": "AV Engine\n---------\nVersion: 8.00014 signed\nContract Expiry Date: Tue Sep 28 2027\nLast Updated using manual update on Wed Nov  4 12:52:53 2026\nLast Update Attempt: Wed Nov  4 12:53:25 2026\nResult: No Updates\n\nVirus Definitions\n---------\nVersion: 93.08223 signed\nContract Expiry Date: Tue Sep 28 2027\nLast Updated using manual update on Wed Nov  4 12:41:47 2026\nLast Update Attempt: Wed Nov  4 12:53:25 2026\nResult: No Updates\n\nExtended set\n---------\nVersion: 93.08223 signed\nContract Expiry Date: Tue Sep 28 2027\nLast Updated using manual update on Wed Nov  4 12:41:47 2026\nLast Update Attempt: Wed Nov  4 12:53:25 2026\nResult: No Updates\n\nExtreme set\n---------\nVersion: 1.00001 signed\nContract Expiry Date: Tue Sep 28 2027\nLast Updated using manual update on Thu Apr  2 14:48:00 2026\nLast Update Attempt: n/a\nResult: Updates Installed\n\nOCR Set\n---------\nVersion: 1.00005\nContract Expiry Date: Tue Sep 28 2027\nLast Updated using manual update on Tue Nov  3 15:11:17 2026\nLast Update Attempt: Wed Nov  4 12:41:47 2026\nResult: No Updates\n\nMobile Malware Definitions\n---------\nVersion: 93.08223 signed\nContract Expiry Date: Tue Sep 28 2027\nLast Updated using manual update on Wed Nov  4 12:41:47 2026\nLast Update Attempt: Wed Nov  4 12:53:25 2026\nResult: No Updates\n\nIPS Attack Engine\n---------\nVersion: 8.00050 signed\nContract Expiry Date: Tue Sep 28 2027\nLast Updated using manual update on Wed Sep  2 17:02:00 2026\nLast Update Attempt: Wed Nov  4 12:53:25 2026\nResult: No Updates\n\nAttack Definitions\n---------\nVersion: 6.00741 signed\nContract Expiry Date: Tue Sep 28 2027\n...",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "diagnose",
+    "p": "fdsm central-mgmt-status",
+    "c": "diagnose fdsm central-mgmt-status",
+    "t": "Connection status: Up\nRegistration status: Registered\nSerial: FMVMxxxx2853",
+    "cap": "lab session 2026-11-02",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "diagnose",
+    "p": "hardware sysinfo memory",
+    "c": "diagnose hardware sysinfo memory",
+    "t": "MemTotal:        3975752 kB\nMemFree:         1800228 kB\nMemAvailable:    2015072 kB\nBuffers:            9204 kB\nCached:           968520 kB\nSwapCached:            0 kB\nActive:          1169652 kB\nInactive:         234804 kB\nActive(anon):     949992 kB\nInactive(anon):   120016 kB\nActive(file):     219660 kB\nInactive(file):   114788 kB\nUnevictable:      375292 kB\nMlocked:           22888 kB\nSwapTotal:             0 kB\nSwapFree:              0 kB\nDirty:                 0 kB\nWriteback:             0 kB\nAnonPages:        802008 kB\nMapped:           287084 kB\nShmem:            275168 kB\nSlab:             120372 kB\nSReclaimable:      16140 kB\nSUnreclaim:       104232 kB\nKernelStack:        3036 kB\nPageTables:        31868 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:     1987876 kB\nCommitted_AS:   16457556 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:           0 kB\nVmallocChunk:          0 kB\nPercpu:              312 kB\nAnonHugePages:         0 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nCmaTotal:              0 kB\nCmaFree:               0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:      132968 kB\nDirectMap2M:     4061184 kB\nDirectMap1G:     2097152 kB",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "diagnose",
+    "p": "sys ha status",
+    "c": "diagnose sys ha status",
+    "t": "HA information\nStatistics\n\ttraffic.local = s:0\n\ttraffic.total = s:0\n\tactivity.ha_id_changes = 2\n\tactivity.fdb  = c:0 q:0\n\nModel=80023, Mode=2 Group=0 Debug=0\nnvcluster=1, ses_pickup=1, delay=0\n\n[Debug_Zone HA information]\nHA group member information: is_manage_primary=1.\nFGVMxxxx7411:      Primary, serialno_prio=1, usr_priority=129, hostname=FGT\nFGVMxxxx7412:    Secondary, serialno_prio=0, usr_priority=128, hostname=FGT\n\n[Kernel HA information]\nvcluster 1, state=work, primary_ip=169.254.0.2, primary_id=0, silent=0\nFGVMxxxx7411:      Primary, ha_prio/o_ha_prio=0/0\nFGVMxxxx7412:    Secondary, ha_prio/o_ha_prio=1/1\nSilent vcluster bitmap=00000000000000000000000000000000",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "get",
+    "p": "system central-management",
+    "c": "get system central-management",
+    "t": "mode                : normal\ntype                : fortimanager\nfortigate-cloud-sso-default-profile:\nschedule-config-restore: enable\nschedule-script-restore: enable\nallow-push-configuration: enable\nallow-push-firmware : enable\nallow-remote-firmware-upgrade: enable\nallow-monitor       : enable\nserial-number       :\nfmg                 : \"10.10.20.32\"\nfmg-source-ip       : 0.0.0.0\nfmg-source-ip6      : ::\nlocal-cert          :\nca-cert             :\nvdom                : root\nserver-list:\nfmg-update-port     : 8890\nfmg-update-http-header: disable\ninclude-default-servers: enable\nuse-default-servers-as-main: disable\nenc-algorithm       : high\ninterface-select-method: auto\nvrf-select          : 0",
+    "cap": "lab session 2026-11-02",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "system console",
+    "c": "get system console",
+    "t": "output              : more\nlogin               : enable",
+    "cap": "lab session 2026-11-02",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "system fortiguard",
+    "c": "get system fortiguard",
+    "t": "fortiguard-anycast  : enable\nfortiguard-anycast-source: fortinet\nprotocol            : https\nport                : 443\nload-balance-servers: 5\nauto-join-forticloud: disable\nfortiguard-server-location: usa\nsandbox-region      :\nupdate-ffdb         : enable\nupdate-uwdb         : enable\nupdate-dldb         : enable\nupdate-extdb        : enable\nupdate-build-proxy  : enable\nvdom                :\nauto-firmware-upgrade: enable\nauto-firmware-upgrade-day:\nauto-firmware-upgrade-delay: 3\nauto-firmware-upgrade-start-hour: 2\nauto-firmware-upgrade-end-hour: 4\nFDS-license-expiring-days: 15\nsubscribe-update-notification: disable\nproxy-fqdn-host     : enable\nantispam-force-off  : disable\nantispam-cache      : enable\n--More--\n\nantispam-cache-ttl  : 1800",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "get",
+    "p": "system global",
+    "c": "get system global",
+    "t": "admin-concurrent    : enable\nadmin-console-timeout: 0\nadmin-forticloud-sso-login: disable\nadmin-host          :\nadmin-hsts-max-age  : 63072000\nadmin-http-json-request-limit: 33554432\nadmin-http-login-request-size-limit: 4096\nadmin-http-rate-limit-exempt-auth: disable\nadmin-http-rate-limit-max-requests: 100\nadmin-http-request-body-timeout: 1800000\nadmin-http-request-header-timeout: 10000\nadmin-http-unauthenticated-request-body-timeout: 10000\nadmin-https-pki-required: disable\nadmin-https-redirect: enable\nadmin-https-ssl-banned-ciphers:\nadmin-https-ssl-ciphersuites: TLS-AES-128-GCM-SHA256 TLS-AES-256-GCM-SHA384 TLS-CHACHA20-POLY1305-SHA256\nadmin-https-ssl-versions: tlsv1-2 tlsv1-3\nadmin-lockout-duration: 60\nadmin-lockout-threshold: 3\nadmin-login-max     : 100\nadmin-port          : 80\nadmin-restrict-local: disable\nadmin-scp           : disable\n--More--\n\nadmin-server-cert   : Fortinet_GUI_Server",
+    "cap": "lab session 2026-11-02",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-02"
+   },
+   {
+    "k": "get",
+    "p": "system performance status",
+    "c": "get system performance status",
+    "t": "CPU states: 1% user 1% system 0% nice 98% idle 0% iowait 0% irq 0% softirq\nCPU0 states: 1% user 1% system 0% nice 98% idle 0% iowait 0% irq 0% softirq\nMemory: 3975752k total, 1806408k used (45.4%), 1596816k free (40.2%), 572528k freeable (14.4%)\nAverage network usage: 36 / 47 kbps in 1 minute, 575 / 14518 kbps in 10 minutes, 482 / 12101 kbps in 30 minutes\nMaximal network usage: 54 / 101 kbps in 1 minute, 17552 / 117425 kbps in 10 minutes, 17552 / 117425 kbps in 30 minutes\nAverage sessions: 39 sessions in 1 minute, 49 sessions in 10 minutes, 43 sessions in 30 minutes\nMaximal sessions: 44 sessions in 1 minute, 97 sessions in 10 minutes, 97 sessions in 30 minutes\nAverage session setup rate: 0 sessions per second in last 1 minute, 0 sessions per second in last 10 minutes, 0 sessions per second in last 30 minutes\nMaximal session setup rate: 3 sessions per second in last 1 minute, 16 sessions per second in last 10 minutes, 16 sessions per second in last 30 minutes\nAverage NPU sessions: 0 sessions in last 1 minute, 0 sessions in last 10 minutes, 0 sessions in last 30 minutes\nMaximal NPU sessions: 0 sessions in last 1 minute, 0 sessions in last 10 minutes, 0 sessions in last 30 minutes\nVirus caught: 0 total in 1 minute\nIPS attacks blocked: 0 total in 1 minute\nUptime: 0 days,  0 hours,  9 minutes",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "get",
+    "p": "system status",
+    "c": "get system status",
+    "t": "Version: FortiGate-VM64-KVM v8.0.2,build0251,260928 (GA.F)\nFirst GA patch build date: 260421\nCurrent Security Level: High\nFirmware Signature: certified\nVirus-DB: 93.08223(2026-11-04 13:24)\nExtended DB: 93.08223(2026-11-04 13:23)\nExtreme DB: 1.00001(2026-04-02 13:48)\nOCR DB: 1.00005(2026-04-16 12:36)\nAV AI/ML Model: 4.05245(2026-11-04 13:21)\nIPS-DB: 6.00741(2015-12-01 02:30)\nIPS-ETDB: 37.00327(2026-11-04 02:39)\nIPS-MLDB: 2609.00300(2026-09-16 00:55)\nAPP-DB: 37.00325(2026-11-03 01:04)\nAIAP-DB: 37.00327(2026-11-04 02:40)\nProxy-IPS-DB: 6.00741(2015-12-01 02:30)\nProxy-IPS-ETDB: 37.00327(2026-11-04 02:39)\nProxy-APP-DB: 37.00325(2026-11-03 01:04)\nProxy-AIAP-DB: 37.00327(2026-11-04 02:40)\nFMWP-DB: 0.00000(2001-01-01 00:00)\nIMCL version: 0.00000(2001-01-01 00:00)\nIPS Malicious URL Database: 5.00844(2026-11-04 05:12)\nIoT-Detect: 0.00000(2022-08-17 17:31)\nOT-Detect-DB: 0.00000(2001-01-01 00:00)\nOT-Patch-DB: 0.00000(2001-01-01 00:00)\n--More--\n\nOT-Threat-DB: 6.00741(2015-12-01 02:30)\nCluster state change time: 2026-11-04 12:47:28",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "get",
+    "p": "vpn certificate local details site-subca",
+    "c": "get vpn certificate local details site-subca",
+    "t": "== [ site-subca ]\n\tName:        site-subca\n\tSubject:     O = corp Health, OU = IT, CN = site-SubCA\n\tIssuer:      DC = internal, DC = lab, DC = ad, CN = LAB-ROOT-CA\n\tValid from:  2026-11-04 19:33:08  GMT\n\tValid to:    2028-11-04 19:43:08  GMT\n\tFingerprint: 01:D2:0C:E2:D6:73:5B:37:E5:FE:EB:35:06:27:6C:DB:F1:B0:78:CC:A5:E9:76:B0:85:32:E4:CD:79:C3:52:C2\n\tSerial Num:  50:00:00:00:03:92:a1:85:79:f5:e7:13:5a:00:00:00:00:00:03",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "full-configuration firewall policy 1",
+    "c": "show full-configuration firewall policy 1",
+    "t": "config firewall policy\n    edit 1\n        set status enable\n        set name \"staff -> internet\"\n        set uuid db1775c2-d7e6-51f1-d7fd-40f1b76178e6\n        set fabric-object disable\n        set srcintf \"port2\"\n        set dstintf \"port4\" \"port5\"\n        set action accept\n        set pcp-outbound disable\n        set pcp-inbound disable\n        set ztna-status disable\n        set srcaddr \"staff-net\"\n        set dstaddr \"all\"\n        set internet-service disable\n        set internet-service-src disable\n        unset reputation-minimum\n        set internet-service6 disable\n        set internet-service6-src disable\n        unset reputation-minimum6\n        set rtp-nat disable\n        set schedule \"always\"\n        set schedule-timeout disable\n        set policy-expiry disable\n--More--\n\n        set service \"ALL\"",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "full-configuration ips global",
+    "c": "show full-configuration ips global",
+    "t": "config ips global\n    set fail-open disable\n    set database extended\n    set traffic-submit disable\n    set anomaly-mode continuous\n    set session-limit-mode heuristic\n    set socket-size 256\n    set engine-count 0\n    set sync-session-ttl enable\n    set deep-app-insp-timeout 0\n    set deep-app-insp-db-limit 0\n    set exclude-signatures ot\n    set packet-log-queue-depth 128\n    set ngfw-max-scan-range 4096\n    set av-mem-limit 0\n    set machine-learning-detection enable\n    config tls-active-probe\n        set interface-select-method auto\n    end\nend",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "full-configuration ips settings",
+    "c": "show full-configuration ips settings",
+    "t": "config ips settings\n    set packet-log-history 1\n    set packet-log-post-attack 0\n    set ips-packet-quota 0\n    set proxy-inline-ips disable\n    set ha-session-pickup connectivity\nend",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "full-configuration system autoupdate schedule",
+    "c": "show full-configuration system autoupdate schedule",
+    "t": "config system autoupdate schedule\n    set status enable\n    set frequency daily\n    set time 01:240\nend",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "full-configuration webfilter fortiguard",
+    "c": "show full-configuration webfilter fortiguard",
+    "t": "config webfilter fortiguard\n    set cache-mode ttl\n    set cache-prefix-match enable\n    set cache-mem-permille 1\n    set ovrd-auth-port-http 8008\n    set ovrd-auth-port-https 8010\n    set ovrd-auth-port-https-flow 8015\n    set ovrd-auth-port-warning 8020\n    set ovrd-auth-https enable\n    set warn-auth-https enable\n    set close-ports disable\n    set request-packet-size-limit 0\n    set embed-image enable\nend",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "system central-management",
+    "c": "show system central-management",
+    "t": "config system central-management\n    set type fortimanager\n    set serial-number \"FMVMxxxx2853\"\n    set fmg \"10.10.20.32\"\nend",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "system dns",
+    "c": "show system dns",
+    "t": "config system dns\n    set primary 192.0.2.173\n    set secondary 203.0.113.70\n    set protocol dot\n    set server-hostname \"globalsdns.fortinet.net\"\nend",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "webfilter ftgd-local-cat",
+    "c": "show webfilter ftgd-local-cat",
+    "t": "config webfilter ftgd-local-cat\n    edit \"custom1\"\n        set id 140\n    next\n    edit \"custom2\"\n        set id 141\n    next\nend",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "webfilter ftgd-local-rating",
+    "c": "show webfilter ftgd-local-rating",
+    "t": "config webfilter ftgd-local-rating\nend",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "webfilter profile all-but-hr",
+    "c": "show webfilter profile all-but-hr",
+    "t": "config webfilter profile\n    edit \"all-but-hr\"\n        set uuid c1fb9eb4-d882-51f1-3dfe-3cd163be938f\n        config web\n            set urlfilter-table 2\n        end\n        config ftgd-wf\n            unset options\n            config filters\n                edit 1\n                    set action warning\n                next\n                edit 2\n                    set category 1\n                next\n                edit 3\n                    set category 3\n                next\n                edit 4\n                    set category 4\n                next\n                edit 5\n                    set category 5\n                next\n--More--\n\n                edit 6",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   },
+   {
+    "k": "show",
+    "p": "webfilter urlfilter",
+    "c": "show webfilter urlfilter",
+    "t": "config webfilter urlfilter\n    edit 1\n        set name \"Auto-webfilter-urlfilter_m1sl361io\"\n        set uuid c43ed548-d881-51f1-51a9-926be7f65892\n        config entries\n            edit 1\n                set url \"10.10.50.40/hr\"\n                set action allow\n            next\n        end\n    next\n    edit 2\n        set name \"Auto-webfilter-urlfilter_xwk6xywnb\"\n        set uuid c1f98e6c-d882-51f1-f49b-5f5c40fc139e\n        config entries\n            edit 1\n                set url \"10.10.50.40/hr\"\n                set action block\n            next\n        end\n    next\nend",
+    "cap": "site-webfilter-rating-error",
+    "build": "FortiGate-VM64-KVM v8.0.2 build0251",
+    "train": "8.0",
+    "date": "2026-11-04"
+   }
+  ]
+ }
+}

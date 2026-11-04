@@ -19,10 +19,11 @@ DEV     ?=
 CONFIG  ?=
 BUNDLE  ?= auto        # `auto` matches the capture's own firmware to a bundle
 ROOT    ?=             # a command prefix for `make crawl`, e.g. get
+LAB     ?=             # a lab checkout for `make import-lab`; default ~/Development/fortinet-lab
 
 .DEFAULT_GOAL := help
 .PHONY: help all versions versions-check sources sources-check fetch build check \
-        capture crawl tree probe serve diff clean distclean
+        capture crawl tree probe serve diff clean distclean import-lab
 
 ## ---------------------------------------------------------------- discovery
 
@@ -114,7 +115,29 @@ check:
 	@$(PY) tools/capture_device.py --selftest
 	@$(PY) tools/parse_hand.py --selftest
 	@$(PY) tools/merge_device.py --selftest
+	@$(PY) tools/import_lab.py --selftest
 	@$(PY) tools/check_page.py
+
+## import-lab     Distil the lab's logged device reads into lab-overlay.json.     ~2s, offline
+##                 Reads investigations/*/lab.log and investigations/_lab/*.log under
+##                 $(LAB) (default ~/Development/fortinet-lab) and lab.toml beside them,
+##                 and never contacts a device. One sample per platform, train and
+##                 command: the newest day's, longest output, cut at 60 lines. Every
+##                 sample is anonymised first -- generic prompts and hostnames, serials
+##                 down to their last four characters, company names and the abbreviations
+##                 in device names gone, secrets masked, public IPv4 swapped for RFC 5737
+##                 -- and it refuses to write (exit 1, naming the record) if a secret,
+##                 serial or company name survives its own final scan.
+##                 Writes lab-overlay.json at the repo root and nothing else. It attaches
+##                 nothing to the bundles yet: that is a later step, so a build does not
+##                 change. Re-running on unchanged logs is byte-identical.
+##                 Expect: records read and kept, why the rest were dropped, samples per
+##                 platform and train, and how many would be new against the bundles.
+##                   make import-lab
+##                   make import-lab LAB=/path/to/fortinet-lab
+##                 `python3 tools/import_lab.py --report` prints the counts without writing.
+import-lab:
+	@$(PY) tools/import_lab.py $(if $(LAB),--lab "$(LAB)")
 
 ## all             sources -> fetch -> build. The whole pipeline from nothing.
 all: sources fetch build
