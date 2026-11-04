@@ -92,16 +92,18 @@ fetch:
 build:
 	@./build.sh
 
-## check           Bundle invariants, and both parser selftests.                 instant
+## check           Bundle invariants, six selftests, and the page check.                 instant
 ##                 One bundle per cli entry, ids and names well formed, no duplicate
 ##                 get/show paths, worked examples not lopsided across builds of one
 ##                 platform, and index.html's PRODUCTS list agreeing with sources.json.
-##                 Then three parser selftests: the tree parser against its fixture,
+##                 Then six selftests: the tree parser against its fixture,
 ##                 the device crawl against a scripted box that hangs up on cue (how we
 ##                 know a crawl resumes without a lab to try it in), and the
 ##                 hand-written-reference parser against real syntax lines from the
 ##                 FortiSwitch, FortiManager and FortiAnalyzer documents, and the device
-##                 merge against the three shapes a `?` listing can take.
+##                 merge against the three shapes a `?` listing can take, the lab-log
+##                 importer's anonymiser (import_lab), and the FortiManager schema
+##                 comparison (diff_schema).
 ##                 Then the PAGE itself: site/index.html's own script is run against a
 ##                 stub DOM and the real bundles, and what it renders is asserted. That
 ##                 is the only check here that catches a page which parses perfectly and

@@ -127,6 +127,14 @@ def mask_serial(s):
     return s if 'xxxx' in s else s[:4] + 'xxxx' + s[-4:]
 
 
+def serial_tail(s):
+    """A serial on a Serial-Number line: F-prefixed ones keep their model prefix, any other is
+    reduced to `xxxx` and its last four characters."""
+    if 'xxxx' in s:
+        return s
+    return mask_serial(s) if re.match(r'F[A-Z]', s) else 'xxxx' + s[-4:]
+
+
 def serial_hit(m_text):
     """Serial-shaped tokens in text: F + capital, 10-25 characters, at least four digits."""
     return [m.group(0) for m in SERIAL.finditer(m_text) if sum(c.isdigit() for c in m.group(0)) >= 4]
@@ -175,7 +183,7 @@ class Anonymiser:
         return self._host_re.sub(lambda m: GENERIC[lower.get(m.group(1).lower(), platform)], s)
 
     def serials(self, s):
-        s = SERIAL_LINE.sub(lambda m: m.group(1) + (mask_serial(m.group(2))
+        s = SERIAL_LINE.sub(lambda m: m.group(1) + (serial_tail(m.group(2))
                             if len(m.group(2)) >= 8 and any(c.isdigit() for c in m.group(2)) else m.group(2)), s)
         return SERIAL.sub(lambda m: mask_serial(m.group(0)) if serial_hit(m.group(0)) else m.group(0), s)
 
@@ -361,7 +369,17 @@ def segments(rec, anon):
 
 def clean_output(lines, anon, platform):
     """Drop banner and prompt scaffolding, make remaining prompts generic. Returns the text."""
-    lines = list(lines)
+    lines, kept, skip_blank = list(lines), [], False
+    for l in lines:                     # pager residue: `--More--` and the blank line after it
+        if l.strip() == '--More--':
+            skip_blank = True
+            continue
+        if skip_blank and not l.strip():
+            skip_blank = False
+            continue
+        skip_blank = False
+        kept.append(l)
+    lines = kept
     # leading: banner lines up to the first prompt, then the prompt itself
     for i, l in enumerate(lines[:12]):
         if PROMPT.match(l) and anon.prompt_line(l, platform, first=True):
@@ -846,7 +864,7 @@ fgt-ac-hub1 $ port1 up
     assert an.serials('FMG-VM0123456789 FS1E48T123456789 FG70GPT22000123') \
         == 'FMG-xxxx6789 FS1Exxxx6789 FG70xxxx0123'
     assert an.serials('Serial-Number: FGVMELTM00001234') == 'Serial-Number: FGVMxxxx1234'
-    assert an.serials('Serial Number : ABC12345678') == 'Serial Number : ABC1xxxx5678'
+    assert an.serials('Serial Number : ABC12345678') == 'Serial Number : xxxx5678'
     assert an.serials('Serial: ') == 'Serial: ' and an.serials('FortiGate-VM64-KVM FGVMxxxx1234') \
         == 'FortiGate-VM64-KVM FGVMxxxx1234'
     assert an.company('Kestrel, Bluebird and Acme; fips-cc; bl-1 AC_x') == 'corp, corp and corp; fips-cc; site-1 site_x'
@@ -898,6 +916,7 @@ fgt-ac-hub1 $ port1 up
     # derive the abbreviations and companies the lab config uses
     n, a = derive_names('[sets.zeta]\ntier = "company"\n# fgt-zz-hq, fgt-ac-x\n')
     assert 'zeta' in n and 'zz' in a and 'ac' in a and 'bl' in a and 'acme' in n
+    assert clean_output(['a', '--More--', '', 'b', '', 'c'], Anonymiser(), 'fortios') == 'a\nb\n\nc'
     print('import_lab selftest: ok')
 
 
@@ -908,6 +927,9 @@ def main(argv):
         return 0
     lab = DEFAULT_LAB
     if '--lab' in argv:
+        if argv.index('--lab') + 1 >= len(argv):
+            print('usage: import_lab.py [--lab PATH] [--report | --selftest]', file=sys.stderr)
+            return 2
         lab = os.path.expanduser(argv[argv.index('--lab') + 1])
     sources, vmids, raw = read_lab(lab)
     load_lab_mask(lab)

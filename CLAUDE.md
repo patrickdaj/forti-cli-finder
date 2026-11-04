@@ -11,9 +11,10 @@ project; the rename was judged not worth doing.
 2. The site is one self-contained `site/index.html` plus the bundles in `site/data/`. The
    bundles are committed.
 3. A rebuild from unchanged input is byte-identical. Confirm with `git diff --stat site/data`.
-4. Every tool ships `--selftest`, wired into `make check`. There is no pytest, by design.
+4. Every new tool ships a `--selftest` wired into `make check` (the 16 older tools predate this). There is no pytest, by design.
 5. This repo is public. From the lab's `investigations/` only command text and anonymised
-   output may arrive: no serial, hostname, public address, token or company name.
+   output may arrive: no hostname, public address, token or company name, and serials only as their last four
+   characters.
    `tools/import_lab.py` anonymises and refuses to write (exit 1) if anything survives its
    own final scan. Do not weaken that scan to get a file through.
 6. Data from the other two repos arrives only as a committed JSON overlay written by a tool in
