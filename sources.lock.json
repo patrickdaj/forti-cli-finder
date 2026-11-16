@@ -1,14 +1,14 @@
 {
  "documents": {
   "ag": {
-   "bytes": 148490830,
+   "bytes": 148482308,
    "doc": "/document/fortigate/7.6.7/administration-guide",
    "name": "FortiOS-7.6.7-Administration_Guide.pdf",
    "title": "FortiOS 7.6.7 Administration Guide",
    "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/7f08ccb4-5ac6-11f1-a33a-02356ffb40d9/FortiOS-7.6.7-Administration_Guide.pdf"
   },
   "ag74": {
-   "bytes": 135097347,
+   "bytes": 135098415,
    "doc": "/document/fortigate/7.4.12/administration-guide",
    "name": "FortiOS-7.4.12-Administration_Guide.pdf",
    "title": "FortiOS 7.4.12 Administration Guide",
@@ -29,14 +29,14 @@
    "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/389f4e0d-59e9-11f1-a33a-02356ffb40d9/FortiOS-8.0-Troubleshooting_Cheat_Sheet.pdf"
   },
   "faz-cli": {
-   "bytes": 2272162,
+   "bytes": 2272195,
    "doc": "/document/fortianalyzer/7.6.7/cli-reference",
    "name": "FortiAnalyzer_7.6.7_CLI_Reference.pdf",
    "title": "FortiAnalyzer 7.6.7 CLI Reference",
    "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/af50a789-5dfe-11f1-a33a-02356ffb40d9/FortiAnalyzer_7.6.7_CLI_Reference.pdf"
   },
   "fazag": {
-   "bytes": 39499138,
+   "bytes": 39508669,
    "doc": "/document/fortianalyzer/7.6.7/administration-guide",
    "name": "FortiAnalyzer-7.6.7-Administration_Guide.pdf",
    "title": "FortiAnalyzer 7.6.7 Administration Guide",
@@ -57,7 +57,7 @@
    "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/3d7939ca-5870-11f1-a33a-02356ffb40d9/FortiManager_7.6.7_CLI_Reference.pdf"
   },
   "fmgag": {
-   "bytes": 81927096,
+   "bytes": 81938009,
    "doc": "/document/fortimanager/7.6.7/administration-guide",
    "name": "FortiManager-7.6.7-Administration_Guide.pdf",
    "title": "FortiManager 7.6.7 Administration Guide",
@@ -92,14 +92,14 @@
    "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/9c663509-50a3-11f1-a33a-02356ffb40d9/FortiSwitchOS-7.6.7-Administration_Guide%E2%80%94Standalone_Mode.pdf"
   },
   "nf74": {
-   "bytes": 36086755,
+   "bytes": 36083431,
    "doc": "/document/fortigate/7.4.0/new-features",
    "name": "FortiOS-7.4.0-New_Features_Guide.pdf",
    "title": "FortiOS 7.4.0 New Features Guide",
    "url": "https://fortinetweb.s3.amazonaws.com/docs.fortinet.com/v2/attachments/41a91d6d-9b7f-11ed-8e6d-fa163e15d75b/FortiOS-7.4.0-New_Features_Guide.pdf"
   },
   "nf76": {
-   "bytes": 39414752,
+   "bytes": 39492359,
    "doc": "/document/fortigate/7.6.7/new-features",
    "name": "FortiOS-7.6.0-New_Features_Guide.pdf",
    "title": "FortiOS 7.6.0 New Features Guide",
