@@ -69,6 +69,10 @@ python3 tools/derive_getshow.py
 # absent -- the build must work for someone with no hardware. See docs/pipeline.md.
 python3 tools/merge_device.py --apply
 
+# Sample output from the lab's own boxes, anonymised by import_lab.py. Attaches after the
+# guide samples, and a no-op when lab-overlay.json is absent.
+python3 tools/attach_lab.py
+
 python3 tools/stamp_build.py
 python3 tools/check_bundles.py
 

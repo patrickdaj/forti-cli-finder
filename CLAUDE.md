@@ -33,7 +33,7 @@ project; the rename was judged not worth doing.
   household perimeter every 450 asks). Nothing crawls from here.
 
 ## Before committing
-- `make check`. It runs `check_bundles.py`, six `--selftest`s and `check_page.py`.
+- `make check`. It runs `check_bundles.py`, seven `--selftest`s and `check_page.py`.
 - A data change also needs `make diff`; put its counts in the commit message.
 - A report-only tool (`diff_schema.py`) changes no parser, bundle or site file. Do not edit a
   parser on the strength of a schema disagreement until `docs/schema-diff.md` says it is real.

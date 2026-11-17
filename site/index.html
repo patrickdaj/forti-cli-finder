@@ -208,7 +208,7 @@ details.dsc[open] summary::before{content:"\25be"}
 <div class="toast" id="toast" hidden></div>
 <script>
 (function(){
-const BUILD='33f53d3da828';   // replaced at build time by tools/stamp_build.py
+const BUILD='6c83e591f35d';   // replaced at build time by tools/stamp_build.py
 const PRODUCTS=[
   {id:"fortios",short:"FGT",name:"FortiOS",vers:[{v:"7.6.7",f:"fortios",src:"CLI Reference + Administration Guide"},{v:"8.0.1",f:"fortios-8.0",src:"CLI Reference (samples from the 7.6 and 7.4 guides)"}]},
   {id:"fortiswitch",short:"FSW",name:"FortiSwitchOS",vers:[{v:"7.6.7",f:"fortiswitch",src:"CLI Reference + Administration and FortiLink guides"}]},
@@ -256,7 +256,9 @@ async function load(id){
       s.i=i;s.prod=b.id;s.short=b.short;s.doc=b.doc;
       s.words=(s.k+' '+s.p).toLowerCase().split(/\s+/).filter(Boolean);
       s.full=s.words.join(' ');
-      s.cap=(s.o||[]).map(o=>o.cap).filter(Boolean);
+      // a lab caption names a session (pqc-hub-spoke-76), not the command, so it never
+      // stands in for a missing description
+      s.cap=(s.o||[]).filter(o=>!isLab(o)).map(o=>o.cap).filter(Boolean);
       if(!s.d&&s.cap.length)s.d=s.cap.slice().sort((a,b)=>a.length-b.length)[0];
       s.text=(s.p+' '+s.d+' '+s.cap.join(' ')).toLowerCase();
       s.otext=(s.o||[]).map(o=>o.t).join(' ').toLowerCase();
@@ -791,6 +793,9 @@ function rowHtml(s,r,i){
   return `<div class="row prm${cur?' cur':''}${on?' on':''}${r.sub?' sub':''}${p.fq>=50?' com':''}" data-row="${i}"><span class="mk" data-pin="${esc(id)}">${on?'\u25cf':'\u25cb'}</span><span class="nm">${esc(p.k)}</span><span class="val">${valueHtml(s,p,id,cur)}</span><span class="hp">${fq}${esc(p.d||p.n)}</span>${more}</div>`;
 }
 function srcName(s,key){const b=DATA[s.prod];return (b.srcs&&b.srcs[key])||b.ag||b.doc}
+function isLab(o){return /^lab:/.test(o.src||'')}
+// a guide sample cites its page; a lab one has no page, so it gives the box's build and the day
+function oSrc(s,o){return esc(srcName(s,o.src||'ag'))+(isLab(o)?', '+esc(o.dt||''):', p.'+o.pg)}
 function outputHtml(s){
   const outs=s.o||[];const ex=s.e||[];
   let h='';
@@ -798,12 +803,12 @@ function outputHtml(s){
     const a=s.po,o=a.o[Math.min(S.oi||0,a.o.length-1)];
     h+=`<section class="blk"><div class="lbl">Output from a parent command <span>${a.o.length>1?`${Math.min(S.oi||0,a.o.length-1)+1} of ${a.o.length} \u00b7 <button class="lk" data-onext="-1">\u2039 p</button> <button class="lk" data-onext="1">n \u203a</button>`:'1 of 1'}</span></div>
       <div class="og alt"><b>note</b> the guides show no output for this command. This is <b>${esc(a.k+' '+a.p)}</b>, the nearest one they do cover.</div>
-      <div class="ocap">${esc(o.cap||'')}</div>${o.g?`<div class="og"><b>look for</b> ${esc(o.g)}</div>`:''}<div class="ocmd"><span># ${esc(o.c)}</span><button class="lk" data-copy-text="${esc(o.c)}">copy</button></div><pre class="opre">${esc(o.t)}</pre><div class="osrc">${esc(srcName(a,o.src||'ag'))}, p.${o.pg}</div></section>`;
+      <div class="ocap">${esc(o.cap||'')}</div>${o.g?`<div class="og"><b>look for</b> ${esc(o.g)}</div>`:''}<div class="ocmd"><span># ${esc(o.c)}</span><button class="lk" data-copy-text="${esc(o.c)}">copy</button></div><pre class="opre">${esc(o.t)}</pre><div class="osrc">${oSrc(a,o)}</div></section>`;
   }
   if(outs.length){
     const i=Math.min(S.oi||0,outs.length-1),o=outs[i];
     h+=`<section class="blk"><div class="lbl">Sample output <span>${outs.length>1?`${i+1} of ${outs.length} \u00b7 <button class="lk" data-onext="-1">\u2039 p</button> <button class="lk" data-onext="1">n \u203a</button>`:'1 of 1'}</span></div>
-      <div class="ocap">${esc(o.cap||'')}</div>${o.g?`<div class="og"><b>look for</b> ${esc(o.g)}</div>`:''}<div class="ocmd"><span># ${esc(o.c)}</span><button class="lk" data-copy-text="${esc(o.c)}">copy</button></div><pre class="opre">${esc(o.t)}</pre><div class="osrc">${esc(srcName(s,o.src||'ag'))}, p.${o.pg}</div></section>`;
+      <div class="ocap">${esc(o.cap||'')}</div>${o.g?`<div class="og"><b>look for</b> ${esc(o.g)}</div>`:''}<div class="ocmd"><span># ${esc(o.c)}</span><button class="lk" data-copy-text="${esc(o.c)}">copy</button></div><pre class="opre">${esc(o.t)}</pre><div class="osrc">${oSrc(s,o)}</div></section>`;
   }
   if(ex.length)h+=`<details class="blk dsc"${outs.length?'':' open'}><summary class="lbl">Worked examples <span>${ex.length}${s.ex?' \u00b7 from '+s.ex+' in the guides':''}</span></summary>${ex.map(e=>`<pre class="opre">${esc(e)}</pre>`).join('')}</details>`;
   return h;

@@ -92,17 +92,18 @@ fetch:
 build:
 	@./build.sh
 
-## check           Bundle invariants, six selftests, and the page check.                 instant
+## check           Bundle invariants, seven selftests, and the page check.                 instant
 ##                 One bundle per cli entry, ids and names well formed, no duplicate
 ##                 get/show paths, worked examples not lopsided across builds of one
 ##                 platform, and index.html's PRODUCTS list agreeing with sources.json.
-##                 Then six selftests: the tree parser against its fixture,
+##                 Then seven selftests: the tree parser against its fixture,
 ##                 the device crawl against a scripted box that hangs up on cue (how we
 ##                 know a crawl resumes without a lab to try it in), and the
 ##                 hand-written-reference parser against real syntax lines from the
 ##                 FortiSwitch, FortiManager and FortiAnalyzer documents, and the device
 ##                 merge against the three shapes a `?` listing can take, the lab-log
-##                 importer's anonymiser (import_lab), and the FortiManager schema
+##                 importer's anonymiser (import_lab), where a lab sample attaches
+##                 (attach_lab), and the FortiManager schema
 ##                 comparison (diff_schema).
 ##                 Then the PAGE itself: site/index.html's own script is run against a
 ##                 stub DOM and the real bundles, and what it renders is asserted. That
@@ -118,6 +119,7 @@ check:
 	@$(PY) tools/parse_hand.py --selftest
 	@$(PY) tools/merge_device.py --selftest
 	@$(PY) tools/import_lab.py --selftest
+	@$(PY) tools/attach_lab.py --selftest
 	@$(PY) tools/diff_schema.py --selftest
 	@$(PY) tools/check_page.py
 
@@ -131,9 +133,9 @@ check:
 ##                 in device names gone, secrets masked, public IPv4 swapped for RFC 5737
 ##                 -- and it refuses to write (exit 1, naming the record) if a secret,
 ##                 serial or company name survives its own final scan.
-##                 Writes lab-overlay.json at the repo root and nothing else. It attaches
-##                 nothing to the bundles yet: that is a later step, so a build does not
-##                 change. Re-running on unchanged logs is byte-identical.
+##                 Writes lab-overlay.json at the repo root and nothing else; the next
+##                 `make build` attaches it (tools/attach_lab.py), after the guide samples.
+##                 Re-running on unchanged logs is byte-identical.
 ##                 Expect: records read and kept, why the rest were dropped, samples per
 ##                 platform and train, and how many would be new against the bundles.
 ##                   make import-lab

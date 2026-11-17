@@ -80,6 +80,7 @@ What each tool contributes to a finished entry:
 | `k`, `p`, `d`, `pg`, `s` | the CLI Reference PDF | `parse_fos.py` (generated reference) / `parse_hand.py` (hand-written ones) |
 | `x[]` parameters, `ty`, `sz`, `df`, `o[]` | the same PDF's Variable tables | the same parsers |
 | `o[]` sample output | the guides in `output[]`/`hand[]` | `extract_outputs.py` → `attach_outputs.py` |
+| `o[]` lab samples, after the guide ones | `lab-overlay.json`, from the lab's logged reads | `import_lab.py` (anonymises, run by hand) → `attach_lab.py` |
 | `e[]` worked examples, `fq` frequency | the same guides | `extract_config_examples.py` → `attach_config_examples.py` |
 | `show`/`get` for every config table | derived, not read | `derive_getshow.py` |
 | `mi` model lists, `BUILD` hash | the reference / the bundles | `build_bundles.py`, `stamp_build.py` |
@@ -98,6 +99,13 @@ than one firmware build while the guides we mine are version-specific, so a `tar
 may name several builds and a sample attaches to each build whose tree contains the
 command. Provenance travels with it — a capture from the 7.6 study guide shown under the
 8.0 build still prints its own source line. See `docs/sources.md`.
+
+**Lab samples attach only to their own train, and only to a command that exists.** A
+sample from an 8.0.2 box goes to the 8.0 bundle and nowhere else; FortiManager and
+FortiAnalyzer 8.0 samples are dropped until those platforms ship an 8.0 bundle. The
+words after the matched command must be its arguments, and a lab command never becomes
+a new entry, because its paths carry object names (`list name H1_T11`). The source line
+under one is the box's build and the day, where a guide's is a page.
 
 **Worked examples are pooled per bundle and filtered by `target`.** A table name is not
 unique across platforms (`system global` exists on all four), so an example only reaches
@@ -311,9 +319,12 @@ the inline `--`, parentheses inside a field name, a line the terminal wrapped).
 - worked examples not lopsided across builds of one platform, which is how a shared
   example pool starving the second build shows up;
 - `index.html`'s generated `PRODUCTS` list agreeing with `sources.json`, including no
-  stale entries.
+  stale entries;
+- no lab sample carrying a secret pattern, a serial or a public address. Company names
+  are `import_lab.py`'s check alone: they come from the lab's `lab.toml`, which neither
+  this repo nor CI has.
 
-There is no test framework. `check_bundles.py` and six `--selftest`s are the tests,
+There is no test framework. `check_bundles.py` and seven `--selftest`s are the tests,
 and the bundles are the thing worth asserting about:
 
 - `parse_tree.py --selftest` — the tree parser against a committed fixture;
@@ -325,6 +336,8 @@ and the bundles are the thing worth asserting about:
   can take;
 - `import_lab.py --selftest` — the lab-log importer's anonymiser and its refusal to write,
   on inline fixtures, so it needs no lab;
+- `attach_lab.py --selftest` — which bundle and command a lab sample lands on, and what
+  it is dropped for;
 - `diff_schema.py --selftest` — the FortiManager schema comparison, needing neither the
   brain nor a bundle.
 

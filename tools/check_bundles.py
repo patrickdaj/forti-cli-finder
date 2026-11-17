@@ -21,6 +21,14 @@ def bundle_id(entry):
     return entry.get('bundle') or entry['product']
 
 
+def _public(ipaddress, il, text):
+    try:
+        a = ipaddress.ip_address(text)
+    except ValueError:
+        return False                          # 999.1.1.1 is not an address
+    return not any(a in n for n in il.KEEP_NETS)
+
+
 def main():
     cfg = json.load(open(os.path.join(ROOT, 'sources.json')))
     fail = []
@@ -103,6 +111,34 @@ def main():
             if lo < hi * 0.5:
                 fail.append(f'{plat}: worked examples are lopsided across builds {have} '
                             f'-- a shared example pool is starving one of them')
+
+    # Lab samples were anonymised by import_lab.py, which refuses to write on a leak. This
+    # is the same scan over what actually shipped, so a hand edit to the overlay or a
+    # change to the attach step cannot slip one past. Company names are import_lab's
+    # check alone: they live in the lab's lab.toml, which this repo never reads.
+    import importlib.util, ipaddress
+    spec = importlib.util.spec_from_file_location(
+        'import_lab', os.path.join(ROOT, 'tools', 'import_lab.py'))
+    il = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(il)
+    anon = il.Anonymiser()
+    for e in cfg['cli']:
+        b = bundle_id(e)
+        path = os.path.join(ROOT, OUT, f'{b}.json')
+        if not os.path.exists(path):
+            continue
+        d = json.load(open(path))
+        for sec in d['secs']:
+            for o in sec.get('o') or ():
+                if not (o.get('src') or '').startswith('lab:'):
+                    continue
+                text = '\n'.join((o['c'], o['t'], o.get('cap') or ''))
+                bad = anon.problems(text)
+                bad += [f'public address {m.group(0)}' for m in il.IPV4.finditer(text)
+                        if _public(ipaddress, il, m.group(0))]
+                if bad:
+                    fail.append(f"{b}: lab sample for {sec['k']} {sec['p']!r} carries "
+                                f"{', '.join(bad)}")
 
     # Check the generated literal itself. A substring search over the whole file would
     # pass on a literal that closed early and left JS dangling -- which is a blank page,

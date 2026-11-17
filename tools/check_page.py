@@ -79,6 +79,17 @@ const ok=(name,got,want)=>{
   ok('a bundle loads and knows which build it is', DATA.fortios.from, 'fortios');
   ok('it has sections', DATA.fortios.secs.length>1000, true);
 
+  // a lab sample cites the box's build and the day, never a page it does not have
+  const ls=DATA.fortios.secs.find(s=>(s.o||[]).some(o=>/^lab:/.test(o.src||'')));
+  ok('the 7.6 bundle carries lab samples', !!ls, true);
+  if(ls){
+    S.oi=ls.o.findIndex(o=>/^lab:/.test(o.src||''));
+    const src=(/class="osrc">([^<]*)</.exec(api.outputHtml(ls))||[])[1]||'';
+    ok('a lab sample\'s source line names the build', /^lab, Forti\S+ v7\.6\.\d+ build\d+, \d{4}-\d\d-\d\d$/.test(src), true);
+    ok('a lab caption never stands in for the description', ls.cap.includes(ls.o[S.oi].cap), false);
+    S.oi=0;
+  }
+
   S.q=''; S.reply=null; renderTerm(true);
   ok('an empty prompt shows the banner', /class="banner"/.test(head()), true);
 
@@ -152,7 +163,7 @@ def main():
         src = (shim + '\nconst api=new Function(' +
                json.dumps(body + '\n;return {S,DATA,LOADING,LOADERR,PRODUCTS,load,'
                                  'renderTerm,search,items,slashRun,slashList,termHead,'
-                                 'liveHtml,measureLive,get LIVE_N(){return LIVE_N}};') +
+                                 'liveHtml,measureLive,outputHtml,get LIVE_N(){return LIVE_N}};') +
                ')();\n' + DRIVE)
         run = os.path.join(d, 'run.js')
         open(run, 'w').write(src)
